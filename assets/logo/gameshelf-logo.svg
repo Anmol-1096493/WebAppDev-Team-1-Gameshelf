@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 1164 1351">
+  <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient2);
+      }
+
+      .st1 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st2 {
+        fill: url(#linear-gradient3);
+      }
+
+      .st3 {
+        fill: url(#linear-gradient6);
+      }
+
+      .st4 {
+        fill: url(#linear-gradient7);
+      }
+
+      .st5 {
+        fill: url(#linear-gradient5);
+      }
+
+      .st6 {
+        fill: url(#linear-gradient4);
+      }
+
+      .st7 {
+        fill: #4338ca;
+      }
+
+      .st7, .st8 {
+        font-family: ArialRoundedMT-ExtraBold, 'Arial Rounded MT';
+        font-size: 174px;
+        font-weight: 700;
+      }
+
+      .st9 {
+        stroke-width: 8px;
+      }
+
+      .st9, .st10 {
+        fill: #f7f3e8;
+        stroke: #172033;
+      }
+
+      .st9, .st10, .st11 {
+        stroke-linejoin: round;
+      }
+
+      .st10 {
+        stroke-width: 8px;
+      }
+
+      .st12 {
+        fill: #ef6a67;
+      }
+
+      .st12, .st13, .st14 {
+        fill-rule: evenodd;
+      }
+
+      .st13, .st8, .st15 {
+        fill: #172033;
+      }
+
+      .st16 {
+        fill: #fff;
+      }
+
+      .st17 {
+        stroke: #fff;
+        stroke-miterlimit: 4;
+        stroke-width: 9px;
+      }
+
+      .st17, .st11 {
+        fill: none;
+      }
+
+      .st8 {
+        isolation: isolate;
+      }
+
+      .st11 {
+        stroke: url(#linear-gradient);
+        stroke-linecap: round;
+        stroke-width: 70px;
+      }
+
+      .st14 {
+        fill: #b4234d;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="160.7" y1="972.9" x2="161.7" y2="971.9" gradientTransform="translate(-105829 613220.6115) scale(660 -630)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#172033"/>
+      <stop offset="1" stop-color="#0d2943"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="159.4" y1="973.9" x2="160.4" y2="972.9" gradientTransform="translate(-16897 243820.8934) scale(108 -250)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5147ed"/>
+      <stop offset="1" stop-color="#3528c7"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient2" x1="159.4" y1="974" x2="160.4" y2="973" gradientTransform="translate(-16779 227309.2087) scale(108 -233)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd34d"/>
+      <stop offset="1" stop-color="#f4b719"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient3" x1="159.4" y1="974" x2="160.4" y2="973" gradientTransform="translate(-16661 237021.9644) scale(108 -243)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16a0b4"/>
+      <stop offset="1" stop-color="#087388"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient4" x1="159.4" y1="974" x2="160.4" y2="973" gradientTransform="translate(-16543 227309.2087) scale(108 -233)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff726e"/>
+      <stop offset="1" stop-color="#e94f53"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient5" x1="160.4" y1="976.1" x2="161.4" y2="975.1" gradientTransform="translate(-47809 100254.1085) scale(300 -102)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5147ed"/>
+      <stop offset="1" stop-color="#3528c7"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient6" x1="160.4" y1="976.1" x2="161.4" y2="975.1" gradientTransform="translate(-45394 100363.1085) scale(285 -102)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16a0b4"/>
+      <stop offset="1" stop-color="#087388"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient7" x1="158.3" y1="973.8" x2="159.3" y2="972.8" gradientTransform="translate(-223202.7825 -12869.7762) rotate(90) scale(86 -230)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff726e"/>
+      <stop offset="1" stop-color="#e94f53"/>
+    </linearGradient>
+  </defs>
+  <g id="logo-mark">
+    <g id="g-shaped-shelf">
+      <path class="st11" d="M902.7,380c0-46.7-26.7-70-80-70h-465c-63.3,0-95,31.7-95,95v440c0,63.3,31.7,95,95,95h480c56.7,0,85-28.3,85-85v-150c0-53.3-26.7-80-80-80H284.7"/>
+    </g>
+    <g id="upper-game-boxes">
+      <g id="upper-box-indigo">
+        <rect class="st1" x="322.7" y="345" width="108" height="250" rx="16" ry="16"/>
+        <path class="st16" d="M376.7,400l16,23,29-7-15,28,5,32h-70l5-32-15-28,29,7,16-23Z"/>
+        <path class="st16" d="M354.7,549h44c3.3,0,6,2.7,6,6h0c0,3.3-2.7,6-6,6h-44c-3.3,0-6-2.7-6-6h0c0-3.3,2.7-6,6-6Z"/>
+      </g>
+      <g id="upper-box-yellow">
+        <rect class="st0" x="440.7" y="362" width="108" height="233" rx="16" ry="16"/>
+        <path class="st15" d="M462.7,480l23-41,23,41h-46ZM492.7,480l27-51,27,51h-54Z"/>
+        <path class="st15" d="M471.7,549h45c3.3,0,6,2.7,6,6h0c0,3.3-2.7,6-6,6h-45c-3.3,0-6-2.7-6-6h0c0-3.3,2.7-6,6-6Z"/>
+      </g>
+      <g id="upper-box-teal">
+        <rect class="st2" x="558.7" y="352" width="108" height="243" rx="16" ry="16"/>
+        <path class="st16" d="M612.7,425l33,46h-16l17,26h-24v26h-20v-26h-24l17-26h-16l33-46Z"/>
+        <path class="st16" d="M590.7,549h44c3.3,0,6,2.7,6,6h0c0,3.3-2.7,6-6,6h-44c-3.3,0-6-2.7-6-6h0c0-3.3,2.7-6,6-6Z"/>
+      </g>
+      <g id="upper-box-coral">
+        <rect class="st6" x="676.7" y="362" width="108" height="233" rx="16" ry="16"/>
+        <circle class="st16" cx="730.7" cy="458" r="26"/>
+        <ellipse class="st17" cx="730.7" cy="458" rx="45" ry="14" transform="translate(-118.4 307.1) rotate(-22)"/>
+        <path class="st16" d="M708.7,549h44c3.3,0,6,2.7,6,6h0c0,3.3-2.7,6-6,6h-44c-3.3,0-6-2.7-6-6h0c0-3.3,2.7-6,6-6Z"/>
+      </g>
+    </g>
+    <g id="lower-game-boxes">
+      <g id="lower-box-indigo">
+        <rect class="st5" x="322.7" y="695" width="300" height="102" rx="18" ry="18"/>
+        <rect class="st16" x="368.7" y="720" width="38" height="38" rx="3" ry="3" transform="translate(-409 490.6) rotate(-45)"/>
+        <path class="st16" d="M448.7,732h114c4.4,0,8,3.6,8,8h0c0,4.4-3.6,8-8,8h-114c-4.4,0-8-3.6-8-8h0c0-4.4,3.6-8,8-8Z"/>
+      </g>
+      <g id="lower-box-teal">
+        <rect class="st3" x="322.7" y="804" width="285" height="102" rx="18" ry="18"/>
+        <path class="st16" d="M368.7,870c10-35,47-41,57-36-7,27-29,48-56,52,13-18,25-33,42-44"/>
+        <path class="st16" d="M448.7,840h110c4.4,0,8,3.6,8,8h0c0,4.4-3.6,8-8,8h-110c-4.4,0-8-3.6-8-8h0c0-4.4,3.6-8,8-8Z"/>
+      </g>
+      <g id="lower-box-coral">
+        <rect class="st4" x="549.3" y="747.8" width="230" height="86" rx="16" ry="16" transform="translate(-211.2849 1338.6019) rotate(-82)"/>
+        <path class="st16" d="M673.3,726.5h0c4.4.6,7.4,4.7,6.8,9l-15.3,108.9c-.6,4.4-4.7,7.4-9,6.8h0c-4.4-.6-7.4-4.7-6.8-9l15.3-108.9c.6-4.4,4.7-7.4,9-6.8Z"/>
+      </g>
+    </g>
+    <g id="playing-cards">
+      <g id="card-spade">
+        <rect class="st9" x="682.6" y="730.2" width="94" height="174" rx="14" ry="14" transform="translate(-176 200.8) rotate(-14)"/>
+        <path class="st13" d="M729.3,834c1.6,6.8.9,11.9-2.3,15.4-.2.2-.2.5,0,.7.1.2.4.3.6.3l14.6-3.6c.3,0,.4-.3.4-.5,0-.3-.1-.5-.4-.6-4.4-1.6-7.4-5.7-9.2-12.5,3.4,3.2,8.6,4.8,13.6,3.6,7.4-1.8,12-9.1,10.2-16.1-2.7-12.7-25.6-17-35.8-29.9-.1-.2-.4-.3-.6-.2s-.4.2-.4.5c-3,16.2-21.2,30.8-17.6,43.2,1.8,7.1,9.2,11.3,16.6,9.4s8.9-5.1,10.3-9.5"/>
+      </g>
+      <g id="card-heart">
+        <rect class="st10" x="730.8" y="710.3" width="94" height="185" rx="14" ry="14"/>
+        <path class="st12" d="M802.2,802.3c-9.7-9.7-17.8-19.9-23.9-31.1-.1-.2-.3-.3-.5-.3s-.4.1-.5.3c-6.1,11.2-14.2,21.4-23.9,31.1-.2.2-.2.6,0,.9,9.7,9.7,17.8,19.9,23.9,31.1.1.2.3.3.5.3s.4-.1.5-.3c6.1-11.2,14.2-21.4,23.9-31.1.2-.2.2-.6,0-.9Z"/>
+      </g>
+      <g id="card-club">
+        <rect class="st9" x="738.1" y="770.2" width="174" height="94" rx="14" ry="14" transform="translate(-167.4017 1420.0895) rotate(-76)"/>
+      </g>
+      <path class="st14" d="M814.8,849.2c11.5-13.5,34.7-16.5,38.6-30.1,5.1-15.7-13.7-25.3-24-16.7-3.3-13.1-24.1-16.3-29.2-.6-4.9,13.4,12.1,29.4,13.6,47.1,0,.2.2.4.4.5s.5,0,.6-.2"/>
+    </g>
+  </g>
+  <g id="wordmark">
+    <text class="st8" transform="translate(97.0719 1170)"><tspan x="0" y="0">Game</tspan></text>
+    <text class="st7" transform="translate(621.0719 1170)"><tspan x="0" y="0">Shelf</tspan></text>
+  </g>
+</svg>
