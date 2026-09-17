@@ -3,7 +3,7 @@
 Webapplicatie voor GameShelf.
 
 - `front-end/`: React + TypeScript met Vite.
-- `back-end/`: gereserveerd voor de toekomstige C#-API.
+- `back-end/`: ASP.NET Core Web API in C# (.NET 10). Zie de [backend-README](back-end/README.md) voor installatie en lokaal starten op Windows en macOS.
 
 ## Frontend starten
 
@@ -27,3 +27,14 @@ npm run build
 ```
 
 De styling, functionaliteit en koppeling met de backend worden later toegevoegd.
+
+## Backend starten
+
+Na het installeren van de .NET 10 SDK:
+
+```sh
+cd back-end
+dotnet run --project GameShelf.Api --launch-profile http
+```
+
+Controleer de API op http://localhost:5080/health. Uitgebreide uitleg staat in [back-end/README.md](back-end/README.md).
