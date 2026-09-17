@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GameShelf design system</title>
+    <link rel="stylesheet" href="src/index.css">
+    <style>
+      .guide { padding-block: var(--space-7); }
+      .guide-section { margin-top: var(--space-7); }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-4); }
+      .swatch { min-height: 7rem; padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--color-border); font-weight: 700; }
+      .swatch--dark { color: #fff; }
+      .demo-form { max-width: 32rem; }
+      .demo-card { max-width: 24rem; }
+    </style>
+  </head>
+  <body>
+    <main class="container guide">
+      <p class="eyebrow">Modern Game Night</p>
+      <h1>GameShelf visual foundation</h1>
+      <p class="text-muted">Een frameworkvrije stijlgids voor alle GameShelf-modules.</p>
+
+      <section class="guide-section" aria-labelledby="colours-title">
+        <h2 id="colours-title">Kleuren</h2>
+        <div class="grid">
+          <div class="swatch swatch--dark" style="background:#172033">Text<br>#172033</div>
+          <div class="swatch" style="background:#f5f7ff">Background<br>#F5F7FF</div>
+          <div class="swatch" style="background:#e5e9f8">Surface<br>#E5E9F8</div>
+          <div class="swatch swatch--dark" style="background:#4338ca">Primary<br>#4338CA</div>
+          <div class="swatch swatch--dark" style="background:#0e7490">Info<br>#0E7490</div>
+          <div class="swatch" style="background:#f4c430">Accent<br>#F4C430</div>
+          <div class="swatch" style="background:#ef6a67">Highlight<br>#EF6A67</div>
+          <div class="swatch swatch--dark" style="background:#b4234d">Danger<br>#B4234D</div>
+        </div>
+      </section>
+
+      <section class="guide-section" aria-labelledby="type-title">
+        <p class="eyebrow">Typografie</p>
+        <h2 id="type-title">Een duidelijke, speelse hiërarchie</h2>
+        <h3>Kaart- en sectietitels</h3>
+        <p>Bodytekst gebruikt Avenir Next, Segoe UI of Arial als veilige fallback.</p>
+        <p class="text-muted">Secundaire informatie blijft leesbaar maar trekt minder aandacht.</p>
+      </section>
+
+      <section class="guide-section" aria-labelledby="buttons-title">
+        <h2 id="buttons-title">Buttons</h2>
+        <div class="cluster">
+          <button class="button button--primary" type="button">Spel toevoegen</button>
+          <button class="button button--secondary" type="button">Annuleren</button>
+          <button class="button button--danger" type="button">Verwijderen</button>
+          <button class="button button--primary" type="button" disabled>Niet beschikbaar</button>
+        </div>
+      </section>
+
+      <section class="guide-section" aria-labelledby="form-title">
+        <h2 id="form-title">Formulier</h2>
+        <form class="stack demo-form">
+          <div class="form-field">
+            <label class="form-label" for="game-title">Titel van het spel</label>
+            <input class="form-control" id="game-title" name="game-title" placeholder="Bijvoorbeeld: Cascadia">
+            <p class="form-help">Gebruik de officiële naam op de doos.</p>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="players">Aantal spelers</label>
+            <select class="form-control" id="players" name="players">
+              <option>2–4 spelers</option>
+              <option>3–6 spelers</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="email">E-mailadres</label>
+            <input class="form-control" id="email" name="email" value="geen-geldig-adres" aria-invalid="true" aria-describedby="email-error">
+            <p class="form-error" id="email-error">Vul een geldig e-mailadres in.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="guide-section" aria-labelledby="card-title">
+        <h2 id="card-title">Kaart</h2>
+        <article class="card demo-card">
+          <header class="card__header">
+            <p class="eyebrow">Mijn collectie</p>
+            <h3>Cascadia</h3>
+          </header>
+          <div class="card__body">
+            <p class="text-muted">Een rustig legspel met leefgebieden en dieren.</p>
+            <div class="cluster">
+              <span class="badge badge--available">Beschikbaar</span>
+              <span class="badge badge--info">2–4 spelers</span>
+            </div>
+          </div>
+          <footer class="card__footer">
+            <span>★★★★☆</span>
+            <button class="button button--secondary" type="button">Bekijken</button>
+          </footer>
+        </article>
+      </section>
+
+      <section class="guide-section stack" aria-labelledby="states-title">
+        <h2 id="states-title">Statusmeldingen</h2>
+        <div class="alert alert--info" role="status">Info: dit spel is gereserveerd tot vrijdag.</div>
+        <div class="alert alert--success" role="status">Gelukt: het spel staat in je collectie.</div>
+        <div class="alert alert--error" role="alert">Fout: opslaan is niet gelukt.</div>
+      </section>
+    </main>
+  </body>
+</html>
