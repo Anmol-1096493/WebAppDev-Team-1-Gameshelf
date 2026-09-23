@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import AppShell, { type PageId } from './AppShell.tsx'
 import SessionsPage from './SessionsPage.tsx'
+import { MockPage } from './MockPages.tsx'
 import LoginScreen from './LoginScreen.tsx'
 import { auth, clearToken, type Member } from '../api.ts'
 import './App.css'
@@ -20,29 +21,6 @@ function pathToRoute(path: string): Route {
     default:
       return 'home'
   }
-}
-
-function CollectionsPage() {
-  // Original front-end content, unchanged.
-  return (
-    <section aria-labelledby="page-title">
-      <p className="eyebrow">Your games</p>
-      <h1 id="page-title">Collections</h1>
-      <p className="text-muted">
-        Manage your board games, shelves and play statistics.
-      </p>
-
-      <div className="page-placeholder card">
-        <div className="card__body">
-          <h2>Page content</h2>
-          <p>
-            Replace this block with the content for the current module. The shared
-            header, navigation and footer stay the same on every page.
-          </p>
-        </div>
-      </div>
-    </section>
-  )
 }
 
 function App() {
@@ -119,7 +97,11 @@ function App() {
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
-      {route === 'sessions' ? <SessionsPage member={member} /> : <CollectionsPage />}
+      {route === 'sessions' ? (
+        <SessionsPage member={member} />
+      ) : (
+        <MockPage page={currentPage} member={member} />
+      )}
     </AppShell>
   )
 }
