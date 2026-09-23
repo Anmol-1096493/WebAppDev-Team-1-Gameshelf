@@ -52,9 +52,14 @@
 
 .brand__logo {
   display: block;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.5rem;
+  height: 3.5rem;
   object-fit: contain;
+  transition: transform var(--transition-fast);
+}
+
+.brand:hover .brand__logo {
+  transform: rotate(-6deg) scale(1.05);
 }
 
 .brand__name {
@@ -213,7 +218,9 @@
   }
 
   .brand__logo {
-    padding: 0.15rem;
+    width: 3.75rem;
+    height: 3.75rem;
+    padding: 0.2rem;
     border-radius: var(--radius-sm);
     background: #ffffff;
   }

@@ -14,16 +14,13 @@ import './SessionsPage.css'
 const CONFIRMED = 0
 const WAITING = 1
 
-type View =
-  | { mode: 'list' }
-  | { mode: 'detail'; sessionId: string }
-
 export default function SessionsPage({ member }: { member: Member }) {
   const [members, setMembers] = useState<Member[]>([])
   const [games, setGames] = useState<Game[]>([])
   const [summaries, setSummaries] = useState<SessionSummary[]>([])
   const [detail, setDetail] = useState<SessionDetail | null>(null)
-  const [view, setView] = useState<View>({ mode: 'list' })
+  const [openSessionId, setOpenSessionId] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -78,13 +75,13 @@ export default function SessionsPage({ member }: { member: Member }) {
   }
 
   function openDetail(id: string) {
-    setView({ mode: 'detail', sessionId: id })
+    setOpenSessionId(id)
     setDetail(null)
     void refreshDetail(id)
   }
 
-  function backToList() {
-    setView({ mode: 'list' })
+  function closeDetail() {
+    setOpenSessionId(null)
     setDetail(null)
     void refreshList()
   }
@@ -114,70 +111,14 @@ export default function SessionsPage({ member }: { member: Member }) {
         </p>
       )}
 
-      {view.mode === 'list' ? (
-        <SessionsList
-          summaries={summaries}
-          currentMember={member}
-          onOpen={openDetail}
-          onCreated={(d) => {
-            applyDetail(d)
-            setView({ mode: 'detail', sessionId: d.id })
-          }}
-          run={run}
-        />
-      ) : (
-        <SessionDetailPanel
-          detail={detail}
-          currentMember={member}
-          members={members}
-          games={games}
-          onBack={backToList}
-          onChanged={applyDetail}
-          run={run}
-        />
-      )}
-    </section>
-  )
-}
-
-function SessionsList({
-  summaries,
-  currentMember,
-  onOpen,
-  onCreated,
-  run,
-}: {
-  summaries: SessionSummary[]
-  currentMember: Member | null
-  onOpen: (id: string) => void
-  onCreated: (d: SessionDetail) => void
-  run: <T>(fn: () => Promise<T>) => Promise<T | undefined>
-}) {
-  const [creating, setCreating] = useState(false)
-
-  return (
-    <>
-      <div className="cluster">
+      <div className="cluster session-toolbar">
         <button className="button button--primary" type="button" onClick={() => setCreating(true)}>
           + Host a session
         </button>
-        <button className="button button--secondary" type="button" onClick={() => window.location.reload()}>
+        <button className="button button--secondary" type="button" onClick={() => loadAll()}>
           Refresh
         </button>
       </div>
-
-      {creating && currentMember && (
-        <CreateSessionForm
-          onCancel={() => setCreating(false)}
-          onSubmit={async (input) => {
-            const d = await run(() => api.createSession(input))
-            if (d) {
-              setCreating(false)
-              onCreated(d)
-            }
-          }}
-        />
-      )}
 
       {summaries.length === 0 ? (
         <div className="card empty-state">
@@ -189,16 +130,16 @@ function SessionsList({
       ) : (
         <ul className="session-grid" role="list">
           {summaries.map((s) => (
-            <li key={s.id} className="card session-card">
+            <li key={s.id} className={`card session-card ${s.isCancelled ? 'is-cancelled' : ''}`}>
               <div
                 className="session-card__clickable"
                 role="button"
                 tabIndex={0}
-                onClick={() => onOpen(s.id)}
+                onClick={() => openDetail(s.id)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
-                    onOpen(s.id)
+                    openDetail(s.id)
                   }
                 }}
               >
@@ -234,7 +175,7 @@ function SessionsList({
                 <button
                   type="button"
                   className="button button--secondary"
-                  onClick={() => onOpen(s.id)}
+                  onClick={() => openDetail(s.id)}
                 >
                   View
                 </button>
@@ -243,11 +184,89 @@ function SessionsList({
           ))}
         </ul>
       )}
-    </>
+
+      {creating && (
+        <CreateSessionModal
+          onCancel={() => setCreating(false)}
+          onSubmit={async (input) => {
+            const d = await run(() => api.createSession(input))
+            if (d) {
+              setCreating(false)
+              applyDetail(d)
+              setOpenSessionId(d.id)
+            }
+          }}
+        />
+      )}
+
+      {openSessionId && (
+        <SessionDetailModal
+          detail={detail}
+          currentMember={member}
+          members={members}
+          games={games}
+          onClose={closeDetail}
+          onChanged={applyDetail}
+          run={run}
+        />
+      )}
+    </section>
   )
 }
 
-function CreateSessionForm({
+/* ---------- Modal shell ---------- */
+
+function Modal({
+  title,
+  eyebrow,
+  onClose,
+  children,
+  footer,
+  size = 'md',
+}: {
+  title: string
+  eyebrow?: string
+  onClose: () => void
+  children: React.ReactNode
+  footer?: React.ReactNode
+  size?: 'md' | 'lg'
+}) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [onClose])
+
+  return (
+    <div className={`modal modal--${size}`} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div className="modal__backdrop" onClick={onClose} />
+      <div className="modal__dialog">
+        <header className="modal__header">
+          <div className="modal__heading">
+            {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+            <h2 id="modal-title">{title}</h2>
+          </div>
+          <button type="button" className="modal__close" aria-label="Close" onClick={onClose}>
+            ✕
+          </button>
+        </header>
+        <div className="modal__body">{children}</div>
+        {footer && <footer className="modal__footer">{footer}</footer>}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Create session modal ---------- */
+
+function CreateSessionModal({
   onCancel,
   onSubmit,
 }: {
@@ -268,9 +287,22 @@ function CreateSessionForm({
   }
 
   return (
-    <form className="card session-form" onSubmit={submit}>
-      <div className="card__body stack">
-        <h2>Host a session</h2>
+    <Modal
+      title="Host a session"
+      eyebrow="New game night"
+      onClose={onCancel}
+      footer={
+        <>
+          <button type="button" className="button" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" form="create-session-form" className="button button--primary">
+            Create session
+          </button>
+        </>
+      }
+    >
+      <form id="create-session-form" className="stack" onSubmit={submit}>
         <label className="form-field">
           <span className="form-label">Title</span>
           <input
@@ -326,25 +358,19 @@ function CreateSessionForm({
             />
           </label>
         </div>
-      </div>
-      <div className="card__footer">
-        <button type="button" className="button" onClick={onCancel}>
-          Cancel
-        </button>
-        <button type="submit" className="button button--primary">
-          Create session
-        </button>
-      </div>
-    </form>
+      </form>
+    </Modal>
   )
 }
 
-function SessionDetailPanel({
+/* ---------- Session detail modal ---------- */
+
+function SessionDetailModal({
   detail,
   currentMember,
   members,
   games,
-  onBack,
+  onClose,
   onChanged,
   run,
 }: {
@@ -352,195 +378,185 @@ function SessionDetailPanel({
   currentMember: Member | null
   members: Member[]
   games: Game[]
-  onBack: () => void
+  onClose: () => void
   onChanged: (d: SessionDetail) => void
   run: <T>(fn: () => Promise<T>, onError?: (e: ApiError) => void) => Promise<T | undefined>
 }) {
-  if (!detail) {
-    return (
-      <div className="card">
-        <div className="card__body">
-          <p className="text-muted">Loading session…</p>
-        </div>
-        <div className="card__footer">
-          <button type="button" className="button" onClick={onBack}>
-            Back to sessions
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  const isHost = currentMember?.id === detail.hostId
+  const isHost = detail && currentMember?.id === detail.hostId
   const canCancel = isHost || currentMember?.isCommittee === true
-  const signedUp = detail.currentMemberSignedUp
-  const confirmed = detail.signups.filter((s) => s.status === CONFIRMED)
-  const waiting = detail.signups.filter((s) => s.status === WAITING)
-  const broughtGames = detail.signups.filter((s) => s.broughtGame)
 
   return (
-    <div className="session-detail stack">
-      <button type="button" className="button back-link" onClick={onBack}>
-        ← All sessions
-      </button>
-
-      <article className={`card session-hero ${detail.isCancelled ? 'is-cancelled' : ''}`}>
-        <header className="card__header">
-          <p className="eyebrow">{formatDate(detail.startAt)} · {formatTime(detail.startAt)}</p>
-          <h2>{detail.title}</h2>
-        </header>
-        <div className="card__body stack">
-          <p className="text-muted session-hero__place">📍 {detail.place}</p>
-          <p className="text-muted">Hosted by {detail.hostName}</p>
-          <div className="cluster cluster--tight">
-            <span className="badge badge--info">
-              {detail.confirmedSeats}/{detail.capacity} confirmed
-            </span>
-            {waiting.length > 0 && (
-              <span className="badge badge--available">{waiting.length} waiting</span>
-            )}
-            {detail.isCancelled && <span className="badge badge--highlight">Cancelled</span>}
-          </div>
-          <div
-            className="seat-bar"
-            aria-label={`${detail.confirmedSeats} of ${detail.capacity} seats confirmed`}
-          >
+    <Modal
+      title={detail?.title ?? 'Session'}
+      eyebrow={detail ? `${formatDate(detail.startAt)} · ${formatTime(detail.startAt)}` : undefined}
+      onClose={onClose}
+      size="lg"
+    >
+      {!detail ? (
+        <p className="text-muted">Loading session…</p>
+      ) : (
+        <div className="session-detail stack">
+          <div className={`session-hero ${detail.isCancelled ? 'is-cancelled' : ''}`}>
+            <p className="text-muted session-hero__place">📍 {detail.place}</p>
+            <p className="text-muted">Hosted by {detail.hostName}</p>
+            <div className="cluster cluster--tight">
+              <span className="badge badge--info">
+                {detail.confirmedSeats}/{detail.capacity} confirmed
+              </span>
+              {detail.signups.filter((s) => s.status === WAITING).length > 0 && (
+                <span className="badge badge--available">
+                  {detail.signups.filter((s) => s.status === WAITING).length} waiting
+                </span>
+              )}
+              {detail.isCancelled && <span className="badge badge--highlight">Cancelled</span>}
+            </div>
             <div
-              className="seat-bar__fill"
-              style={{ width: `${Math.min(100, (detail.confirmedSeats / detail.capacity) * 100)}%` }}
+              className="seat-bar"
+              aria-label={`${detail.confirmedSeats} of ${detail.capacity} seats confirmed`}
+            >
+              <div
+                className="seat-bar__fill"
+                style={{ width: `${Math.min(100, (detail.confirmedSeats / detail.capacity) * 100)}%` }}
+              />
+            </div>
+          </div>
+
+          {!detail.isCancelled && currentMember && (
+            <SignupActions
+              detail={detail}
+              signedUp={detail.currentMemberSignedUp}
+              games={games}
+              onSignUp={async (gameId) => {
+                const d = await run(() => api.signUp(detail.id, gameId))
+                if (d) onChanged(d)
+              }}
+              onCancelSignup={async () => {
+                const d = await run(() => api.cancelSignup(detail.id))
+                if (d) onChanged(d)
+              }}
             />
-          </div>
-        </div>
-      </article>
+          )}
 
-      {!detail.isCancelled && currentMember && (
-        <SignupActions
-          detail={detail}
-          signedUp={signedUp}
-          games={games}
-          onSignUp={async (gameId) => {
-            const d = await run(() => api.signUp(detail.id, gameId))
-            if (d) onChanged(d)
-          }}
-          onCancelSignup={async () => {
-            const d = await run(() => api.cancelSignup(detail.id))
-            if (d) onChanged(d)
-          }}
-        />
-      )}
-
-      {isHost && !detail.isCancelled && (
-        <HostControls
-          detail={detail}
-          members={members}
-          onUpdated={async (input) => {
-            const d = await run(() => api.updateSession(detail.id, input))
-            if (d) onChanged(d)
-          }}
-          onTransfer={async (newHostId) => {
-            const d = await run(() => api.transferHost(detail.id, newHostId))
-            if (d) onChanged(d)
-          }}
-          onCancel={async () => {
-            const d = await run(() => api.cancelSession(detail.id))
-            if (d) onChanged(d)
-          }}
-        />
-      )}
-
-      {canCancel && isHost === false && !detail.isCancelled && currentMember?.isCommittee && (
-        <div className="card">
-          <div className="card__body">
-            <p className="text-muted">
-              As a committee member you can cancel this session if the club room cannot be opened.
-            </p>
-          </div>
-          <div className="card__footer">
-            <button
-              type="button"
-              className="button button--danger"
-              onClick={async () => {
+          {isHost && !detail.isCancelled && (
+            <HostControls
+              detail={detail}
+              members={members}
+              onUpdated={async (input) => {
+                const d = await run(() => api.updateSession(detail.id, input))
+                if (d) onChanged(d)
+              }}
+              onTransfer={async (newHostId) => {
+                const d = await run(() => api.transferHost(detail.id, newHostId))
+                if (d) onChanged(d)
+              }}
+              onCancel={async () => {
                 const d = await run(() => api.cancelSession(detail.id))
                 if (d) onChanged(d)
               }}
-            >
-              Cancel session
-            </button>
-          </div>
-        </div>
-      )}
+            />
+          )}
 
-      <div className="card">
-        <div className="card__header">
-          <h3>Confirmed seats ({confirmed.length})</h3>
-        </div>
-        <div className="card__body">
-          {confirmed.length === 0 ? (
-            <p className="text-muted">No confirmed seats yet.</p>
-          ) : (
-            <ul className="signup-list" role="list">
-              {confirmed.map((s) => (
-                <SignupRow key={s.id} signup={s} />
-              ))}
-            </ul>
+          {canCancel && isHost === false && !detail.isCancelled && currentMember?.isCommittee && (
+            <div className="card">
+              <div className="card__body">
+                <p className="text-muted">
+                  As a committee member you can cancel this session if the club room cannot be opened.
+                </p>
+              </div>
+              <div className="card__footer">
+                <button
+                  type="button"
+                  className="button button--danger"
+                  onClick={async () => {
+                    const d = await run(() => api.cancelSession(detail.id))
+                    if (d) onChanged(d)
+                  }}
+                >
+                  Cancel session
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="card">
+            <div className="card__header">
+              <h3>Confirmed seats ({detail.signups.filter((s) => s.status === CONFIRMED).length})</h3>
+            </div>
+            <div className="card__body">
+              {detail.signups.filter((s) => s.status === CONFIRMED).length === 0 ? (
+                <p className="text-muted">No confirmed seats yet.</p>
+              ) : (
+                <ul className="signup-list" role="list">
+                  {detail.signups
+                    .filter((s) => s.status === CONFIRMED)
+                    .map((s) => (
+                      <SignupRow key={s.id} signup={s} />
+                    ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {detail.signups.filter((s) => s.status === WAITING).length > 0 && (
+            <div className="card">
+              <div className="card__header">
+                <h3>Waiting list ({detail.signups.filter((s) => s.status === WAITING).length})</h3>
+              </div>
+              <div className="card__body">
+                <ol className="signup-list" role="list">
+                  {detail.signups
+                    .filter((s) => s.status === WAITING)
+                    .map((s, i) => (
+                      <li key={s.id} className="signup-row">
+                        <span className="signup-row__position">{i + 1}</span>
+                        <span className="signup-row__name">{s.memberName}</span>
+                        {s.broughtGame && (
+                          <span className="signup-row__game text-muted">brings {s.broughtGame.title}</span>
+                        )}
+                      </li>
+                    ))}
+                </ol>
+              </div>
+            </div>
+          )}
+
+          {detail.signups.filter((s) => s.broughtGame).length > 0 && (
+            <div className="card">
+              <div className="card__header">
+                <h3>On the table tonight</h3>
+              </div>
+              <div className="card__body">
+                <p className="text-muted">
+                  The table knows what the evening looks like before it starts.
+                </p>
+                <ul className="table-games" role="list">
+                  {detail.signups
+                    .filter((s) => s.broughtGame)
+                    .map((s) => {
+                      const game = s.broughtGame!
+                      return (
+                        <li key={s.id} className="table-games__item">
+                          <span className="table-games__title">{game.title}</span>
+                          <span className="text-muted">
+                            {game.minPlayers}–{game.maxPlayers} players
+                          </span>
+                          {s.gameFits ? (
+                            <span className="badge badge--info">fits {detail.confirmedSeats} seats</span>
+                          ) : (
+                            <span className="badge badge--highlight">
+                              needs {game.minPlayers} players
+                            </span>
+                          )}
+                        </li>
+                      )
+                    })}
+                </ul>
+              </div>
+            </div>
           )}
         </div>
-      </div>
-
-      {waiting.length > 0 && (
-        <div className="card">
-          <div className="card__header">
-            <h3>Waiting list ({waiting.length})</h3>
-          </div>
-          <div className="card__body">
-            <ol className="signup-list" role="list">
-              {waiting.map((s, i) => (
-                <li key={s.id} className="signup-row">
-                  <span className="signup-row__position">{i + 1}</span>
-                  <span className="signup-row__name">{s.memberName}</span>
-                  {s.broughtGame && (
-                    <span className="signup-row__game text-muted">brings {s.broughtGame.title}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
       )}
-
-      {broughtGames.length > 0 && (
-        <div className="card">
-          <div className="card__header">
-            <h3>On the table tonight</h3>
-          </div>
-          <div className="card__body">
-            <p className="text-muted">
-              The table knows what the evening looks like before it starts.
-            </p>
-            <ul className="table-games" role="list">
-              {broughtGames.map((s) => {
-                const game = s.broughtGame!
-                return (
-                  <li key={s.id} className="table-games__item">
-                    <span className="table-games__title">{game.title}</span>
-                    <span className="text-muted">
-                      {game.minPlayers}–{game.maxPlayers} players
-                    </span>
-                    {s.gameFits ? (
-                      <span className="badge badge--info">fits {detail.confirmedSeats} seats</span>
-                    ) : (
-                      <span className="badge badge--highlight">
-                        needs {game.minPlayers} players
-                      </span>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </div>
-      )}
-    </div>
+    </Modal>
   )
 }
 
