@@ -23,7 +23,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   gap: var(--space-4);
-  margin: 0;
+  margin: var(--space-5) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -187,7 +187,11 @@
 
 /* ---------- Forms ---------- */
 
-.session-form,
+.session-form {
+  margin-top: var(--space-4);
+  max-width: 100%;
+}
+
 .session-detail .card {
   max-width: 100%;
 }
@@ -195,6 +199,7 @@
 /* ---------- Empty state ---------- */
 
 .empty-state {
+  margin-top: var(--space-5);
   max-width: 30rem;
 }
 
