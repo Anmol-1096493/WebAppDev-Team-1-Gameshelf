@@ -14,12 +14,26 @@
 
 /* ---------- Layout shell ---------- */
 
-.mp-shell {
-  min-height: 100vh;
-  background: var(--color-background);
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--color-primary);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 .mp-shell {
+  min-height: 100vh;
+  background: var(--color-background);
   display: flex;
   flex-direction: column;
 }
@@ -28,6 +42,14 @@
   .mp-shell {
     display: grid;
     grid-template-columns: 238px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    grid-column: 1;
+  }
+
+  .mp-main-col {
+    grid-column: 2;
   }
 }
 
@@ -221,7 +243,7 @@
   background: rgb(255 255 255 / 0.6);
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 60rem) {
   .mp-header { padding: var(--space-4) var(--space-9, var(--space-9)); }
 }
 
@@ -251,7 +273,7 @@
   color: #94a3b8;
 }
 
-@media (max-width: 39.99rem) {
+@media (max-width: 59.99rem) {
   .mp-search kbd { display: none; }
 }
 
@@ -260,7 +282,7 @@
   color: #94a3b8;
 }
 
-@media (max-width: 39.99rem) {
+@media (max-width: 59.99rem) {
   .mp-header__date { display: none; }
 }
 
@@ -288,7 +310,7 @@
   padding: var(--space-6) var(--space-5);
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 60rem) {
   .mp-content { padding: var(--space-8) var(--space-9); }
 }
 
@@ -332,7 +354,7 @@
   letter-spacing: -0.02em;
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 60rem) {
   .page-head__title { font-size: 2.25rem; }
 }
 
@@ -609,7 +631,7 @@
 .grid-3 { display: grid; gap: var(--space-5); }
 .grid-4 { display: grid; gap: var(--space-4); }
 
-@media (min-width: 40rem) {
+@media (min-width: 60rem) {
   .grid-2 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -625,7 +647,7 @@
   padding: var(--space-6);
 }
 
-@media (max-width: 39.99rem) {
+@media (max-width: 59.99rem) {
   .cover-stage { height: 12rem; }
   .game-cover { height: 100%; }
 }
