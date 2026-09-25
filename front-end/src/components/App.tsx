@@ -1,26 +1,15 @@
 import AppShell from './AppShell.tsx'
-import './App.css'
+import BoxDetailPage from '../pages/BoxDetailPage'
+import LendingListPage from '../pages/LendingListPage'
+import { lendingBoxes } from '../data/lendingBoxes'
 
 function App() {
-  return (
-    <AppShell currentPage="collections">
-      <section aria-labelledby="page-title">
-        <p className="eyebrow">Your games</p>
-        <h1 id="page-title">Collections</h1>
-        <p className="text-muted">
-          Manage your board games, shelves and play statistics.
-        </p>
+  const boxId = window.location.pathname.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
+  const selectedBox = lendingBoxes.find((box) => box.id === boxId)
 
-        <div className="page-placeholder card">
-          <div className="card__body">
-            <h2>Page content</h2>
-            <p>
-              Replace this block with the content for the current module. The shared
-              header, navigation and footer stay the same on every page.
-            </p>
-          </div>
-        </div>
-      </section>
+  return (
+    <AppShell currentPage="lending">
+      {selectedBox ? <BoxDetailPage box={selectedBox} /> : <LendingListPage />}
     </AppShell>
   )
 }
