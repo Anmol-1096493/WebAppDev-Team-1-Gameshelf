@@ -4,6 +4,9 @@ import SessionsPage from './SessionsPage.tsx'
 import { MockPage } from './MockPages.tsx'
 import LoginScreen from './LoginScreen.tsx'
 import { auth, clearToken, type Member } from '../api.ts'
+import BoxDetailPage from '../pages/BoxDetailPage'
+import LendingListPage from '../pages/LendingListPage'
+import { lendingBoxes } from '../data/lendingBoxes'
 import './App.css'
 
 type Route = PageId | 'home'
@@ -25,6 +28,8 @@ function pathToRoute(path: string): Route {
 
 function App() {
   const [route, setRoute] = useState<Route>(() => pathToRoute(window.location.pathname))
+  const boxId = window.location.pathname.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
+  const selectedBox = lendingBoxes.find((box) => box.id === boxId)
   const [member, setMember] = useState<Member | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -99,6 +104,12 @@ function App() {
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
       {route === 'sessions' ? (
         <SessionsPage member={member} />
+      ) : route === 'lending' ? (
+        selectedBox ? (
+          <BoxDetailPage box={selectedBox} />
+        ) : (
+          <LendingListPage />
+        )
       ) : (
         <MockPage page={currentPage} member={member} />
       )}
