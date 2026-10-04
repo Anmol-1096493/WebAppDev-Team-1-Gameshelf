@@ -8,10 +8,11 @@ import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import CollectionPage from '../pages/CollectionPage'
 import CollectionDetailPage from '../pages/CollectionDetailPage'
+import CollectionRecordForm from "../pages/CollectionRecordForm";
 import { lendingBoxes } from '../data/lendingBoxes'
 import './App.css'
 
-type Route = PageId | 'collection-detail' | 'home'
+type Route = PageId | 'collection-detail' | 'collection-record-form' | 'home'
 
 function pathToRoute(path: string): Route {
   const segment = path.replace(/^\//, '').split('/')[0] ?? ''
@@ -21,6 +22,9 @@ function pathToRoute(path: string): Route {
     return 'collection-detail'
   }
 
+  if (segment === 'collection-record') {
+    return 'collection-record-form'
+  }
 
   switch (segment) {
     case 'catalogue':
@@ -108,14 +112,18 @@ function App() {
   }
 
   const currentPage: PageId =
-  route === 'home' || route === 'collection-detail'
-    ? 'collections'
-    : route
+    route === 'home' ||
+    route === 'collection-detail' ||
+    route === 'collection-record-form'
+      ? 'collections'
+      : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
       {route === 'collection-detail' ? (
         <CollectionDetailPage />
+      ) : route === 'collection-record-form' ? (
+        <CollectionRecordForm />
       ) : route === 'collections' ? (
         <CollectionPage />
       ) : route === 'sessions' ? (
