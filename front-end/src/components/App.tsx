@@ -6,6 +6,7 @@ import LoginScreen from './LoginScreen.tsx'
 import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
+import CollectionPage from '../pages/CollectionPage'
 import { lendingBoxes } from '../data/lendingBoxes'
 import './App.css'
 
@@ -102,7 +103,9 @@ function App() {
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
-      {route === 'sessions' ? (
+      {route === 'collections' ? (
+        <CollectionPage />
+      ) : route === 'sessions' ? (
         <SessionsPage member={member} />
       ) : route === 'lending' ? (
         selectedBox ? (
