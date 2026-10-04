@@ -154,20 +154,26 @@ export default function CollectionPage() {
 
   return (
     <main className="collection-page">
-      <header className="collection-page-header">
-        <div>
-          <p className="collection-page-eyebrow">MY GAMES</p>
-          <h1>My Collection</h1>
-          <p className="collection-page-description">
-            View and manage the games in your personal collection.
-          </p>
-        </div>
+    <header className="collection-page-header">
+    <div>
+        <p className="collection-page-eyebrow">MY GAMES</p>
+        <h1>My Collection</h1>
+        <p className="collection-page-description">
+        View and manage the games in your personal collection.
+        </p>
+    </div>
+
+    <div className="collection-page-header-actions">
+        <a href="/collection-record" className="collection-add-button">
+        Add Game to Collection
+        </a>
 
         <div className="collection-count">
-          <strong>{filteredGames.length}</strong>
-          <span>Games</span>
+        <strong>{filteredGames.length}</strong>
+        <span>Games</span>
         </div>
-      </header>
+    </div>
+    </header>
 
       {/* Search and filter controls help members quickly find collection games. */}
       <section className="collection-filters" aria-label="Collection filters">
