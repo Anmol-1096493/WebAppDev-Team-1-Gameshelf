@@ -1,0 +1,132 @@
+.collection-detail-page {
+  width: min(1000px, 100%);
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.collection-detail-back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.collection-detail-back-link:hover {
+  text-decoration: underline;
+}
+
+.collection-detail-card {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #dedede;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.collection-detail-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  padding: 2rem;
+  background: #f4f4f4;
+}
+
+.collection-detail-image {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+}
+
+.collection-detail-content {
+  min-width: 0;
+  padding: 2rem;
+}
+
+.collection-detail-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.collection-detail-content h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.collection-detail-status {
+  margin: 1.5rem 0 0;
+}
+
+.collection-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.collection-detail-stats div {
+  padding: 1rem;
+  border: 1px solid #dedede;
+  border-radius: 12px;
+}
+
+.collection-detail-stats dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.collection-detail-stats dd {
+  margin: 0.35rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.collection-detail-notes {
+  margin-top: 1.5rem;
+}
+
+.collection-detail-notes h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.collection-detail-notes p {
+  margin: 0.5rem 0 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .collection-detail-page {
+    padding: 1rem;
+  }
+
+  .collection-detail-card {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-detail-image-wrapper {
+    min-height: 260px;
+  }
+
+  .collection-detail-image {
+    max-height: 220px;
+  }
+
+  .collection-detail-content {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 450px) {
+  .collection-detail-stats {
+    grid-template-columns: 1fr;
+  }
+}

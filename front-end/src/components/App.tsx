@@ -7,13 +7,21 @@ import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import CollectionPage from '../pages/CollectionPage'
+import CollectionDetailPage from '../pages/CollectionDetailPage'
 import { lendingBoxes } from '../data/lendingBoxes'
 import './App.css'
 
-type Route = PageId | 'home'
+type Route = PageId | 'collection-detail' | 'home'
 
 function pathToRoute(path: string): Route {
   const segment = path.replace(/^\//, '').split('/')[0] ?? ''
+
+  // Collection detail pages use the /collections/:id URL structure.
+  if (segment === 'collections' && path.split('/').filter(Boolean).length > 1) {
+    return 'collection-detail'
+  }
+
+
   switch (segment) {
     case 'catalogue':
     case 'collections':
@@ -103,7 +111,9 @@ function App() {
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
-      {route === 'collections' ? (
+      {route === 'collection-detail' ? (
+        <CollectionDetailPage />
+      ) : route === 'collections' ? (
         <CollectionPage />
       ) : route === 'sessions' ? (
         <SessionsPage member={member} />
