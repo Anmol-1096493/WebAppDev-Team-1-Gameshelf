@@ -10,12 +10,20 @@ import { lendingBoxes } from '../data/lendingBoxes'
 import CollectionPage from '../pages/CollectionPage'
 import CollectionDetailPage from '../pages/CollectionDetailPage'
 import CollectionRecordForm from "../pages/CollectionRecordForm";
+import ShelvesPage from "../pages/ShelvesPage";
 import ShelfForm from "../pages/ShelfForm";
 import ShelfDetailPage from "../pages/ShelfDetailPage";
 
 import './App.css'
 
-type Route = PageId | 'collection-detail' | 'collection-record-form' | 'shelf-form' | 'shelf-detail'| 'home'
+type Route =
+  | PageId
+  | 'collection-detail'
+  | 'collection-record-form'
+  | 'shelf-form'
+  | 'shelf-detail'
+  | 'shelves'
+  | 'home'
 
 function pathToRoute(path: string): Route {
   const segment = path.replace(/^\//, '').split('/')[0] ?? ''
@@ -36,6 +44,11 @@ function pathToRoute(path: string): Route {
   if (segment === 'shelf-detail') {
   return 'shelf-detail'
   }
+
+  if (segment === 'shelves') {
+  return 'shelves'
+  }
+
 
   switch (segment) {
     case 'catalogue':
@@ -127,7 +140,8 @@ function App() {
   route === 'collection-detail' ||
   route === 'collection-record-form' ||
   route === 'shelf-form' ||
-  route === 'shelf-detail'
+  route === 'shelf-detail' ||
+  route === 'shelves'
     ? 'collections'
     : route
 
@@ -140,7 +154,9 @@ function App() {
       ) : route === 'shelf-form' ? (
         <ShelfForm />
       ) : route === 'shelf-detail' ? (
-        <ShelfDetailPage />  
+        <ShelfDetailPage />
+      ) : route === 'shelves' ? (
+        <ShelvesPage />
       ) : route === 'collections' ? (
         <CollectionPage />
       ) : route === 'sessions' ? (
