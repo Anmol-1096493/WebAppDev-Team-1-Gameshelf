@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./CollectionPage.css";
 
 import azulImage from "../assets/games/azul.svg";
@@ -122,6 +123,23 @@ function CollectionGameCard({ game }: { game: CollectionGame }) {
 }
 
 export default function CollectionPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<CollectionStatus | "All">(
+    "All",
+  );
+
+  // Filter the collection locally until the C# API is connected.
+  const filteredGames = collectionGames.filter((game) => {
+    const matchesSearch = game.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "All" || game.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <main className="collection-page">
       <header className="collection-page-header">
@@ -134,18 +152,59 @@ export default function CollectionPage() {
         </div>
 
         <div className="collection-count">
-          <strong>{collectionGames.length}</strong>
+          <strong>{filteredGames.length}</strong>
           <span>Games</span>
         </div>
       </header>
+
+      {/* Search and filter controls help members quickly find collection games. */}
+      <section className="collection-filters" aria-label="Collection filters">
+        <div className="collection-filter-field">
+          <label htmlFor="collection-search">Search games</label>
+          <input
+            id="collection-search"
+            type="search"
+            placeholder="Search by game name..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </div>
+
+        <div className="collection-filter-field">
+          <label htmlFor="collection-status-filter">Filter by status</label>
+          <select
+            id="collection-status-filter"
+            value={statusFilter}
+            onChange={(event) =>
+              setStatusFilter(
+                event.target.value as CollectionStatus | "All",
+              )
+            }
+          >
+            <option value="All">All statuses</option>
+            <option value="Not Played">Not Played</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Played">Played</option>
+          </select>
+        </div>
+      </section>
 
       <section
         className="collection-game-list"
         aria-label="Games in your collection"
       >
-        {collectionGames.map((game) => (
-          <CollectionGameCard key={game.id} game={game} />
-        ))}
+        {filteredGames.length > 0 ? (
+          filteredGames.map((game) => (
+            <CollectionGameCard key={game.id} game={game} />
+          ))
+        ) : (
+          <div className="collection-no-results">
+            <h2>No games found</h2>
+            <p>
+              Try a different search term or change the selected status filter.
+            </p>
+          </div>
+        )}
       </section>
     </main>
   );
