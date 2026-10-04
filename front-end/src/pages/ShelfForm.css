@@ -1,0 +1,150 @@
+.shelf-form {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid #dedede;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.shelf-form-header {
+  margin-bottom: 2rem;
+}
+
+.shelf-form-eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.shelf-form-header h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.shelf-form-header p:last-child {
+  max-width: 600px;
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.shelf-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.shelf-form-field label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.shelf-form-field input,
+.shelf-form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.shelf-form-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.shelf-form-field input:focus,
+.shelf-form-field textarea:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.shelf-form-fieldset {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 10px;
+}
+
+.shelf-form-fieldset legend {
+  padding: 0 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.shelf-visibility-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.shelf-visibility-option + .shelf-visibility-option {
+  margin-top: 0.5rem;
+}
+
+.shelf-visibility-option:hover {
+  background: #f5f5f5;
+}
+
+.shelf-visibility-option input {
+  margin-top: 0.2rem;
+}
+
+.shelf-visibility-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.shelf-visibility-option small {
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+.shelf-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.shelf-form-actions button {
+  min-height: 44px;
+  padding: 0.7rem 1.2rem;
+  border: 0;
+  border-radius: 8px;
+  background: #222222;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shelf-form-actions button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .shelf-form {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .shelf-form-actions {
+    justify-content: stretch;
+  }
+
+  .shelf-form-actions button {
+    width: 100%;
+  }
+}
