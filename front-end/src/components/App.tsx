@@ -6,14 +6,16 @@ import LoginScreen from './LoginScreen.tsx'
 import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
+import { lendingBoxes } from '../data/lendingBoxes'
 import CollectionPage from '../pages/CollectionPage'
 import CollectionDetailPage from '../pages/CollectionDetailPage'
 import CollectionRecordForm from "../pages/CollectionRecordForm";
 import ShelfForm from "../pages/ShelfForm";
-import { lendingBoxes } from '../data/lendingBoxes'
+import ShelfDetailPage from "../pages/ShelfDetailPage";
+
 import './App.css'
 
-type Route = PageId | 'collection-detail' | 'collection-record-form' | 'shelf-form' | 'home'
+type Route = PageId | 'collection-detail' | 'collection-record-form' | 'shelf-form' | 'shelf-detail'| 'home'
 
 function pathToRoute(path: string): Route {
   const segment = path.replace(/^\//, '').split('/')[0] ?? ''
@@ -29,7 +31,11 @@ function pathToRoute(path: string): Route {
 
   if (segment === 'shelf') {
   return 'shelf-form'
-}
+  }
+
+  if (segment === 'shelf-detail') {
+  return 'shelf-detail'
+  }
 
   switch (segment) {
     case 'catalogue':
@@ -120,7 +126,8 @@ function App() {
   route === 'home' ||
   route === 'collection-detail' ||
   route === 'collection-record-form' ||
-  route === 'shelf-form'
+  route === 'shelf-form' ||
+  route === 'shelf-detail'
     ? 'collections'
     : route
 
@@ -131,7 +138,9 @@ function App() {
       ) : route === 'collection-record-form' ? (
         <CollectionRecordForm />
       ) : route === 'shelf-form' ? (
-        <ShelfForm />  
+        <ShelfForm />
+      ) : route === 'shelf-detail' ? (
+        <ShelfDetailPage />  
       ) : route === 'collections' ? (
         <CollectionPage />
       ) : route === 'sessions' ? (
