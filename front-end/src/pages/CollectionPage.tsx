@@ -81,6 +81,18 @@ const collectionGames: CollectionGame[] = [
   },
 ];
 
+function EmptyCollectionState() {
+  return (
+    <section className="collection-empty-state" aria-labelledby="empty-collection-title">
+      <h2 id="empty-collection-title">Your collection is empty</h2>
+      <p>
+        You do not have any games in your collection yet. Add a game to get
+        started.
+      </p>
+    </section>
+  );
+}
+
 function CollectionGameCard({ game }: { game: CollectionGame }) {
   return (
     <article className="collection-game-card">
@@ -189,23 +201,28 @@ export default function CollectionPage() {
         </div>
       </section>
 
-      <section
-        className="collection-game-list"
-        aria-label="Games in your collection"
-      >
-        {filteredGames.length > 0 ? (
-          filteredGames.map((game) => (
-            <CollectionGameCard key={game.id} game={game} />
-          ))
-        ) : (
-          <div className="collection-no-results">
-            <h2>No games found</h2>
-            <p>
-              Try a different search term or change the selected status filter.
-            </p>
-          </div>
-        )}
-      </section>
+ {collectionGames.length === 0 ? (
+        <EmptyCollectionState />
+      ) : (
+        <section
+          className="collection-game-list"
+          aria-label="Games in your collection"
+        >
+          {filteredGames.length > 0 ? (
+            filteredGames.map((game) => (
+              <CollectionGameCard key={game.id} game={game} />
+            ))
+          ) : (
+            <div className="collection-no-results">
+              <h2>No games found</h2>
+              <p>
+                Try a different search term or change the selected status
+                filter.
+              </p>
+            </div>
+          )}
+        </section>
+      )}
     </main>
   );
 }

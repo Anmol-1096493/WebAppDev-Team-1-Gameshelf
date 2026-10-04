@@ -235,3 +235,22 @@
     grid-template-columns: 1fr;
   }
 }
+
+.collection-empty-state {
+  padding: 3rem 2rem;
+  border: 1px dashed #cfcfcf;
+  border-radius: 12px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.collection-empty-state h2 {
+  margin: 0;
+}
+
+.collection-empty-state p {
+  max-width: 520px;
+  margin: 0.75rem auto 0;
+  line-height: 1.6;
+  opacity: 0.75;
+}

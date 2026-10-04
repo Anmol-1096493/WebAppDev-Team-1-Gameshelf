@@ -107,7 +107,10 @@ function App() {
     )
   }
 
-  const currentPage: PageId = route === 'home' ? 'collections' : route
+  const currentPage: PageId =
+  route === 'home' || route === 'collection-detail'
+    ? 'collections'
+    : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
