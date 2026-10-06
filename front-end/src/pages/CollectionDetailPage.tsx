@@ -7,6 +7,10 @@ import azulImage from "../assets/games/azul.svg";
 type CollectionGameDetail = {
   title: string;
   image: string;
+  edition: string;
+  owner: string;
+  players: string;
+  time: string;
   status: "Not Played" | "In Progress" | "Played";
   playCount: number;
   rating: number | null;
@@ -16,6 +20,10 @@ type CollectionGameDetail = {
 const game: CollectionGameDetail = {
   title: "Azul",
   image: azulImage,
+  edition: "English edition · 2017",
+  owner: "Sanne",
+  players: "2–4 players",
+  time: "30–45 min",
   status: "Played",
   playCount: 12,
   rating: 9,
@@ -43,6 +51,26 @@ export default function CollectionDetailPage() {
 
           <h1>{game.title}</h1>
 
+            <p className="collection-detail-edition">
+            {game.edition}
+            </p>
+
+            <dl className="collection-detail-game-info">
+            <div>
+                <dt>Owner</dt>
+                <dd>{game.owner}</dd>
+            </div>
+
+            <div>
+                <dt>Players</dt>
+                <dd>{game.players}</dd>
+            </div>
+
+            <div>
+                <dt>Time</dt>
+                <dd>{game.time}</dd>
+            </div>
+            </dl>
           {/* The written status makes the state understandable without relying on colour. */}
           <p className="collection-detail-status">
             <strong>Status:</strong> {game.status}

@@ -130,3 +130,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+.collection-detail-edition {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.collection-detail-game-info {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border-top: 1px solid currentColor;
+}
+
+.collection-detail-game-info > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid currentColor;
+}
+
+.collection-detail-game-info dt {
+  font-weight: 400;
+}
+
+.collection-detail-game-info dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
