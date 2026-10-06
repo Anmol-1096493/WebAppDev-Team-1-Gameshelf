@@ -4,10 +4,14 @@
   padding: 2rem;
 }
 
+/* ========================================
+   Page Header
+   ======================================== */
+
 .collection-page-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-end;
+  justify-content: space-between;
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -31,6 +35,35 @@
   opacity: 0.75;
 }
 
+.collection-page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ========================================
+   Add Button
+   ======================================== */
+
+.collection-add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.collection-add-button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   Collection Count
+   ======================================== */
+
 .collection-count {
   display: flex;
   flex-direction: column;
@@ -50,169 +83,9 @@
   opacity: 0.7;
 }
 
-.collection-game-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-.collection-game-card {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid #dedede;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.collection-game-image-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 190px;
-  padding: 1rem;
-  background: #f4f4f4;
-}
-
-.collection-game-image {
-  display: block;
-  width: 100%;
-  max-height: 160px;
-  object-fit: contain;
-}
-
-.collection-game-content {
-  min-width: 0;
-  padding: 1.25rem;
-}
-
-.collection-game-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.collection-game-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  overflow-wrap: anywhere;
-}
-
-.collection-status {
-  flex-shrink: 0;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid #cfcfcf;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.collection-game-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-}
-
-.collection-game-notes {
-  margin-top: 1rem;
-}
-
-.collection-game-notes strong {
-  font-size: 0.85rem;
-}
-
-.collection-game-notes p {
-  margin: 0.35rem 0 0;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
-/* Stack collection cards on smaller screens. */
-@media (max-width: 850px) {
-  .collection-game-list {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Use a single-column card on phones to keep the content readable. */
-@media (max-width: 560px) {
-  .collection-page {
-    padding: 1rem;
-  }
-
-  .collection-page-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-
-  .collection-page-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.collection-add-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.collection-add-button:focus-visible {
-  outline: 3px solid currentColor;
-  outline-offset: 3px;
-}
-
-@media (max-width: 700px) {
-  .collection-page-header-actions {
-    width: 100%;
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .collection-add-button {
-    width: 100%;
-  }
-}
-
-  .collection-count {
-    flex-direction: row;
-    gap: 0.5rem;
-    min-width: 0;
-  }
-
-  .collection-game-card {
-    grid-template-columns: 1fr;
-  }
-
-  .collection-game-image-wrapper {
-    min-height: 180px;
-  }
-
-  .collection-game-header {
-    flex-direction: column;
-  }
-
-  .collection-status {
-    white-space: normal;
-  }
-}
-
-.collection-game-edition {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
+/* ========================================
+   Filters
+   ======================================== */
 
 .collection-filters {
   display: grid;
@@ -253,28 +126,130 @@
   outline-offset: 2px;
 }
 
-.collection-no-results {
-  grid-column: 1 / -1;
-  padding: 2rem;
-  border: 1px dashed #cfcfcf;
-  border-radius: 12px;
-  text-align: center;
+/* ========================================
+   Game List
+   ======================================== */
+
+.collection-game-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
-.collection-no-results h2 {
+/* ========================================
+   Game Card
+   ======================================== */
+
+.collection-game-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #dedede;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   Game Image
+   ======================================== */
+
+.collection-game-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 190px;
+  padding: 1rem;
+  background: #f4f4f4;
+}
+
+.collection-game-image {
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+}
+
+/* ========================================
+   Game Content
+   ======================================== */
+
+.collection-game-content {
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+/* ========================================
+   Game Header
+   ======================================== */
+
+.collection-game-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.collection-game-header h2 {
   margin: 0;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
 }
 
-.collection-no-results p {
-  margin: 0.5rem 0 0;
-  opacity: 0.75;
+.collection-game-edition {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
-@media (max-width: 650px) {
-  .collection-filters {
-    grid-template-columns: 1fr;
-  }
+/* ========================================
+   Status
+   ======================================== */
+
+.collection-status {
+  flex-shrink: 0;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
+
+/* ========================================
+   Game Meta
+   ======================================== */
+
+.collection-game-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   Game Notes
+   ======================================== */
+
+.collection-game-notes {
+  margin-top: 1rem;
+}
+
+.collection-game-notes strong {
+  font-size: 0.85rem;
+}
+
+.collection-game-notes p {
+  margin: 0.35rem 0 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
 
 .collection-empty-state {
   padding: 3rem 2rem;
@@ -293,4 +268,90 @@
   margin: 0.75rem auto 0;
   line-height: 1.6;
   opacity: 0.75;
+}
+
+/* ========================================
+   No Results
+   ======================================== */
+
+.collection-no-results {
+  grid-column: 1 / -1;
+  padding: 2rem;
+  border: 1px dashed #cfcfcf;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.collection-no-results h2 {
+  margin: 0;
+}
+
+.collection-no-results p {
+  margin: 0.5rem 0 0;
+  opacity: 0.75;
+}
+
+/* ========================================
+   Responsive: Tablet
+   ======================================== */
+
+@media (max-width: 850px) {
+  .collection-game-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .collection-page-header-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .collection-add-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .collection-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
+
+@media (max-width: 560px) {
+  .collection-page {
+    padding: 1rem;
+  }
+
+  .collection-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .collection-count {
+    flex-direction: row;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .collection-game-card {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-game-image-wrapper {
+    min-height: 180px;
+  }
+
+  .collection-game-header {
+    flex-direction: column;
+  }
+
+  .collection-status {
+    white-space: normal;
+  }
 }

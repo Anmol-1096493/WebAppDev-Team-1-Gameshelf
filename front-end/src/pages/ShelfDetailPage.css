@@ -4,10 +4,14 @@
   padding: 2rem;
 }
 
+/* ========================================
+   Page Header
+   ======================================== */
+
 .shelf-detail-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -32,6 +36,7 @@
   opacity: 0.75;
 }
 
+/* Visibility Badge */
 .shelf-visibility-badge {
   flex-shrink: 0;
   padding: 0.5rem 0.8rem;
@@ -49,17 +54,22 @@
   border-style: dashed;
 }
 
+/* ========================================
+   Game List
+   ======================================== */
+
 .shelf-game-list {
+  overflow: hidden;
   border: 1px solid #dedede;
   border-radius: 16px;
   background: #ffffff;
-  overflow: hidden;
 }
 
+/* Game List Header */
 .shelf-game-list-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #dedede;
@@ -75,14 +85,15 @@
   opacity: 0.7;
 }
 
+/* Game Items */
 .shelf-game-items {
   display: grid;
 }
 
 .shelf-game-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
 }
@@ -101,6 +112,7 @@
   font-size: 0.9rem;
 }
 
+/* Remove Button */
 .shelf-game-item button {
   flex-shrink: 0;
   min-height: 40px;
@@ -121,6 +133,10 @@
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
 
 @media (max-width: 650px) {
   .shelf-detail-page {

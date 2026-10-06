@@ -8,6 +8,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* ========================================
+   Form Header
+   ======================================== */
+
 .collection-record-form-header {
   margin-bottom: 2rem;
 }
@@ -31,6 +35,10 @@
   line-height: 1.5;
   opacity: 0.75;
 }
+
+/* ========================================
+   Form Fields
+   ======================================== */
 
 .collection-record-form-field {
   display: flex;
@@ -57,9 +65,13 @@
 }
 
 .collection-record-form-field textarea {
-  resize: vertical;
   min-height: 120px;
+  resize: vertical;
 }
+
+/* ========================================
+   Form Field Focus
+   ======================================== */
 
 .collection-record-form-field input:focus,
 .collection-record-form-field select:focus,
@@ -67,6 +79,10 @@
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+/* ========================================
+   Form Actions
+   ======================================== */
 
 .collection-record-form-actions {
   display: flex;
@@ -90,6 +106,10 @@
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
 
 @media (max-width: 560px) {
   .collection-record-form {

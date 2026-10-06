@@ -5,12 +5,15 @@ type ShelfFormProps = {
   mode?: "create" | "edit";
 };
 
-export default function ShelfForm({ mode = "create" }: ShelfFormProps) {
+export default function ShelfForm({
+  mode = "create",
+}: ShelfFormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [visibility, setVisibility] = useState<"Public" | "Private">(
-    "Private",
-  );
+
+  const [visibility, setVisibility] = useState<
+    "Public" | "Private"
+  >("Private");
 
   const isEditMode = mode === "edit";
 
@@ -21,7 +24,9 @@ export default function ShelfForm({ mode = "create" }: ShelfFormProps) {
           {isEditMode ? "EDIT SHELF" : "CREATE SHELF"}
         </p>
 
-        <h1>{isEditMode ? "Edit Shelf" : "Create Shelf"}</h1>
+        <h1>
+          {isEditMode ? "Edit Shelf" : "Create Shelf"}
+        </h1>
 
         <p>
           {isEditMode
@@ -46,13 +51,17 @@ export default function ShelfForm({ mode = "create" }: ShelfFormProps) {
       </div>
 
       <div className="shelf-form-field">
-        <label htmlFor="shelf-description">Description</label>
+        <label htmlFor="shelf-description">
+          Description
+        </label>
 
         <textarea
           id="shelf-description"
           rows={5}
           value={description}
-          onChange={(event) => setDescription(event.target.value)}
+          onChange={(event) =>
+            setDescription(event.target.value)
+          }
           placeholder="Describe this shelf..."
         />
       </div>
@@ -70,6 +79,7 @@ export default function ShelfForm({ mode = "create" }: ShelfFormProps) {
             checked={visibility === "Private"}
             onChange={() => setVisibility("Private")}
           />
+
           <span>
             <strong>Private</strong>
             <small>Only you can view this shelf.</small>
@@ -84,6 +94,7 @@ export default function ShelfForm({ mode = "create" }: ShelfFormProps) {
             checked={visibility === "Public"}
             onChange={() => setVisibility("Public")}
           />
+
           <span>
             <strong>Public</strong>
             <small>Other members can view this shelf.</small>

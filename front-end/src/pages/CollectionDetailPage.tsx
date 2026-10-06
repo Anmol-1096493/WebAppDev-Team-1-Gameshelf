@@ -47,30 +47,33 @@ export default function CollectionDetailPage() {
         </div>
 
         <div className="collection-detail-content">
-          <p className="collection-detail-eyebrow">COLLECTION RECORD</p>
+          <p className="collection-detail-eyebrow">
+            COLLECTION RECORD
+          </p>
 
           <h1>{game.title}</h1>
 
-            <p className="collection-detail-edition">
+          <p className="collection-detail-edition">
             {game.edition}
-            </p>
+          </p>
 
-            <dl className="collection-detail-game-info">
+          <dl className="collection-detail-game-info">
             <div>
-                <dt>Owner</dt>
-                <dd>{game.owner}</dd>
+              <dt>Owner</dt>
+              <dd>{game.owner}</dd>
             </div>
 
             <div>
-                <dt>Players</dt>
-                <dd>{game.players}</dd>
+              <dt>Players</dt>
+              <dd>{game.players}</dd>
             </div>
 
             <div>
-                <dt>Time</dt>
-                <dd>{game.time}</dd>
+              <dt>Time</dt>
+              <dd>{game.time}</dd>
             </div>
-            </dl>
+          </dl>
+
           {/* The written status makes the state understandable without relying on colour. */}
           <p className="collection-detail-status">
             <strong>Status:</strong> {game.status}
@@ -85,7 +88,9 @@ export default function CollectionDetailPage() {
             <div>
               <dt>Rating</dt>
               <dd>
-                {game.rating !== null ? `${game.rating}/10` : "Not rated"}
+                {game.rating !== null
+                  ? `${game.rating}/10`
+                  : "Not rated"}
               </dd>
             </div>
           </dl>

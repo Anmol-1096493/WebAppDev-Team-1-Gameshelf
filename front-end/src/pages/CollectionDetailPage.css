@@ -4,6 +4,10 @@
   padding: 2rem;
 }
 
+/* ========================================
+   Back Link
+   ======================================== */
+
 .collection-detail-back-link {
   display: inline-block;
   margin-bottom: 1.5rem;
@@ -15,6 +19,10 @@
   text-decoration: underline;
 }
 
+/* ========================================
+   Detail Card
+   ======================================== */
+
 .collection-detail-card {
   display: grid;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
@@ -24,6 +32,10 @@
   background: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
+/* ========================================
+   Game Image
+   ======================================== */
 
 .collection-detail-image-wrapper {
   display: flex;
@@ -40,6 +52,10 @@
   max-height: 340px;
   object-fit: contain;
 }
+
+/* ========================================
+   Detail Content
+   ======================================== */
 
 .collection-detail-content {
   min-width: 0;
@@ -59,9 +75,53 @@
   font-size: clamp(2rem, 5vw, 3rem);
 }
 
+.collection-detail-edition {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* ========================================
+   Game Information
+   ======================================== */
+
+.collection-detail-game-info {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border-top: 1px solid currentColor;
+}
+
+.collection-detail-game-info > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid currentColor;
+}
+
+.collection-detail-game-info dt {
+  font-weight: 400;
+}
+
+.collection-detail-game-info dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ========================================
+   Status
+   ======================================== */
+
 .collection-detail-status {
   margin: 1.5rem 0 0;
 }
+
+/* ========================================
+   Stats
+   ======================================== */
 
 .collection-detail-stats {
   display: grid;
@@ -88,6 +148,10 @@
   font-weight: 700;
 }
 
+/* ========================================
+   Notes
+   ======================================== */
+
 .collection-detail-notes {
   margin-top: 1.5rem;
 }
@@ -102,6 +166,10 @@
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
+/* ========================================
+   Responsive: Tablet / Mobile
+   ======================================== */
 
 @media (max-width: 700px) {
   .collection-detail-page {
@@ -125,40 +193,12 @@
   }
 }
 
+/* ========================================
+   Responsive: Small Mobile
+   ======================================== */
+
 @media (max-width: 450px) {
   .collection-detail-stats {
     grid-template-columns: 1fr;
   }
-}
-
-.collection-detail-edition {
-  margin: 0.25rem 0 1.25rem;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-.collection-detail-game-info {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  border-top: 1px solid currentColor;
-}
-
-.collection-detail-game-info > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid currentColor;
-}
-
-.collection-detail-game-info dt {
-  font-weight: 400;
-}
-
-.collection-detail-game-info dd {
-  margin: 0;
-  font-weight: 700;
-  text-align: right;
 }

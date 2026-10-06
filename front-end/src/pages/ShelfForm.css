@@ -8,6 +8,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* ========================================
+   Form Header
+   ======================================== */
+
 .shelf-form-header {
   margin-bottom: 2rem;
 }
@@ -31,6 +35,10 @@
   line-height: 1.5;
   opacity: 0.75;
 }
+
+/* ========================================
+   Form Fields
+   ======================================== */
 
 .shelf-form-field {
   display: flex;
@@ -56,15 +64,20 @@
 }
 
 .shelf-form-field textarea {
-  resize: vertical;
   min-height: 120px;
+  resize: vertical;
 }
 
+/* Form Field Focus */
 .shelf-form-field input:focus,
 .shelf-form-field textarea:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
+/* ========================================
+   Visibility
+   ======================================== */
 
 .shelf-form-fieldset {
   margin: 0 0 1.5rem;
@@ -111,6 +124,10 @@
   opacity: 0.7;
 }
 
+/* ========================================
+   Form Actions
+   ======================================== */
+
 .shelf-form-actions {
   display: flex;
   justify-content: flex-end;
@@ -133,6 +150,10 @@
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
 
 @media (max-width: 560px) {
   .shelf-form {

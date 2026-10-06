@@ -90,8 +90,12 @@ const collectionGames: CollectionGame[] = [
 
 function EmptyCollectionState() {
   return (
-    <section className="collection-empty-state" aria-labelledby="empty-collection-title">
+    <section
+      className="collection-empty-state"
+      aria-labelledby="empty-collection-title"
+    >
       <h2 id="empty-collection-title">Your collection is empty</h2>
+
       <p>
         You do not have any games in your collection yet. Add a game to get
         started.
@@ -113,19 +117,19 @@ function CollectionGameCard({ game }: { game: CollectionGame }) {
 
       <div className="collection-game-content">
         <div className="collection-game-header">
-            <div>
-                <h2>{game.title}</h2>
+          <div>
+            <h2>{game.title}</h2>
 
-                <p className="collection-game-edition">
-                {game.edition}
-                </p>
-            </div>
+            <p className="collection-game-edition">
+              {game.edition}
+            </p>
+          </div>
 
-            {/* The status text is always visible so the UI does not rely on colour alone. */}
-            <span className="collection-status">
-                {game.status}
-            </span>
-            </div>
+          {/* The status text is always visible so the UI does not rely on colour alone. */}
+          <span className="collection-status">
+            {game.status}
+          </span>
+        </div>
 
         <div className="collection-game-meta">
           <span>
@@ -140,6 +144,7 @@ function CollectionGameCard({ game }: { game: CollectionGame }) {
 
         <div className="collection-game-notes">
           <strong>Notes:</strong>
+
           <p>{game.notes}</p>
         </div>
       </div>
@@ -149,9 +154,10 @@ function CollectionGameCard({ game }: { game: CollectionGame }) {
 
 export default function CollectionPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<CollectionStatus | "All">(
-    "All",
-  );
+
+  const [statusFilter, setStatusFilter] = useState<
+    CollectionStatus | "All"
+  >("All");
 
   // Filter the collection locally until the C# API is connected.
   const filteredGames = collectionGames.filter((game) => {
@@ -167,31 +173,44 @@ export default function CollectionPage() {
 
   return (
     <main className="collection-page">
-    <header className="collection-page-header">
-    <div>
-        <p className="collection-page-eyebrow">MY GAMES</p>
-        <h1>My Collection</h1>
-        <p className="collection-page-description">
-        View and manage the games in your personal collection.
-        </p>
-    </div>
+      <header className="collection-page-header">
+        <div>
+          <p className="collection-page-eyebrow">
+            MY GAMES
+          </p>
 
-    <div className="collection-page-header-actions">
-        <a href="/collection-record" className="collection-add-button">
-        Add Game to Collection
-        </a>
+          <h1>My Collection</h1>
 
-        <div className="collection-count">
-        <strong>{filteredGames.length}</strong>
-        <span>Games</span>
+          <p className="collection-page-description">
+            View and manage the games in your personal collection.
+          </p>
         </div>
-    </div>
-    </header>
+
+        <div className="collection-page-header-actions">
+          <a
+            href="/collection-record"
+            className="collection-add-button"
+          >
+            Add Game to Collection
+          </a>
+
+          <div className="collection-count">
+            <strong>{filteredGames.length}</strong>
+            <span>Games</span>
+          </div>
+        </div>
+      </header>
 
       {/* Search and filter controls help members quickly find collection games. */}
-      <section className="collection-filters" aria-label="Collection filters">
+      <section
+        className="collection-filters"
+        aria-label="Collection filters"
+      >
         <div className="collection-filter-field">
-          <label htmlFor="collection-search">Search games</label>
+          <label htmlFor="collection-search">
+            Search games
+          </label>
+
           <input
             id="collection-search"
             type="search"
@@ -202,7 +221,10 @@ export default function CollectionPage() {
         </div>
 
         <div className="collection-filter-field">
-          <label htmlFor="collection-status-filter">Filter by status</label>
+          <label htmlFor="collection-status-filter">
+            Filter by status
+          </label>
+
           <select
             id="collection-status-filter"
             value={statusFilter}
@@ -220,7 +242,7 @@ export default function CollectionPage() {
         </div>
       </section>
 
- {collectionGames.length === 0 ? (
+      {collectionGames.length === 0 ? (
         <EmptyCollectionState />
       ) : (
         <section
@@ -229,14 +251,18 @@ export default function CollectionPage() {
         >
           {filteredGames.length > 0 ? (
             filteredGames.map((game) => (
-              <CollectionGameCard key={game.id} game={game} />
+              <CollectionGameCard
+                key={game.id}
+                game={game}
+              />
             ))
           ) : (
             <div className="collection-no-results">
               <h2>No games found</h2>
+
               <p>
-                Try a different search term or change the selected status
-                filter.
+                Try a different search term or change the selected
+                status filter.
               </p>
             </div>
           )}

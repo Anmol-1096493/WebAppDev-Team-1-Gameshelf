@@ -5,6 +5,10 @@
   width: 100%;
 }
 
+/* ========================================
+   Page Header
+   ======================================== */
+
 .shelves-page-header {
   display: flex;
   align-items: flex-end;
@@ -24,10 +28,14 @@
 }
 
 .shelves-page-description {
-  margin: 0.5rem 0 0;
   max-width: 42rem;
+  margin: 0.5rem 0 0;
   line-height: 1.6;
 }
+
+/* ========================================
+   Buttons
+   ======================================== */
 
 .shelves-create-button,
 .shelf-view-button {
@@ -46,12 +54,17 @@
   outline-offset: 3px;
 }
 
+/* ========================================
+   Shelf List
+   ======================================== */
+
 .shelves-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
+/* Shelf Card */
 .shelf-card {
   display: flex;
   flex-direction: column;
@@ -70,6 +83,7 @@
   border: 2px dashed currentColor;
 }
 
+/* Shelf Content */
 .shelf-card-content {
   display: flex;
   flex-direction: column;
@@ -104,15 +118,24 @@
   font-weight: 600;
 }
 
+/* View Button */
 .shelf-view-button {
   align-self: flex-start;
 }
+
+/* ========================================
+   Responsive: Tablet
+   ======================================== */
 
 @media (max-width: 900px) {
   .shelves-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
 
 @media (max-width: 650px) {
   .shelves-page-header {

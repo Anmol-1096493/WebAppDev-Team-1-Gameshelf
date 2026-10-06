@@ -13,21 +13,24 @@ const shelves: Shelf[] = [
   {
     id: 1,
     name: "Game Night Favorites",
-    description: "Games that are great for relaxed game nights.",
+    description:
+      "Games that are great for relaxed game nights.",
     visibility: "Public",
     gameCount: 6,
   },
   {
     id: 2,
     name: "Two Player Games",
-    description: "Games that work especially well with two players.",
+    description:
+      "Games that work especially well with two players.",
     visibility: "Private",
     gameCount: 4,
   },
   {
     id: 3,
     name: "Games to Learn",
-    description: "Games that I still want to learn and play more often.",
+    description:
+      "Games that I still want to learn and play more often.",
     visibility: "Private",
     gameCount: 5,
   },
@@ -38,23 +41,36 @@ export default function ShelvesPage() {
     <main className="shelves-page">
       <header className="shelves-page-header">
         <div>
-          <p className="shelves-page-eyebrow">MY SHELVES</p>
+          <p className="shelves-page-eyebrow">
+            MY SHELVES
+          </p>
+
           <h1>Shelves</h1>
+
           <p className="shelves-page-description">
-            Organize games from your collection into personal shelves.
+            Organize games from your collection into personal
+            shelves.
           </p>
         </div>
 
-        <a href="/shelf" className="shelves-create-button">
+        <a
+          href="/shelf"
+          className="shelves-create-button"
+        >
           Create Shelf
         </a>
       </header>
 
-      <section className="shelves-list" aria-label="Your shelves">
+      <section
+        className="shelves-list"
+        aria-label="Your shelves"
+      >
         {shelves.map((shelf) => (
           <article
             className={`shelf-card ${
-              shelf.visibility === "Public" ? "is-public" : "is-private"
+              shelf.visibility === "Public"
+                ? "is-public"
+                : "is-private"
             }`}
             key={shelf.id}
           >

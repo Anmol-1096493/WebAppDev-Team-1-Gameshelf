@@ -39,8 +39,8 @@ export default function ShelfDetailPage({
           <h1>Game Night Favorites</h1>
 
           <p className="shelf-detail-description">
-            A selection of games that are great for relaxed game nights with
-            friends and family.
+            A selection of games that are great for relaxed game
+            nights with friends and family.
           </p>
         </div>
 
@@ -58,13 +58,19 @@ export default function ShelfDetailPage({
         aria-labelledby="shelf-games-title"
       >
         <div className="shelf-game-list-header">
-          <h2 id="shelf-games-title">Games on this shelf</h2>
+          <h2 id="shelf-games-title">
+            Games on this shelf
+          </h2>
+
           <span>{shelfGames.length} games</span>
         </div>
 
         <div className="shelf-game-items">
           {shelfGames.map((game) => (
-            <article className="shelf-game-item" key={game.id}>
+            <article
+              className="shelf-game-item"
+              key={game.id}
+            >
               <div>
                 <h3>{game.title}</h3>
 
@@ -77,7 +83,9 @@ export default function ShelfDetailPage({
                 </p>
               </div>
 
-              <button type="button">Remove</button>
+              <button type="button">
+                Remove
+              </button>
             </article>
           ))}
         </div>
