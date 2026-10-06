@@ -16,6 +16,7 @@ type CollectionGame = {
   id: number;
   title: string;
   image: string;
+  edition: string;
   status: CollectionStatus;
   playCount: number;
   rating: number | null;
@@ -30,6 +31,7 @@ const collectionGames: CollectionGame[] = [
     title: "Azul",
     image: azulImage,
     status: "Played",
+    edition: "English edition · 2015",
     playCount: 12,
     rating: 9,
     notes: "Great game for smaller groups.",
@@ -39,6 +41,7 @@ const collectionGames: CollectionGame[] = [
     title: "Carcassonne",
     image: carcassonneImage,
     status: "Played",
+    edition: "English edition · 2015",
     playCount: 8,
     rating: 8,
     notes: "Easy to teach and always fun.",
@@ -48,6 +51,7 @@ const collectionGames: CollectionGame[] = [
     title: "Catan",
     image: catanImage,
     status: "In Progress",
+    edition: "English edition · 2015",
     playCount: 3,
     rating: null,
     notes: "Still learning the best strategies.",
@@ -57,6 +61,7 @@ const collectionGames: CollectionGame[] = [
     title: "Codenames",
     image: codenamesImage,
     status: "Not Played",
+    edition: "English edition · 2015",
     playCount: 0,
     rating: null,
     notes: "Bought recently and waiting for game night.",
@@ -66,6 +71,7 @@ const collectionGames: CollectionGame[] = [
     title: "Splendor",
     image: splendorImage,
     status: "Played",
+    edition: "English edition · 2015",
     playCount: 6,
     rating: 8,
     notes: "A quick game that works well with two players.",
@@ -75,6 +81,7 @@ const collectionGames: CollectionGame[] = [
     title: "Ticket to Ride",
     image: ticketToRideImage,
     status: "In Progress",
+    edition: "English edition · 2015",
     playCount: 2,
     rating: null,
     notes: "Planning to play this again soon.",
@@ -106,13 +113,19 @@ function CollectionGameCard({ game }: { game: CollectionGame }) {
 
       <div className="collection-game-content">
         <div className="collection-game-header">
-          <h2>{game.title}</h2>
+            <div>
+                <h2>{game.title}</h2>
 
-          {/* The status text is always visible so the UI does not rely on colour alone. */}
-          <span className="collection-status">
-            {game.status}
-          </span>
-        </div>
+                <p className="collection-game-edition">
+                {game.edition}
+                </p>
+            </div>
+
+            {/* The status text is always visible so the UI does not rely on colour alone. */}
+            <span className="collection-status">
+                {game.status}
+            </span>
+            </div>
 
         <div className="collection-game-meta">
           <span>

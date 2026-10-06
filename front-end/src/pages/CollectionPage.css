@@ -208,6 +208,12 @@
   }
 }
 
+.collection-game-edition {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .collection-filters {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
