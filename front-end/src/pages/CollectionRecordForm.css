@@ -1,0 +1,127 @@
+.collection-record-form {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid #dedede;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   Form Header
+   ======================================== */
+
+.collection-record-form-header {
+  margin-bottom: 2rem;
+}
+
+.collection-record-form-eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.collection-record-form-header h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.collection-record-form-header p:last-child {
+  max-width: 600px;
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+/* ========================================
+   Form Fields
+   ======================================== */
+
+.collection-record-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.collection-record-form-field label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.collection-record-form-field input,
+.collection-record-form-field select,
+.collection-record-form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.collection-record-form-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ========================================
+   Form Field Focus
+   ======================================== */
+
+.collection-record-form-field input:focus,
+.collection-record-form-field select:focus,
+.collection-record-form-field textarea:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Form Actions
+   ======================================== */
+
+.collection-record-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.collection-record-form-actions button {
+  min-height: 44px;
+  padding: 0.7rem 1.2rem;
+  border: 0;
+  border-radius: 8px;
+  background: #222222;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.collection-record-form-actions button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   Responsive: Mobile
+   ======================================== */
+
+@media (max-width: 560px) {
+  .collection-record-form {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .collection-record-form-actions {
+    justify-content: stretch;
+  }
+
+  .collection-record-form-actions button {
+    width: 100%;
+  }
+}
