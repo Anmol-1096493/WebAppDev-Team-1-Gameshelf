@@ -1,0 +1,611 @@
+# Wishlist & Trading Module
+
+## Overview
+
+The Wishlist & Trading module allows members to keep track of board games they want to own and exchange games with other members.
+
+Members can:
+
+- View their own wishlist.
+- View the wishlists of other members.
+- Add games from the shared catalogue to their wishlist.
+- Assign a priority to each wishlist item.
+- Add personal notes about the desired game.
+- View whether a wishlist item has been fulfilled.
+- Make trade offers for games on another member's wishlist.
+- Specify which game they want to receive in return.
+- View incoming and outgoing trade offers.
+- Accept or reject trade offers received for their own wishlist items.
+- Cancel their own open trade offers.
+- View the status of trade offers.
+- See whether a trade offer has expired.
+
+All wishlists are public and visible to every member of the club.
+
+Trading is based on exchanging one game for another. No money or prices are involved, and games are exchanged in person.
+
+## Scope and Terminology
+
+- A **game** is a catalogue entry representing one specific edition of a board game.
+- A **wishlist item** represents a game that a member wants to obtain.
+- A **priority** indicates how important a wishlist item is to the member.
+- A **trade offer** is a proposal from one member to exchange a game for a game requested by another member.
+- The **wishlist owner** is the member who created the wishlist item.
+- The **offer creator** is the member who submits the trade offer.
+- A **fulfilled wishlist item** represents a wish that has been satisfied through an accepted trade offer.
+- An **expired offer** is an offer whose validity period has passed.
+
+The system does not verify whether a member actually owns the game they are offering.
+
+The club operates on trust.
+
+## User Flows
+
+### Flow 1 View Own Wishlist
+
+**Goal:** A member wants to see the games they would like to obtain.
+
+1. Member opens **My Wishlist**.
+2. System retrieves all wishlist items belonging to the signed-in member.
+3. System displays the games and their wishlist information.
+4. Member selects a wishlist item.
+5. System displays the wishlist item details.
+
+**Wishlist overview should show:**
+
+- Game title
+- Game image, if available
+- Game edition/details
+- Priority
+- Personal notes, if available
+- Fulfilled status
+
+### Flow 2 Add a Game to Wishlist
+
+**Goal:** A member wants to add a game they would like to own.
+
+1. Member opens **My Wishlist**.
+2. Member chooses **Add to Wishlist**.
+3. Member searches for a game in the shared catalogue.
+4. Member selects the desired game.
+5. Member assigns a priority.
+6. Member adds an optional note.
+7. Member saves the wishlist item.
+8. System creates the wishlist item with the signed-in member as owner.
+9. The game appears in the member's wishlist.
+
+**Important rules**
+
+- The game must exist in the shared catalogue.
+- A wishlist item must have an owner, game and priority.
+- A note may describe the desired edition or acceptable condition.
+- Wishlist items are publicly visible to all members.
+
+### Flow 3 View Another Member's Wishlist
+
+**Goal:** A member wants to see which games another member is looking for.
+
+1. Member opens another member's public wishlist.
+2. System displays the wishlist items.
+3. Member selects a wishlist item.
+4. System displays the game details, priority, notes and fulfilled status.
+5. If the item is not fulfilled, the member can choose **Make Trade Offer**.
+
+**Important rule**
+
+All wishlists are public.
+
+Members may view another member's wishlist, but they cannot modify wishlist items belonging to another member.
+
+### Flow 4 Make a Trade Offer
+
+**Goal:** A member wants to offer a game in exchange for a game another member wants.
+
+1. Member opens another member's wishlist.
+2. Member selects an unfulfilled wishlist item.
+3. Member chooses **Make Trade Offer**.
+4. System identifies the game requested by the wishlist owner.
+5. Member selects the game they want to receive in return from the shared catalogue.
+6. System creates a trade offer with status `OPEN`.
+7. System records the date and time when the offer was created.
+8. The offer appears under **My Sent Offers**.
+9. The wishlist owner can view the offer under **Received Offers**.
+
+**Important rules**
+
+- The offered game is determined by the selected wishlist item.
+- The offer creator specifies the game they want in return.
+- The system does not verify whether the offer creator owns the offered game.
+- Multiple members may receive offers involving the same game.
+- The offer must be associated with an unfulfilled wishlist item.
+- A new trade offer starts with status `OPEN`.
+
+**Invalid scenario**
+
+A member tries to make a trade offer for a wishlist item that has already been fulfilled.
+
+**Expected result:** The system rejects the action and explains that the wishlist item is already fulfilled.
+
+### Flow 5 View Received Trade Offers
+
+**Goal:** A member wants to review trade offers for their wishlist items.
+
+1. Member opens **Received Offers**.
+2. System retrieves offers associated with the member's wishlist items.
+3. System displays the offers and their statuses.
+4. Member selects an offer.
+5. System displays the offer details.
+6. If the offer is open and has not expired, the member can accept or reject it.
+
+**Offer overview should show:**
+
+- Requested wishlist game
+- Offer creator
+- Game requested in return
+- Date the offer was created
+- Offer status
+- Expiration information
+
+### Flow 6 Accept a Trade Offer
+
+**Goal:** A wishlist owner wants to accept a trade proposal.
+
+1. Wishlist owner opens **Received Offers**.
+2. Wishlist owner selects an offer.
+3. System verifies that the signed-in member owns the associated wishlist item.
+4. System checks that the offer has status `OPEN`.
+5. System checks that the offer has not expired.
+6. System checks that the wishlist item is not already fulfilled.
+7. Wishlist owner chooses **Accept Offer**.
+8. System changes the offer status to `ACCEPTED`.
+9. System marks the associated wishlist item as fulfilled.
+10. System identifies conflicting open trade offers.
+11. System automatically changes the status of those offers to `CANCELLED`.
+12. The accepted offer and updated wishlist item are saved.
+
+**Important rules**
+
+- Only the wishlist owner may accept an offer.
+- An expired offer cannot be accepted.
+- An offer that is no longer open cannot be accepted.
+- Accepting an offer marks the associated wishlist item as fulfilled.
+- A fulfilled wishlist item cannot receive new trade offers.
+- Other open offers in which the same member offers the same game must be cancelled automatically.
+
+**Conflicting-offer cancellation**
+
+When a trade offer is accepted, the system identifies all other open offers in which the same offer creator is offering the same wishlist game.
+
+These conflicting offers are automatically cancelled.
+
+Offers involving different games or different offer creators are not automatically cancelled by this specific rule.
+
+The acceptance and cancellation of conflicting offers must be processed together to prevent inconsistent data.
+
+### Flow 7 Reject a Trade Offer
+
+**Goal:** A wishlist owner does not want to accept a trade proposal.
+
+1. Wishlist owner opens **Received Offers**.
+2. Wishlist owner selects an open offer.
+3. System verifies that the signed-in member owns the associated wishlist item.
+4. Wishlist owner chooses **Reject Offer**.
+5. System changes the offer status to `REJECTED`.
+6. The offer creator can see the updated status.
+
+**Important rules**
+
+- Only the wishlist owner can reject an offer.
+- Rejection does not mark the wishlist item as fulfilled.
+- Rejecting one offer does not automatically reject other offers.
+- A rejected offer cannot be accepted later.
+
+### Flow 8 Cancel a Trade Offer
+
+**Goal:** A member wants to withdraw a trade offer they previously submitted.
+
+1. Member opens **My Sent Offers**.
+2. Member selects an offer.
+3. Member chooses **Cancel Offer**.
+4. System verifies that the signed-in member created the offer.
+5. System checks that the offer still has status `OPEN`.
+6. System changes the offer status to `CANCELLED`.
+7. The updated status becomes visible to both members.
+
+**Important rules**
+
+- Only the offer creator can manually cancel their own offer.
+- Manual cancellation is allowed only while the offer is open.
+- An accepted offer cannot be cancelled.
+- A rejected offer cannot be cancelled.
+- A cancelled offer cannot be accepted.
+
+**Invalid scenario**
+
+A member tries to cancel an offer that has already been accepted.
+
+**Expected result:** The system rejects the action because the offer is no longer open.
+
+### Flow 9 Check Offer Expiration
+
+**Goal:** The system determines whether a trade offer is still valid.
+
+1. Member opens a trade offer.
+2. System retrieves the offer creation date.
+3. System checks the configured validity period.
+4. System calculates whether the offer has expired.
+5. If the validity period has passed, the offer is considered expired.
+6. The system prevents acceptance of the expired offer.
+
+**Important rules**
+
+- The validity period starts when the offer is created.
+- Expiration is calculated automatically.
+- Members cannot manually change the expiration date.
+- An expired offer cannot be accepted.
+- Expiration is a calculated condition, not an additional manually assigned offer status.
+
+**Invalid scenario**
+
+A wishlist owner tries to accept an open offer after its validity period has passed.
+
+**Expected result:** The system rejects the acceptance and explains that the offer has expired.
+
+### Flow 10 View Fulfilled Wishlist Items
+
+**Goal:** A member wants to see which wishlist items have already been fulfilled.
+
+1. Member opens **My Wishlist**.
+2. System displays the member's wishlist items.
+3. Fulfilled items are identified using their fulfilled status.
+4. Member selects a fulfilled item.
+5. System displays its details.
+6. The system does not allow new trade offers for that item.
+
+**Important rules**
+
+- Accepting a trade offer automatically marks the wishlist item as fulfilled.
+- A fulfilled wishlist item remains identifiable as fulfilled.
+- New trade offers cannot be created for fulfilled items.
+- The case does not specify whether fulfilled items can be manually reopened.
+
+## Pages
+
+| Page | Purpose |
+|---|---|
+| My Wishlist | Displays the signed-in member's wishlist |
+| Wishlist Item Details | Displays game, priority, notes and fulfilled status |
+| Add Wishlist Item | Allows a member to select a catalogue game and create a wishlist item |
+| Public Wishlist | Displays another member's wishlist |
+| Make Trade Offer | Allows a member to submit a trade proposal |
+| Received Offers | Displays trade offers received for the member's wishlist items |
+| Sent Offers | Displays trade offers created by the member |
+| Trade Offer Details | Displays offer information, status, validity and available actions |
+
+Pages may be implemented as separate routes, tabs, panels or modals, as long as the required information and permissions remain available.
+
+## Data Fields
+
+### Wishlist Item
+
+A wishlist item represents a specific game that a member wants to obtain.
+
+**Required fields:**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | identifier | Yes | Unique identifier of the wishlist item |
+| `memberId` | member reference | Yes | ID of the member who owns the wishlist item |
+| `gameId` | catalogue-game reference | Yes | ID of the desired game |
+| `priority` | enum or configured value | Yes | Priority assigned to the desired game |
+| `notes` | text | No | Additional information about the desired game |
+| `isFulfilled` | boolean | Yes | Indicates whether the wishlist item has been fulfilled |
+
+**Priority values**
+
+The case requires every wishlist item to have a priority but does not define the exact values.
+
+A possible implementation is:
+
+- `LOW`
+- `MEDIUM`
+- `HIGH`
+
+These values are a proposed implementation choice and must be confirmed with the group or product owner.
+
+**Fulfilled values**
+
+- `false` — the member is still looking for the game.
+- `true` — the wishlist item has been fulfilled.
+
+All wishlist items are publicly visible. A separate visibility field is unnecessary because the case does not define private wishlists.
+
+### Trade Offer
+
+A trade offer represents a proposal to exchange one game for another.
+
+**Required fields:**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | identifier | Yes | Unique identifier of the trade offer |
+| `wishlistItemId` | wishlist-item reference | Yes | ID of the wishlist item receiving the offer |
+| `offerCreatorId` | member reference | Yes | ID of the member making the offer |
+| `requestedGameId` | catalogue-game reference | Yes | ID of the game the offer creator wants in return |
+| `createdAt` | date-time | Yes | Date and time when the offer was created |
+| `status` | enum | Yes | Current trade offer status |
+
+The game being offered is obtained through the linked wishlist item.
+
+The member receiving the offer is obtained through the owner of that wishlist item.
+
+These relationships prevent unnecessary duplication of data.
+
+### Trade Offer Status Values
+
+- `OPEN`
+- `ACCEPTED`
+- `REJECTED`
+- `CANCELLED`
+
+**Status descriptions**
+
+| Status | Description |
+|---|---|
+| `OPEN` | The offer has been submitted and is awaiting a decision |
+| `ACCEPTED` | The wishlist owner has accepted the offer |
+| `REJECTED` | The wishlist owner has rejected the offer |
+| `CANCELLED` | The offer creator cancelled the offer, or the system cancelled it because of a conflicting accepted offer |
+
+### Derived Offer Expiration
+
+Expiration is calculated using the offer creation date and the club's configured validity period.
+
+**Calculation:**
+
+`expiresAt = createdAt + configuredValidityPeriod`
+
+`isExpired = currentDateTime > expiresAt`
+
+The exact validity period is not specified in the case and must be configured after agreement with the product owner.
+
+An offer can have status `OPEN` while its validity period has expired.
+
+In that situation, the offer is no longer eligible for acceptance.
+
+### Trade Offer State Transitions
+
+```text
+OPEN
+ |
+ |-- Wishlist owner accepts --> ACCEPTED
+ |
+ |-- Wishlist owner rejects --> REJECTED
+ |
+ |-- Offer creator cancels --> CANCELLED
+ |
+ |-- Conflicting offer accepted --> CANCELLED
+```
+
+**Expiration**
+
+```text
+OPEN + validity period expired
+          |
+          v
+   Cannot be accepted
+```
+
+Expiration does not create an additional stored status.
+
+`ACCEPTED`, `REJECTED` and `CANCELLED` are final offer states.
+
+## Permissions
+
+### Every Signed-in Member
+
+- View their own wishlist.
+- View the public wishlists of other members.
+- Add games from the catalogue to their own wishlist.
+- Assign priorities and notes to their wishlist items.
+- View the fulfilled status of wishlist items.
+- Submit trade offers for unfulfilled wishlist items belonging to other members.
+- View their own sent trade offers.
+- Cancel their own open trade offers.
+- View the status and expiration of their trade offers.
+
+### Wishlist Owner
+
+- View trade offers received for their wishlist items.
+- Accept eligible trade offers for their own wishlist items.
+- Reject open trade offers for their own wishlist items.
+- View which wishlist items have been fulfilled.
+- Cannot accept or reject offers belonging to another member's wishlist.
+
+### Trade Offer Creator
+
+- Create trade offers for other members' unfulfilled wishlist items.
+- View the status of their submitted offers.
+- Cancel their own offers while they remain open.
+- Cannot accept or reject their own submitted offers on behalf of the wishlist owner.
+- Cannot manually cancel another member's offer.
+
+### Committee Members
+
+Committee members have the same wishlist and trading permissions as ordinary members.
+
+The case does not grant committee members additional permissions to accept, reject or cancel trade offers belonging to other members.
+
+Permission checks must be enforced by the backend, not only by hiding frontend buttons.
+
+## Business Rules
+
+### Catalogue Relationship
+
+- Every wishlist item must reference an existing game in the shared catalogue.
+- The catalogue distinguishes between different editions of the same game.
+- Every trade offer must reference an existing wishlist item.
+- The game requested in return must also exist in the catalogue.
+
+### Public Visibility
+
+- All wishlists are visible to all members.
+- Members can view wishlist items belonging to other members.
+- Public visibility does not give members permission to modify another member's wishlist.
+
+### Wishlist Priorities
+
+- Every wishlist item has a priority.
+- Priorities indicate the relative importance of desired games.
+- The exact priority values are not defined by the case.
+- Priority values must be agreed upon before implementation.
+
+### Trade Offer Creation
+
+- Members may submit offers for unfulfilled wishlist items.
+- The offered game is the game referenced by the wishlist item.
+- The offer creator specifies which catalogue game they want in return.
+- A new offer receives status `OPEN`.
+- The creation date must be recorded.
+- The system does not verify ownership of the offered game.
+
+### Accepting Offers
+
+- Only the wishlist owner can accept an offer.
+- The offer must be open and not expired.
+- The associated wishlist item must not already be fulfilled.
+- Acceptance changes the offer status to `ACCEPTED`.
+- Acceptance marks the wishlist item as fulfilled.
+- Conflicting open offers must be cancelled automatically.
+
+### Rejecting Offers
+
+- Only the wishlist owner can reject an offer.
+- Rejection changes the offer status to `REJECTED`.
+- Rejection does not fulfill the wishlist item.
+- Rejection does not automatically cancel unrelated offers.
+
+### Cancelling Offers
+
+- Only the offer creator can manually cancel their offer.
+- Manual cancellation is only permitted while the offer is open.
+- Accepted, rejected and cancelled offers cannot be manually cancelled again.
+- The system may automatically cancel conflicting open offers after another offer is accepted.
+
+### Offer Expiration
+
+- Every offer has a limited validity period.
+- The validity period is calculated from the creation date.
+- The system automatically determines whether the offer has expired.
+- An expired offer cannot be accepted.
+- Expiration does not require a manually assigned status.
+- The validity period must be configured according to the club's rules.
+
+### Fulfilled Wishlist Items
+
+- A wishlist item becomes fulfilled when an offer is accepted.
+- A fulfilled wishlist item cannot receive new trade offers.
+- The fulfilled status is stored with the wishlist item.
+- The case does not specify a manual reopening action.
+
+### Conflicting Trade Offers
+
+- A member may offer the same game to multiple other members at the same time.
+- When one of those offers is accepted, other open offers involving the same offer creator and offered game must be cancelled.
+- Cancellation applies to matching offers even when they belong to different wishlist owners.
+- Unrelated offers must remain unchanged.
+- The acceptance and conflicting-offer cancellation should be handled as one atomic backend operation.
+
+### Ownership Verification
+
+- The system does not check whether the offer creator actually owns the offered game.
+- A game does not need to appear in the offer creator's personal collection.
+- The club relies on trust between members.
+- Trade offers must not be rejected solely because the offered game is absent from the member's collection.
+
+### Physical Exchange
+
+- Trading involves exchanging one game for another.
+- No prices or monetary transactions are involved.
+- Games are exchanged in person.
+- The case does not require shipping or payment functionality.
+
+## Example Invalid Actions
+
+The system must reject invalid actions.
+
+Examples:
+
+1. **Accepting another member's offer:**  
+   A member tries to accept an offer associated with a wishlist item they do not own.
+
+   **Expected result:** The backend rejects the action as forbidden. The offer remains unchanged.
+
+2. **Rejecting another member's offer:**  
+   A member tries to reject an offer belonging to another member's wishlist item.
+
+   **Expected result:** The system rejects the action because only the wishlist owner can reject the offer.
+
+3. **Cancelling another member's offer:**  
+   A member tries to cancel an offer created by someone else.
+
+   **Expected result:** The backend rejects the action as forbidden.
+
+4. **Cancelling an accepted offer:**  
+   An offer creator tries to cancel an offer that has already been accepted.
+
+   **Expected result:** The system rejects the action because cancellation is only allowed while the offer is open.
+
+5. **Accepting an expired offer:**  
+   A wishlist owner tries to accept an offer after its validity period has passed.
+
+   **Expected result:** The system rejects the action and explains that the offer has expired.
+
+6. **Offering a game for a fulfilled wishlist item:**  
+   A member tries to create a trade offer for a wishlist item marked `isFulfilled = true`.
+
+   **Expected result:** The system rejects the action and does not create a new offer.
+
+7. **Accepting an already rejected offer:**  
+   A wishlist owner tries to accept an offer with status `REJECTED`.
+
+   **Expected result:** The system rejects the action because the offer is no longer open.
+
+8. **Accepting a cancelled offer:**  
+   A wishlist owner tries to accept an offer with status `CANCELLED`.
+
+   **Expected result:** The system rejects the action because cancelled offers cannot be accepted.
+
+9. **Accepting a second conflicting offer:**  
+   A member offers the same game to two different wishlist owners. The first offer is accepted. Another wishlist owner then tries to accept the second offer.
+
+   **Expected result:** The second offer has already been automatically cancelled and cannot be accepted.
+
+10. **Modifying another member's wishlist:**  
+    A member attempts to modify a wishlist item belonging to another member.
+
+    **Expected result:** The system rejects the action as forbidden.
+
+11. **Concurrent conflicting acceptances:**  
+    Two wishlist owners attempt to accept offers involving the same offer creator and offered game at nearly the same time.
+
+    **Expected result:** Only one conflicting offer may be accepted. The other must be cancelled or rejected as a conflict without producing inconsistent data.
+
+## Open Decisions
+
+The following details are not explicitly defined in the GameShelf case and should be confirmed with the product owner or project group before implementation:
+
+- **Priority values:** Should priorities use `LOW`, `MEDIUM` and `HIGH`, numeric values, or another system?
+- **Offer validity period:** How long does a trade offer remain valid?
+- **Editing wishlist items:** Can members change the priority or notes after creating an item?
+- **Removing wishlist items:** Can members delete wishlist items, and what happens to associated open offers?
+- **Duplicate wishlist items:** Can a member add the same catalogue game more than once?
+- **Own wishlist offers:** Should members be prevented from making offers on their own wishlist items?
+- **Expired-offer cancellation:** Can the offer creator manually cancel an expired offer that still has status `OPEN`?
+- **Fulfilled-item offers:** What should happen to other open offers on the same fulfilled wishlist item if they do not match the specified conflicting-offer rule?
+- **Reopening fulfilled items:** Can a fulfilled wishlist item ever become unfulfilled again?
+- **Physical trade completion:** Is accepting an offer sufficient to complete the system workflow, or should physical handover be recorded separately?
+- **Offer notifications:** Should members receive notifications when offers are created, accepted, rejected or cancelled?
+- **Trade history:** Should completed and cancelled offers remain visible indefinitely?
+
+These decisions should be resolved before implementing functionality that depends on them.
