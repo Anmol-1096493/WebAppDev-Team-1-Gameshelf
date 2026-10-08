@@ -277,20 +277,7 @@ The following actions must be rejected and tested:
 
 7. **Accepting a cancelled or rejected offer:** A wishlist owner attempts to accept an offer that is no longer open. The action is rejected.
 
-8. **Conflicting acceptance:** Two members attempt to accept offers involving the same offer creator and offered game. Only one succeeds; the conflicting offer is cancelled.
+8. **Conflicting acceptance:** Two members attempt to accept offers involving the same offer creator and offered game. Only one succeeds: the conflicting offer is cancelled.
 
 9. **Editing another member's wishlist:** A member attempts to modify someone else's wishlist item. The backend rejects the action as forbidden.
 
-## Open decisions
-
-The following details are not explicitly defined in the case and should be agreed with the product owner before implementation:
-
-- The exact priority values (`LOW`, `MEDIUM`, `HIGH` or another system).
-- The numeric trade offer validity period.
-- Whether members may edit or remove wishlist items after creation.
-- Whether duplicate wishlist items for the same game are allowed.
-- Whether members may submit offers for their own wishlist items.
-- Whether expired but still `OPEN` offers can be manually cancelled.
-- What happens to other open offers for the same fulfilled wishlist item when they do not meet the conflicting-offer rule.
-- Whether fulfilled wishlist items can be reopened.
-- Whether the physical exchange should be recorded separately after an offer is accepted.
