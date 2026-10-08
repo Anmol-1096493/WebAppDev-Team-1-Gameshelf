@@ -1,4 +1,3 @@
-
 # Wishlist & Trading Requirements
 
 This document translates the GameShelf case into user flows, pages, fields, permissions and business rules for the Wishlist & Trading module. It serves as a shared reference for design, frontend, backend and testing.
