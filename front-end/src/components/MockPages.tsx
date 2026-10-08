@@ -214,16 +214,55 @@ export function LendingPage() {
 /* ---------- Wishlists ---------- */
 
 type Wish = {
+  id: number
+  memberName: string
   title: string
   priority: 'high' | 'medium' | 'low'
   note: string
   emoji: string
+  isFulfilled: boolean
 }
 
 const wishes: Wish[] = [
-  { title: 'Ark Nova', priority: 'high', note: 'Heavy engine builder for the committee shelf.', emoji: '🦁' },
-  { title: 'Spirit Island', priority: 'medium', note: 'Co-op we keep hearing about.', emoji: '🏝️' },
-  { title: 'Terraforming Mars', priority: 'low', note: 'Maybe after the expansion drops.', emoji: '🪐' },
+  { id: 1,
+    memberName: 'Emma',
+    title: 'Ark Nova',
+    priority: 'high',
+    note: 'Looking for the English edition.',
+    emoji: '🦁',
+    isFulfilled: false },
+  { id: 2,
+    memberName: 'Noah',
+    title: 'Spirit Island',
+    priority: 'medium',
+    note: 'Would love to trade for this cooperative game.',
+    emoji: '🏝️',
+    isFulfilled: false, },
+  { id: 3,
+    memberName: 'Sophie',
+    title: 'Terraforming Mars',
+    priority: 'low',
+    note: 'I finally found someone willing to trade!',
+    emoji: '🪐',
+    isFulfilled: true, },
+    {
+    id: 4,
+    memberName: 'Emma',
+    title: 'Wingspan',
+    priority: 'high',
+    note: 'Preferably in good condition with all original components.',
+    emoji: '🪶',
+    isFulfilled: false,
+  },
+  {
+    id: 5,
+    memberName: 'Liam',
+    title: 'Catan',
+    priority: 'medium',
+    note: 'Looking for a complete English edition, ideally with the original box and all playing pieces included.',
+    emoji: '🏔️',
+    isFulfilled: true,
+  },
 ]
 
 function WishlistPage() {
