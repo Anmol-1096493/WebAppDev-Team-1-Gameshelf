@@ -102,7 +102,7 @@ export default function WishlistPage() {
     <section className="wishlist-page" aria-labelledby="page-title">
       <header className="wishlist-page__header">
         <p className="eyebrow">GameShelf Community</p>
-        <h1 id="page-title">Community Wishlists</h1>
+        <h1 id="page-title">Wishlists</h1>
         <p className="text-muted"> Discover which board games other club members are looking for.
           Browse their wishes and find opportunities to trade.
         </p>
