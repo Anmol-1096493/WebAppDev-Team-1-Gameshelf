@@ -11,10 +11,12 @@ import {
 } from '../api.ts'
 import './SessionsPage.css'
 
+// Deze statuswaarden komen overeen met de SignupStatus-enum in de backend.
 const CONFIRMED = 0
 const WAITING = 1
 
 export default function SessionsPage({ member }: { member: Member }) {
+  // Bewaart API-gegevens en de schermstatus: geopende pop-up, laden en foutmeldingen.
   const [members, setMembers] = useState<Member[]>([])
   const [games, setGames] = useState<Game[]>([])
   const [summaries, setSummaries] = useState<SessionSummary[]>([])
@@ -24,16 +26,19 @@ export default function SessionsPage({ member }: { member: Member }) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Haalt de sessiekaarten opnieuw op, bijvoorbeeld na een aanmelding.
   const refreshList = useCallback(async () => {
     const list = await api.listSessions()
     setSummaries(list)
   }, [])
 
+  // Haalt alle details en deelnemers van één sessie op.
   const refreshDetail = useCallback(async (id: string) => {
     const d = await api.getSession(id)
     setDetail(d)
   }, [])
 
+  // Laadt leden, spellen en sessies tegelijk voor de pagina en de keuzelijsten.
   const loadAll = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -49,11 +54,12 @@ export default function SessionsPage({ member }: { member: Member }) {
     }
   }, [])
 
+  // Laadt de gegevens wanneer de sessiepagina wordt geopend.
   useEffect(() => {
     loadAll()
   }, [loadAll])
 
-  // Keep the open detail in sync after any mutation that returns a fresh detail.
+  // Werkt de open pop-up en sessiekaarten bij met het resultaat van een API-actie.
   const applyDetail = useCallback(
     (d: SessionDetail) => {
       setDetail(d)
@@ -62,6 +68,7 @@ export default function SessionsPage({ member }: { member: Member }) {
     [refreshList],
   )
 
+  // Voert een API-actie uit en zet een eventuele fout om naar een schermmelding.
   async function run<T>(fn: () => Promise<T>, onError?: (e: ApiError) => void): Promise<T | undefined> {
     setError(null)
     try {
@@ -74,18 +81,21 @@ export default function SessionsPage({ member }: { member: Member }) {
     }
   }
 
+  // Opent de detailpop-up en wist eerst de gegevens van de vorige sessie.
   function openDetail(id: string) {
     setOpenSessionId(id)
     setDetail(null)
     void refreshDetail(id)
   }
 
+  // Sluit de detailpop-up en vernieuwt het overzicht.
   function closeDetail() {
     setOpenSessionId(null)
     setDetail(null)
     void refreshList()
   }
 
+  // Toont een laadmelding totdat de eerste API-aanroepen klaar zijn.
   if (loading) {
     return (
       <section aria-labelledby="page-title">
@@ -105,12 +115,14 @@ export default function SessionsPage({ member }: { member: Member }) {
         for a seat; once the table is full, signups join the waiting list.
       </p>
 
+      {/* Toont fouten die tijdens het laden of een API-actie zijn opgetreden. */}
       {error && (
         <p className="alert alert--error" role="alert">
           {error}
         </p>
       )}
 
+      {/* Opent het aanmaakformulier of vernieuwt alle gegevens. */}
       <div className="cluster session-toolbar">
         <button className="button button--primary" type="button" onClick={() => setCreating(true)}>
           + Host a session
@@ -120,6 +132,7 @@ export default function SessionsPage({ member }: { member: Member }) {
         </button>
       </div>
 
+      {/* Toont een lege lijstmelding of een kaart per sessie. */}
       {summaries.length === 0 ? (
         <div className="card empty-state">
           <div className="card__body">
@@ -185,6 +198,7 @@ export default function SessionsPage({ member }: { member: Member }) {
         </ul>
       )}
 
+      {/* Maakt de sessie via de API aan en opent daarna de nieuwe sessie. */}
       {creating && (
         <CreateSessionModal
           onCancel={() => setCreating(false)}
@@ -199,6 +213,7 @@ export default function SessionsPage({ member }: { member: Member }) {
         />
       )}
 
+      {/* Geeft de gekozen sessie en callbacks door aan de detailpop-up. */}
       {openSessionId && (
         <SessionDetailModal
           detail={detail}
@@ -214,7 +229,7 @@ export default function SessionsPage({ member }: { member: Member }) {
   )
 }
 
-/* ---------- Modal shell ---------- */
+/* Gedeelde pop-up: titel, inhoud, sluitknop en optionele voettekst. */
 
 function Modal({
   title,
@@ -231,6 +246,7 @@ function Modal({
   footer?: React.ReactNode
   size?: 'md' | 'lg'
 }) {
+  // Sluit met Escape en blokkeert het scrollen van de achtergrond zolang de pop-up open is.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -238,6 +254,7 @@ function Modal({
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    // Herstelt scrollen en verwijdert de toetslistener wanneer de pop-up sluit.
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
@@ -264,7 +281,7 @@ function Modal({
   )
 }
 
-/* ---------- Create session modal ---------- */
+/* Formulier voor het aanmaken van een nieuwe sessie. */
 
 function CreateSessionModal({
   onCancel,
@@ -279,6 +296,7 @@ function CreateSessionModal({
   const [place, setPlace] = useState('Club room')
   const [capacity, setCapacity] = useState(4)
 
+  // Controleert verplichte velden en zet de lokale datum en tijd om naar een ISO-tijdstip.
   function submit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim() || !place.trim() || !date) return
@@ -363,7 +381,7 @@ function CreateSessionModal({
   )
 }
 
-/* ---------- Session detail modal ---------- */
+/* Sessiegegevens, deelnemers, wachtlijst en beschikbare beheeracties. */
 
 function SessionDetailModal({
   detail,
@@ -382,6 +400,7 @@ function SessionDetailModal({
   onChanged: (d: SessionDetail) => void
   run: <T>(fn: () => Promise<T>, onError?: (e: ApiError) => void) => Promise<T | undefined>
 }) {
+  // Bepaalt welke knoppen zichtbaar zijn; de backend controleert de rechten opnieuw.
   const isHost = detail && currentMember?.id === detail.hostId
   const canCancel = isHost || currentMember?.isCommittee === true
 
@@ -421,41 +440,49 @@ function SessionDetailModal({
             </div>
           </div>
 
+          {/* Actieve sessies bieden aanmelden of het intrekken van de eigen aanmelding. */}
           {!detail.isCancelled && currentMember && (
             <SignupActions
               detail={detail}
               signedUp={detail.currentMemberSignedUp}
               games={games}
               onSignUp={async (gameId) => {
+                // Stuurt de aanmelding en het optionele meegenomen spel naar de API.
                 const d = await run(() => api.signUp(detail.id, gameId))
                 if (d) onChanged(d)
               }}
               onCancelSignup={async () => {
+                // Verwijdert de eigen aanmelding via de API.
                 const d = await run(() => api.cancelSignup(detail.id))
                 if (d) onChanged(d)
               }}
             />
           )}
 
+          {/* Alleen de host ziet wijzigen, hostschap overdragen en annuleren. */}
           {isHost && !detail.isCancelled && (
             <HostControls
               detail={detail}
               members={members}
               onUpdated={async (input) => {
+                // Slaat gewijzigde sessiegegevens op via de API.
                 const d = await run(() => api.updateSession(detail.id, input))
                 if (d) onChanged(d)
               }}
               onTransfer={async (newHostId) => {
+                // Draagt het hostschap over via de API.
                 const d = await run(() => api.transferHost(detail.id, newHostId))
                 if (d) onChanged(d)
               }}
               onCancel={async () => {
+                // Markeert de sessie via de API als geannuleerd.
                 const d = await run(() => api.cancelSession(detail.id))
                 if (d) onChanged(d)
               }}
             />
           )}
 
+          {/* Een commissielid kan ook een sessie annuleren waarvan het geen host is. */}
           {canCancel && isHost === false && !detail.isCancelled && currentMember?.isCommittee && (
             <div className="card">
               <div className="card__body">
@@ -478,6 +505,7 @@ function SessionDetailModal({
             </div>
           )}
 
+          {/* Filtert bevestigde deelnemers uit de ontvangen aanmeldingen. */}
           <div className="card">
             <div className="card__header">
               <h3>Confirmed seats ({detail.signups.filter((s) => s.status === CONFIRMED).length})</h3>
@@ -497,6 +525,7 @@ function SessionDetailModal({
             </div>
           </div>
 
+          {/* Toont wachtende deelnemers in de volgorde die de API teruggeeft. */}
           {detail.signups.filter((s) => s.status === WAITING).length > 0 && (
             <div className="card">
               <div className="card__header">
@@ -520,6 +549,7 @@ function SessionDetailModal({
             </div>
           )}
 
+          {/* Toont meegenomen spellen; de API berekent de waarde van gameFits. */}
           {detail.signups.filter((s) => s.broughtGame).length > 0 && (
             <div className="card">
               <div className="card__header">
@@ -560,6 +590,7 @@ function SessionDetailModal({
   )
 }
 
+// Eén bevestigde deelnemer met het optionele spel en de spelerswaarschuwing.
 function SignupRow({ signup }: { signup: Signup }) {
   return (
     <li className="signup-row">
@@ -579,6 +610,7 @@ function SignupRow({ signup }: { signup: Signup }) {
   )
 }
 
+// Toont voor het huidige lid een aanmeldformulier of de mogelijkheid om zich af te melden.
 function SignupActions({
   detail,
   signedUp,
@@ -592,6 +624,7 @@ function SignupActions({
   onSignUp: (gameId: string | null) => void
   onCancelSignup: () => void
 }) {
+  // Een lege spelkeuze wordt bij aanmelden als null naar de API gestuurd.
   const [gameId, setGameId] = useState('')
 
   if (signedUp) {
@@ -652,6 +685,7 @@ function SignupActions({
   )
 }
 
+// Beheerformulier voor sessiegegevens, overdracht van het hostschap en annuleren.
 function HostControls({
   detail,
   members,
@@ -665,6 +699,7 @@ function HostControls({
   onTransfer: (newHostId: string) => void
   onCancel: () => void
 }) {
+  // Houdt de formulierwaarden bij totdat de host ze opslaat.
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState(detail.title)
   const [date, setDate] = useState(detail.startAt.slice(0, 10))
@@ -673,6 +708,7 @@ function HostControls({
   const [capacity, setCapacity] = useState(detail.capacity)
   const [transferTarget, setTransferTarget] = useState('')
 
+  // Alleen bevestigde deelnemers buiten de huidige host zijn overdrachtskandidaten.
   const confirmedMembers = detail.signups.filter(
     (s) => s.status === CONFIRMED && s.memberId !== detail.hostId,
   )
@@ -687,6 +723,7 @@ function HostControls({
           <form
             onSubmit={(e) => {
               e.preventDefault()
+              // Zet de ingevoerde datum en tijd om en geeft de wijzigingen door aan de API-callback.
               const startAt = new Date(`${date}T${time}:00`).toISOString()
               onUpdated({ title, startAt, place, capacity })
               setEditing(false)
@@ -769,6 +806,7 @@ function HostControls({
             onSubmit={(e) => {
               e.preventDefault()
               if (transferTarget) {
+                // Geeft het gekozen lid door en wist daarna de selectie.
                 onTransfer(transferTarget)
                 setTransferTarget('')
               }
@@ -807,18 +845,21 @@ function HostControls({
   )
 }
 
+// Zet verschillende soorten fouten om naar een leesbare melding.
 function messageOf(e: unknown): string {
   if (e instanceof ApiError) return e.message
   if (e instanceof Error) return e.message
   return 'Something went wrong.'
 }
 
+// Toont een ISO-datum in de lokale datumnotatie van de browser.
 function formatDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
+// Toont een ISO-tijdstip in de lokale tijdzone van de browser.
 function formatTime(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
