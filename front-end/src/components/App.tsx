@@ -13,6 +13,8 @@ import CollectionRecordForm from "../pages/CollectionRecordForm";
 import ShelvesPage from "../pages/ShelvesPage";
 import ShelfForm from "../pages/ShelfForm";
 import ShelfDetailPage from "../pages/ShelfDetailPage";
+import WishlistPage from '../pages/WishlistPage'
+import WishlistDetailsPage from '../pages/WishlistDetailsPage.tsx'
 
 import './App.css'
 
@@ -23,14 +25,21 @@ type Route =
   | 'shelf-form'
   | 'shelf-detail'
   | 'shelves'
+  | 'wishlist-detail'
   | 'home'
 
 function pathToRoute(path: string): Route {
-  const segment = path.replace(/^\//, '').split('/')[0] ?? ''
+  const segments = path.split('/').filter(Boolean)
+  const segment = segments[0] ?? ''
 
   // Collection detail pages use the /collections/:id URL structure.
   if (segment === 'collections' && path.split('/').filter(Boolean).length > 1) {
     return 'collection-detail'
+  }
+
+  // Wishlist detail pages
+  if (segment === 'wishlists' && segments.length > 1) {
+    return 'wishlist-detail'
   }
 
   if (segment === 'collection-record') {
@@ -136,14 +145,16 @@ function App() {
   }
 
   const currentPage: PageId =
-  route === 'home' ||
-  route === 'collection-detail' ||
-  route === 'collection-record-form' ||
-  route === 'shelf-form' ||
-  route === 'shelf-detail' ||
-  route === 'shelves'
-    ? 'collections'
-    : route
+    route === 'wishlist-detail'
+      ? 'wishlists'
+      : route === 'home' ||
+          route === 'collection-detail' ||
+          route === 'collection-record-form' ||
+          route === 'shelf-form' ||
+          route === 'shelf-detail' ||
+          route === 'shelves'
+        ? 'collections'
+        : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
@@ -167,6 +178,10 @@ function App() {
         ) : (
           <LendingListPage />
         )
+      ) : route === 'wishlists' ? (
+        <WishlistPage />
+      ) : route === 'wishlist-detail' ? (
+        <WishlistDetailsPage />
       ) : (
         <MockPage page={currentPage} member={member} />
       )}
