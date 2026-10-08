@@ -106,3 +106,34 @@
 .wishlist-details__empty p {
   margin: 1rem 0 1.5rem;
 }
+
+/* Tablet and mobile */
+@media (max-width: 800px) {
+  .wishlist-details__card {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-details__cover {
+    min-height: 240px;
+    font-size: 5rem;
+  }
+
+  .wishlist-details__content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .wishlist-details__cover {
+    min-height: 180px;
+    font-size: 4rem;
+  }
+
+  .wishlist-details__content {
+    padding: 1rem;
+  }
+
+  .wishlist-details__actions .button {
+    width: 100%;
+  }
+}
