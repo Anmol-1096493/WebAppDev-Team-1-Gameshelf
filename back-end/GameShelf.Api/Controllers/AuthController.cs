@@ -17,7 +17,7 @@ public sealed class AuthController(GameShelfDbContext db, TokenService tokens) :
 {
     /// <summary>Checks a member's credentials and returns a bearer token.</summary>
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken ct)
+    public async Task<ActionResult<LoginResultDto>> Login([FromBody] LoginDto dto, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(dto.UserName) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest(new { error = "Username and password are required." });
@@ -33,7 +33,7 @@ public sealed class AuthController(GameShelfDbContext db, TokenService tokens) :
     /// <summary>Returns the member identified by the bearer token.</summary>
     [Authorize]
     [HttpGet("me")]
-    public async Task<IActionResult> Me(CancellationToken ct)
+    public async Task<ActionResult<MemberDto>> Me(CancellationToken ct)
     {
         var id = CurrentMemberId;
         if (id is null) return Unauthorized();

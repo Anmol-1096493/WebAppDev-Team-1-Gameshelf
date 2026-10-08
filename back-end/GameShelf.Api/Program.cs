@@ -1,11 +1,31 @@
 using GameShelf.Api.Data;
 using GameShelf.Api.Services;
+using GameShelf.Api.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "GameShelf API",
+        Version = "v1",
+        Description = "Authentication and game session endpoints for GameShelf."
+    });
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "GameShelf.Api.xml"));
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        Description = "Enter the token returned by POST /api/auth/login."
+    });
+    options.OperationFilter<BearerSecurityOperationFilter>();
+});
 
 // SQLite database stored in gameshelf.db next to the project file.
 var dbPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "gameshelf.db");
@@ -30,6 +50,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -41,10 +67,12 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedAsync(db);
 }
 
-// Eenvoudige controle om te zien of de API lokaal draait.
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+// Lightweight health check for local development.
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
+    .WithName("Health")
+    .WithSummary("Checks whether the API is running.");
 
-// De controllers voor de GameShelf-modules worden later toegevoegd.
+// Map authentication, session, member and game controllers.
 app.MapControllers();
 
 app.Run();

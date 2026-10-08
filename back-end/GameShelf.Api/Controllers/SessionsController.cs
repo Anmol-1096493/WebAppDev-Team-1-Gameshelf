@@ -22,6 +22,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
     }
 
     /// <summary>Creates a session hosted by the signed-in member.</summary>
+    [ProducesResponseType(typeof(SessionDetailDto), StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<ActionResult<SessionDetailDto>> Create([FromBody] CreateSessionDto dto, CancellationToken ct)
     {

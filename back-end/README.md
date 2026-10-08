@@ -1,6 +1,6 @@
 # GameShelf backend
 
-Leeg ASP.NET Core Web API-project in C#, gericht op **.NET 10**. De API gebruikt controllers; de controllers voor de clubonderdelen worden later toegevoegd. Er zijn nog geen database, authenticatie of koppelingen met de frontend nodig.
+ASP.NET Core Web API in C#, gericht op **.NET 10**. De API gebruikt controllers, SQLite en bearer-tokenauthenticatie voor de sessiefuncties.
 
 ## Wat heb je nodig?
 
@@ -9,7 +9,7 @@ Leeg ASP.NET Core Web API-project in C#, gericht op **.NET 10**. De API gebruikt
 | .NET | .NET 10 SDK | .NET 10 SDK |
 | Editor | Visual Studio 2026, bijgewerkt naar de nieuwste versie | Visual Studio Code |
 | Editorondersteuning | Workload **ASP.NET and web development** | Microsoft-extensie **C# Dev Kit** |
-| Database / Docker / Node.js | Niet nodig voor de backend | Niet nodig voor de backend |
+| Database / Docker / Node.js | SQLite wordt automatisch aangemaakt; Docker en Node.js zijn niet nodig voor de backend | SQLite wordt automatisch aangemaakt; Docker en Node.js zijn niet nodig voor de backend |
 
 Installeer de **SDK**, niet alleen de Runtime. De SDK bevat de tools om de API te bouwen en te draaien. Download: [.NET 10 SDK voor Windows en macOS](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
 
@@ -75,7 +75,9 @@ Verwachte HTTP-status: `200 OK`. Verwachte JSON:
 {"status":"ok"}
 ```
 
-De route `/` geeft voorlopig `404`: er is nog geen API-homepage. Er is ook nog geen Swagger-interface. Het bestand `GameShelf.Api/GameShelf.Api.http` bevat een voorbeeldrequest; je kunt het met een HTTP-client openen, maar de browser is voldoende voor deze check.
+De route `/` geeft voorlopig `404`. In de ontwikkelomgeving vind je de interactieve Swagger-documentatie op `http://localhost:5080/swagger` en het OpenAPI-document op `http://localhost:5080/swagger/v1/swagger.json`.
+
+Gebruik eerst `POST /api/auth/login` in Swagger, bijvoorbeeld met het ontwikkelaccount `jeffrey` en wachtwoord `gameshelf123`. Kopieer de waarde van `token` uit het antwoord naar **Authorize**; typ alleen de token, zonder `Bearer` ervoor. Daarna kun je de beveiligde sessie-, leden- en spellenroutes uitproberen. Swagger is alleen ingeschakeld in de `Development`-omgeving.
 
 ### Automatisch herstarten tijdens ontwikkelen
 
@@ -97,19 +99,20 @@ back-end/
 ├── .vscode/
 │   └── extensions.json
 └── GameShelf.Api/
-    ├── Controllers/             # toekomstige API-controllers
+    ├── Controllers/             # auth-, sessie-, leden- en spellenroutes
+    ├── Swagger/                 # bearer-tokenmarkering in het OpenAPI-document
     ├── Properties/
     │   └── launchSettings.json  # lokaal startprofiel en poort
     ├── GameShelf.Api.csproj
     ├── GameShelf.Api.http
-    ├── Program.cs              # services, middleware en routes
+    ├── Program.cs              # services, middleware, Swagger en routes
     ├── appsettings.json
     └── appsettings.Development.json
 ```
 
 `global.json` laat het team een .NET 10 SDK gebruiken en staat nieuwere stabiele .NET 10 feature bands en patches toe. De benodigde basisversie is `10.0.100`. Buildbestanden in `bin/` en `obj/` worden via de bestaande `.gitignore` uitgesloten.
 
-De React-frontend blijft een apart project in `../front-end/` en start in een tweede terminal met `npm run dev`. API-calls en CORS worden toegevoegd wanneer we de frontend en backend koppelen.
+De React-frontend blijft een apart project in `../front-end/` en start in een tweede terminal met `npm run dev`. De sessiepagina gebruikt de API via `../front-end/src/api.ts`.
 
 ## Veelvoorkomende problemen
 
