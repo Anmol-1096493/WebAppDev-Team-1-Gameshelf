@@ -15,6 +15,7 @@ public sealed record LoginResultDto(MemberDto Member, string Token);
 [Route("api/auth")]
 public sealed class AuthController(GameShelfDbContext db, TokenService tokens) : ControllerBase
 {
+    /// <summary>Checks a member's credentials and returns a bearer token.</summary>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken ct)
     {
@@ -29,6 +30,7 @@ public sealed class AuthController(GameShelfDbContext db, TokenService tokens) :
         return Ok(new LoginResultDto(new MemberDto(member.Id, member.Name, member.IsCommittee), token));
     }
 
+    /// <summary>Returns the member identified by the bearer token.</summary>
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> Me(CancellationToken ct)

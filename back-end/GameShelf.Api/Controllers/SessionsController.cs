@@ -1,36 +1,19 @@
-using System.Security.Claims;
 using GameShelf.Api.Dtos;
 using GameShelf.Api.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameShelf.Api.Controllers;
-
-/// <summary>
-/// Base class that resolves the signed-in member from the auth cookie. All
-/// session endpoints require an authenticated member.
-/// </summary>
-[Authorize]
-public abstract class AuthenticatedController : ControllerBase
-{
-    protected Guid CurrentMemberId
-    {
-        get
-        {
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return Guid.TryParse(id, out var parsed) ? parsed : Guid.Empty;
-        }
-    }
-}
 
 [ApiController]
 [Route("api/sessions")]
 public sealed class SessionsController(SessionService service) : AuthenticatedController
 {
+    /// <summary>Lists sessions with seat counts and waiting-list totals.</summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SessionSummaryDto>>> GetAll(CancellationToken ct)
         => Ok(await service.ListSessionsAsync(ct));
 
+    /// <summary>Gets one session, including signups and the current member's status.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<SessionDetailDto>> Get(Guid id, CancellationToken ct)
     {
@@ -38,6 +21,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (NotFoundException) { return NotFound(); }
     }
 
+    /// <summary>Creates a session hosted by the signed-in member.</summary>
     [HttpPost]
     public async Task<ActionResult<SessionDetailDto>> Create([FromBody] CreateSessionDto dto, CancellationToken ct)
     {
@@ -50,6 +34,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (ValidationException ex) { return BadRequest(new { error = ex.Message }); }
     }
 
+    /// <summary>Changes session details; only the host may do this.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<SessionDetailDto>> Update(Guid id, [FromBody] UpdateSessionDto dto, CancellationToken ct)
     {
@@ -60,6 +45,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (ValidationException ex) { return BadRequest(new { error = ex.Message }); }
     }
 
+    /// <summary>Cancels a session; allowed for its host or a committee member.</summary>
     [HttpPost("{id:guid}/cancel")]
     public async Task<ActionResult<SessionDetailDto>> Cancel(Guid id, CancellationToken ct)
     {
@@ -69,6 +55,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (ConflictException ex) { return Conflict(new { error = ex.Message }); }
     }
 
+    /// <summary>Transfers hosting to a member with a confirmed seat.</summary>
     [HttpPost("{id:guid}/transfer-host")]
     public async Task<ActionResult<SessionDetailDto>> TransferHost(Guid id, [FromBody] TransferHostDto dto, CancellationToken ct)
     {
@@ -79,6 +66,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (ConflictException ex) { return Conflict(new { error = ex.Message }); }
     }
 
+    /// <summary>Signs up the current member, or puts them on the waiting list if full.</summary>
     [HttpPost("{id:guid}/signups")]
     public async Task<ActionResult<SessionDetailDto>> SignUp(Guid id, [FromBody] SignUpDto? dto, CancellationToken ct)
     {
@@ -89,6 +77,7 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (ValidationException ex) { return BadRequest(new { error = ex.Message }); }
     }
 
+    /// <summary>Removes the current member's signup and promotes the next waiting member.</summary>
     [HttpDelete("{id:guid}/signups")]
     public async Task<ActionResult<SessionDetailDto>> CancelSignup(Guid id, CancellationToken ct)
     {
@@ -96,22 +85,4 @@ public sealed class SessionsController(SessionService service) : AuthenticatedCo
         catch (NotFoundException) { return NotFound(); }
         catch (ConflictException ex) { return Conflict(new { error = ex.Message }); }
     }
-}
-
-[ApiController]
-[Route("api/members")]
-public sealed class MembersController(SessionService service) : AuthenticatedController
-{
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetAll(CancellationToken ct)
-        => Ok(await service.ListMembersAsync(ct));
-}
-
-[ApiController]
-[Route("api/games")]
-public sealed class GamesController(SessionService service) : AuthenticatedController
-{
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<GameDto>>> GetAll(CancellationToken ct)
-        => Ok(await service.ListGamesAsync(ct));
 }

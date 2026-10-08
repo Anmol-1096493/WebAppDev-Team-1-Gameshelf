@@ -120,6 +120,7 @@ export class ApiError extends Error {
 }
 
 export const auth = {
+  // Sign in with a username and password; store the returned bearer token.
   login: async (userName: string, password: string) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
@@ -135,36 +136,47 @@ export const auth = {
     setToken(body.token)
     return body.member
   },
+  // Restore the signed-in member using the stored token.
   me: () => request<Member>('/api/auth/me'),
 }
 
 export const api = {
+  // Members available as potential session hosts.
   listMembers: () => request<Member[]>('/api/members'),
+  // Catalogue games a member can bring to a session.
   listGames: () => request<Game[]>('/api/games'),
+  // Session cards with confirmed and waiting counts.
   listSessions: () => request<SessionSummary[]>('/api/sessions'),
+  // Full session details and the current member's signup status.
   getSession: (id: string) => request<SessionDetail>(`/api/sessions/${id}`),
+  // Host a new session.
   createSession: (input: CreateSessionInput) =>
     request<SessionDetail>('/api/sessions', {
       method: 'POST',
       body: JSON.stringify(input),
     }),
+  // Change a session's details as its host.
   updateSession: (id: string, input: UpdateSessionInput) =>
     request<SessionDetail>(`/api/sessions/${id}`, {
       method: 'PUT',
       body: JSON.stringify(input),
     }),
+  // Cancel a session as its host or a committee member.
   cancelSession: (id: string) =>
     request<SessionDetail>(`/api/sessions/${id}/cancel`, { method: 'POST' }),
+  // Hand hosting to a member with a confirmed seat.
   transferHost: (id: string, newHostId: string) =>
     request<SessionDetail>(`/api/sessions/${id}/transfer-host`, {
       method: 'POST',
       body: JSON.stringify({ newHostId }),
     }),
+  // Claim a seat, or join the waiting list when the session is full.
   signUp: (id: string, gameId: string | null) =>
     request<SessionDetail>(`/api/sessions/${id}/signups`, {
       method: 'POST',
       body: JSON.stringify({ gameId }),
     }),
+  // Leave a session; the next waiting member gets any freed seat.
   cancelSignup: (id: string) =>
     request<SessionDetail>(`/api/sessions/${id}/signups`, { method: 'DELETE' }),
 }
