@@ -13,7 +13,10 @@ import CollectionRecordForm from "../pages/CollectionRecordForm";
 import ShelvesPage from "../pages/ShelvesPage";
 import ShelfForm from "../pages/ShelfForm";
 import ShelfDetailPage from "../pages/ShelfDetailPage";
-
+import WishlistPage from '../pages/WishlistPage'
+import WishlistDetailsPage from '../pages/WishlistDetailsPage'
+import TradeOfferFormPage from '../pages/TradeOfferFormPage'
+import TradeOffersPage from '../pages/TradeOffersPage'
 import './App.css'
 
 type Route =
@@ -23,14 +26,42 @@ type Route =
   | 'shelf-form'
   | 'shelf-detail'
   | 'shelves'
+  | 'wishlist-detail'
+  | 'trade-offer-form'
+  | 'trade-offers'
   | 'home'
 
 function pathToRoute(path: string): Route {
-  const segment = path.replace(/^\//, '').split('/')[0] ?? ''
+  const segments = path.split('/').filter(Boolean)
+  const segment = segments[0] ?? ''
 
   // Collection detail pages use the /collections/:id URL structure.
-  if (segment === 'collections' && path.split('/').filter(Boolean).length > 1) {
+  if (segment === 'collections' && segments.length > 1) {
     return 'collection-detail'
+  }
+
+  // Trade offer form: /wishlists/:id/offer
+  if (
+    segment === 'wishlists' &&
+    segments.length === 3 &&
+    /^\d+$/.test(segments[1]) &&
+    segments[2] === 'offer'
+  ) {
+    return 'trade-offer-form'
+  }
+
+  // Wishlist detail: /wishlists/:id
+  if (
+    segment === 'wishlists' &&
+    segments.length === 2 &&
+    /^\d+$/.test(segments[1])
+  ) {
+    return 'wishlist-detail'
+  }
+
+  // Trade offers overview: /trade-offers
+  if (segment === 'trade-offers' && segments.length === 1) {
+    return 'trade-offers'
   }
 
   if (segment === 'collection-record') {
@@ -91,7 +122,16 @@ function App() {
       const target = (e.target as HTMLElement)?.closest('a')
       if (!target) return
       const href = target.getAttribute('href') ?? ''
-      if (!href.startsWith('/') || href.startsWith('//')) return
+      if (!href.startsWith('/') || href.startsWith('//')) {
+        return
+      }
+
+      if (target.hasAttribute('download')) return
+
+      if (target.target && target.target !== '_self') {
+        return
+      }
+
       e.preventDefault()
       const url = new URL(target.href, window.location.href)
       if (url.pathname !== window.location.pathname) {
@@ -135,15 +175,20 @@ function App() {
     )
   }
 
+  //Wishlist & Trading routes under Wishlists menu item.
   const currentPage: PageId =
-  route === 'home' ||
-  route === 'collection-detail' ||
-  route === 'collection-record-form' ||
-  route === 'shelf-form' ||
-  route === 'shelf-detail' ||
-  route === 'shelves'
-    ? 'collections'
-    : route
+    route === 'wishlist-detail' ||
+    route === 'trade-offer-form' ||
+    route === 'trade-offers'
+      ? 'wishlists'
+      : route === 'home' ||
+          route === 'collection-detail' ||
+          route === 'collection-record-form' ||
+          route === 'shelf-form' ||
+          route === 'shelf-detail' ||
+          route === 'shelves'
+        ? 'collections'
+        : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
@@ -167,6 +212,14 @@ function App() {
         ) : (
           <LendingListPage />
         )
+      ) : route === 'wishlists' ? (
+        <WishlistPage />
+      ) : route === 'wishlist-detail' ? (
+        <WishlistDetailsPage />
+      ) : route === 'trade-offer-form' ? (
+        <TradeOfferFormPage />
+      ) : route === 'trade-offers' ? (
+        <TradeOffersPage />
       ) : (
         <MockPage page={currentPage} member={member} />
       )}

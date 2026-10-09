@@ -1,0 +1,153 @@
+.wishlist-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.wishlist-page-header {
+  margin-bottom: 1.5rem;
+}
+
+.wishlist-page-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.wishlist-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.wishlist-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.wishlist-section-heading h2 {
+  margin-bottom: 0.4rem;
+}
+
+.wishlist-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.wishlist-filters .form-field {
+  min-width: 0;
+}
+
+.wishlist-filters .form-control {
+  width: 100%;
+}
+
+.wishlist-count {
+  margin-bottom: 1.25rem;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wishlist-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.wishlist-card-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  background: #eef2fa;
+  font-size: 3.5rem;
+}
+
+.wishlist-card h3 {
+  overflow-wrap: anywhere;
+}
+
+.wishlist-card-body {
+  flex: 1;
+}
+
+.wishlist-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wishlist-card-note {
+  margin-top: 1.25rem;
+}
+
+.wishlist-card-note strong {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.wishlist-card-note p {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.wishlist-card-footer {
+  margin-top: auto;
+}
+
+.wishlist-card-footer .button {
+  width: 100%;
+  text-align: center;
+}
+
+.wishlist-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.wishlist-empty p {
+  margin: 1rem 0;
+}
+
+@media (max-width: 1000px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .wishlist-tabs {
+    flex-direction: column;
+  }
+
+  .wishlist-tabs .button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .wishlist-section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wishlist-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: 1fr;
+  }
+}
