@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import WishlistItemModal, {
+  type WishlistDraft,
+} from './WishlistItemModal'
 import './WishlistPage.css'
 
 export type WishlistItem = {
@@ -26,7 +29,7 @@ export const wishlistItems: WishlistItem[] = [
     memberName: 'Noah',
     gameTitle: 'Spirit Island',
     priority: 'Medium',
-    notes: 'Would love to trade for this cooperative board game.',
+    notes: 'Would love to try this cooperative board game.',
     isFulfilled: false,
     emoji: '🏝️',
   },
@@ -35,7 +38,7 @@ export const wishlistItems: WishlistItem[] = [
     memberName: 'Sophie',
     gameTitle: 'Terraforming Mars',
     priority: 'Low',
-    notes: 'I finally found someone willing to trade this game!',
+    notes: 'Found a copy through another member!',
     isFulfilled: true,
     emoji: '🪐',
   },
@@ -62,19 +65,46 @@ export const wishlistItems: WishlistItem[] = [
     memberName: 'Olivia',
     gameTitle: 'Azul',
     priority: 'Low',
-    notes: 'Interested in the original version of Azul.',
+    notes: 'The original Azul game would be great.',
     isFulfilled: false,
     emoji: '🟦',
   },
 ]
 
+const gameEmojis: Record<string, string> = {
+  'Ark Nova': '🦁',
+  'Spirit Island': '🏝️',
+  'Terraforming Mars': '🪐',
+  Wingspan: '🪶',
+  Catan: '🏔️',
+  Azul: '🟦',
+  'Ticket to Ride': '🚂',
+  Carcassonne: '🏰',
+}
+
 export default function WishlistPage() {
+  const [tab, setTab] = useState<'community' | 'mine'>('community')
+  const [myItems, setMyItems] = useState<WishlistItem[]>([
+    {
+      id: 101,
+      memberName: 'You (demo)',
+      gameTitle: 'Ticket to Ride',
+      priority: 'High',
+      notes: 'Looking for the European edition.',
+      isFulfilled: false,
+      emoji: '🚂',
+    },
+  ])
+
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('all')
   const [priority, setPriority] = useState('all')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState<WishlistItem | null>(null)
 
-  const filteredItems = wishlistItems.filter((item) => {
-    const query = search.trim().toLowerCase()
+  const items = tab === 'community' ? wishlistItems : myItems
+  const filteredItems = items.filter((item) => {
+    const query = search.toLowerCase().trim()
 
     const matchesSearch =
       item.gameTitle.toLowerCase().includes(query) ||
@@ -92,78 +122,169 @@ export default function WishlistPage() {
     return matchesSearch && matchesStatus && matchesPriority
   })
 
-  function resetFilters() {
+  function changeTab(next: 'community' | 'mine') {
+    setTab(next)
     setSearch('')
     setStatus('all')
     setPriority('all')
   }
 
+  function openAdd() {
+    setEditingItem(null)
+    setModalOpen(true)
+  }
+
+  function openEdit(item: WishlistItem) {
+    setEditingItem(item)
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingItem(null)
+  }
+
+  function saveItem(draft: WishlistDraft) {
+    if (editingItem) {
+      setMyItems((current) =>
+        current.map((item) =>
+          item.id === editingItem.id
+            ? {
+                ...item,
+                gameTitle: draft.gameTitle,
+                priority: draft.priority,
+                notes: draft.notes,
+                emoji: gameEmojis[draft.gameTitle] ?? '🎲',
+              }
+            : item
+        )
+      )
+    } else {
+      setMyItems((current) => [
+        ...current,
+        {
+          id: Date.now(),
+          memberName: 'You (demo)',
+          gameTitle: draft.gameTitle,
+          priority: draft.priority,
+          notes: draft.notes,
+          isFulfilled: false,
+          emoji: gameEmojis[draft.gameTitle] ?? '🎲',
+        },
+      ])
+    }
+
+    closeModal()
+  }
+
   return (
     <section className="wishlist-page" aria-labelledby="page-title">
-      <header className="wishlist-page__header">
+      <header className="wishlist-page-header">
         <p className="eyebrow">GameShelf Community</p>
         <h1 id="page-title">Wishlists</h1>
-        <p className="text-muted"> Discover which board games other club members are looking for.
-          Browse their wishes and find opportunities to trade.
+        <p className="text-muted">
+          Discover games other members want and manage your own wishlist.
         </p>
       </header>
 
-      <div className="card wishlist-filters">
-        <div className="wishlist-filters__grid">
-          <label className="form-field">
-            <span className="form-label">Search wishlists</span>
-            <input
-              type="search"
-              className="form-control"
-              placeholder="Search games or members..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </label>
+      <div className="wishlist-tabs" role="group" aria-label="Wishlist views">
+        <button
+          type="button"
+          className={`button ${
+            tab === 'community' ? 'button--primary' : 'button--secondary'
+          }`}
+          aria-pressed={tab === 'community'}
+          onClick={() => changeTab('community')}
+        >
+          Community Wishlists
+        </button>
 
-          <label className="form-field">
-            <span className="form-label">Status</span>
-            <select
-              className="form-control"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="all">All wishes</option>
-              <option value="open">Open</option>
-              <option value="fulfilled">Fulfilled</option>
-            </select>
-          </label>
+        <button
+          type="button"
+          className={`button ${
+            tab === 'mine' ? 'button--primary' : 'button--secondary'
+          }`}
+          aria-pressed={tab === 'mine'}
+          onClick={() => changeTab('mine')}
+        >
+          My Wishlist
+        </button>
 
-          <label className="form-field">
-            <span className="form-label">Priority</span>
-            <select
-              className="form-control"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-            >
-              <option value="all">All priorities</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </label>
-        </div>
+        <a href="/trade-offers" className="button button--secondary">
+          My Trade Offers
+        </a>
       </div>
 
-      <div className="wishlist-results-header">
+      <div className="wishlist-section-heading">
         <div>
-          <h2>Members' wishes</h2>
+          <h2>{tab === 'community' ? "Members' Wishes" : 'My Wishlist'}</h2>
           <p className="text-muted">
-            {filteredItems.length} wishlist item(s) found
+            {tab === 'community'
+              ? 'Public wishlist items from GameShelf members.'
+              : 'Manage the board games you would like to have.'}
           </p>
         </div>
+
+        {tab === 'mine' && (
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={openAdd}
+          >
+            + Add Wishlist Item
+          </button>
+        )}
       </div>
+
+      <div className="card wishlist-filters">
+        <label className="form-field">
+          <span className="form-label">Search games or members</span>
+          <input
+            type="search"
+            className="form-control"
+            placeholder="Search wishlists..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
+
+        <label className="form-field">
+          <span className="form-label">Status</span>
+          <select
+            className="form-control"
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+          >
+            <option value="all">All statuses</option>
+            <option value="open">Open</option>
+            <option value="fulfilled">Fulfilled</option>
+          </select>
+        </label>
+
+        <label className="form-field">
+          <span className="form-label">Priority</span>
+          <select
+            className="form-control"
+            value={priority}
+            onChange={(event) => setPriority(event.target.value)}
+          >
+            <option value="all">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+      </div>
+
+      <p className="wishlist-count text-muted">
+        {filteredItems.length} wishlist item(s) found
+      </p>
 
       {filteredItems.length > 0 ? (
         <ul className="wishlist-grid" role="list">
           {filteredItems.map((item) => (
-            <li key={item.id} className="card wishlist-card">
-              <div className="wishlist-card__cover" aria-hidden="true">
+            <li className="card wishlist-card" key={item.id}>
+              <div className="wishlist-card-cover" aria-hidden="true">
                 {item.emoji}
               </div>
 
@@ -171,25 +292,14 @@ export default function WishlistPage() {
                 <p className="eyebrow">
                   Wishlist by {item.memberName}
                 </p>
-                <h3 className="wishlist-card__title">
-                  {item.gameTitle}
-                </h3>
+                <h3>{item.gameTitle}</h3>
               </div>
 
-              <div className="card__body wishlist-card__body">
-                <div className="cluster cluster--tight">
-                  <span
-                    className={`badge ${
-                      item.priority === 'High'
-                        ? 'badge--highlight'
-                        : item.priority === 'Medium'
-                          ? 'badge--available'
-                          : 'badge--info'
-                    }`}
-                  >
+              <div className="card__body wishlist-card-body">
+                <div className="wishlist-badges">
+                  <span className="badge badge--highlight">
                     {item.priority} priority
                   </span>
-
                   <span
                     className={`badge ${
                       item.isFulfilled
@@ -201,41 +311,61 @@ export default function WishlistPage() {
                   </span>
                 </div>
 
-                <div className="wishlist-card__note">
+                <div className="wishlist-card-note">
                   <strong>Member's note</strong>
-                  <p className="text-muted">{item.notes}</p>
+                  <p className="text-muted">
+                    {item.notes || 'No additional notes.'}
+                  </p>
                 </div>
               </div>
 
-              <footer className="card__footer">
-                <a
-                  href={`/wishlists/${item.id}`}
-                  className="button button--secondary"
-                >
-                  View details →
-                </a>
+              <footer className="card__footer wishlist-card-footer">
+                {tab === 'mine' ? (
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() => openEdit(item)}
+                  >
+                    Edit Wishlist Item
+                  </button>
+                ) : (
+                  <a
+                    href={`/wishlists/${item.id}`}
+                    className="button button--secondary"
+                  >
+                    View Details →
+                  </a>
+                )}
               </footer>
             </li>
           ))}
         </ul>
       ) : (
         <div className="card wishlist-empty">
-          <div className="wishlist-empty__icon" aria-hidden="true">
-            🔍
-          </div>
           <h3>No wishlist items found</h3>
           <p className="text-muted">
-            No games match your search or filters.
-            Try changing your search criteria.
+            Try changing your filters or search criteria.
           </p>
           <button
             type="button"
-            className="button button--primary"
-            onClick={resetFilters}
+            className="button button--secondary"
+            onClick={() => {
+              setSearch('')
+              setStatus('all')
+              setPriority('all')
+            }}
           >
-            Clear filters
+            Clear Filters
           </button>
         </div>
+      )}
+
+      {modalOpen && (
+        <WishlistItemModal
+          item={editingItem}
+          onClose={closeModal}
+          onSave={saveItem}
+        />
       )}
     </section>
   )
