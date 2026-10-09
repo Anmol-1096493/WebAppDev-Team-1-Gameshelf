@@ -2,26 +2,19 @@ import { wishlistItems } from './WishlistPage'
 import './WishlistDetailsPage.css'
 
 export default function WishlistDetailsPage() {
-  const pathParts = window.location.pathname.split('/').filter(Boolean)
-  const id = Number(pathParts[1])
-
-  const item = wishlistItems.find((wish) => wish.id === id)
+  const segments = window.location.pathname.split('/').filter(Boolean)
+  const itemId = Number(segments[1])
+  const item = wishlistItems.find((wish) => wish.id === itemId)
 
   if (!item) {
     return (
       <section className="wishlist-details">
-        <a href="/wishlists" className="wishlist-details__back">
-          ← Back to wishlists
-        </a>
-
-        <div className="card wishlist-details__empty">
-          <h1>Wishlist item not found</h1>
+        <a href="/wishlists">← Back to Wishlists</a>
+        <div className="card wishlist-details-not-found">
+          <h1>Wishlist Item Not Found</h1>
           <p className="text-muted">
-            This wishlist item does not exist or is no longer available.
+            The requested wishlist item does not exist.
           </p>
-          <a href="/wishlists" className="button button--primary">
-            Browse wishlists
-          </a>
         </div>
       </section>
     )
@@ -29,101 +22,78 @@ export default function WishlistDetailsPage() {
 
   return (
     <section className="wishlist-details" aria-labelledby="page-title">
-      <a href="/wishlists" className="wishlist-details__back">
-        ← Back to wishlists
+      <a className="wishlist-details-back" href="/wishlists">
+        ← Back to Community Wishlists
       </a>
 
-      <header className="wishlist-details__header">
+      <header className="wishlist-details-header">
         <p className="eyebrow">Community Wishlists</p>
         <h1 id="page-title">Wishlist Item Details</h1>
         <p className="text-muted">
-          View the details of this member's wanted board game.
+          Learn more about this member's wanted board game.
         </p>
       </header>
 
-      <div className="card wishlist-details__card">
-        <div className="wishlist-details__cover" aria-hidden="true">
+      <article className="card wishlist-details-card">
+        <div className="wishlist-details-cover" aria-hidden="true">
           {item.emoji}
         </div>
 
-        <div className="wishlist-details__content">
-          <p className="eyebrow">Wanted board game</p>
-          <h2 className="wishlist-details__title">
-            {item.gameTitle}
-          </h2>
+        <div className="wishlist-details-content">
+          <p className="eyebrow">Wanted Board Game</p>
+          <h2>{item.gameTitle}</h2>
 
           <p className="text-muted">
             Wanted by <strong>{item.memberName}</strong>
           </p>
 
-          <div className="cluster cluster--tight wishlist-details__badges">
-            <span
-              className={`badge ${
-                item.priority === 'High'
-                  ? 'badge--highlight'
-                  : item.priority === 'Medium'
-                    ? 'badge--available'
-                    : 'badge--info'
-              }`}
-            >
-              {item.priority} priority
+          <div className="wishlist-details-badges">
+            <span className="badge badge--highlight">
+              {item.priority} Priority
             </span>
 
             <span
               className={`badge ${
-                item.isFulfilled
-                  ? 'badge--info'
-                  : 'badge--available'
+                item.isFulfilled ? 'badge--info' : 'badge--available'
               }`}
             >
               {item.isFulfilled ? 'Fulfilled' : 'Open'}
             </span>
           </div>
 
-          <div className="wishlist-details__section">
-            <h3>Member's note</h3>
-            <p className="text-muted wishlist-details__note">
+          <div className="wishlist-details-section">
+            <h3>Member's Note</h3>
+            <p className="text-muted wishlist-details-note">
               {item.notes || 'No additional notes provided.'}
             </p>
           </div>
 
-          <div className="wishlist-details__section">
-            <h3>Trade information</h3>
+          <div className="wishlist-details-section">
+            <h3>About Trading</h3>
             <p className="text-muted">
-              GameShelf members can exchange board games in person
-              during club evenings. No payments or shipping are involved.
+              Have this game? You can propose a game-for-game
+              exchange with {item.memberName}.
+              Exchanges take place in person during club evenings.
             </p>
           </div>
 
-          <div className="wishlist-details__actions">
+          <div className="wishlist-details-actions">
             {item.isFulfilled ? (
-              <div className="wishlist-details__notice">
-                <strong>This wish has been fulfilled</strong>
-                <p>
-                  This member has already found the game.
-                  New trade offers are no longer available.
-                </p>
+              <div className="wishlist-details-notice">
+                <strong>This wish has been fulfilled.</strong>
+                <p>No new trade offers can be made for this item.</p>
               </div>
             ) : (
-              <>
-                <p className="text-muted">
-                  Have this game? You can offer it in exchange for
-                  another board game.
-                </p>
-
-                <button
-                  type="button"
-                  className="button button--primary"
-                  disabled
-                  title="Trade offers will be available in a future version"
-                >
-                  Make Trade Offer (Coming soon)
-                </button>
-              </>
+              <a
+                href={`/wishlists/${item.id}/offer`}
+                className="button button--primary"
+              >
+                Make Trade Offer
+              </a>
             )}
           </div>
         </div>
-      </div>
+      </article>
     </section>
   )
 }
