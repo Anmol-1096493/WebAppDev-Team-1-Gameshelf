@@ -10,7 +10,7 @@ import { lendingBoxes } from '../data/lendingBoxes'
 import { CollectionPage } from '../features/collection/CollectionPage'
 import CollectionDetailPage from '../pages/CollectionDetailPage'
 import CollectionRecordForm from "../pages/CollectionRecordForm";
-import ShelvesPage from "../pages/ShelvesPage";
+import { ShelvesPage } from "../features/shelves/ShelvesPage";
 import ShelfForm from "../pages/ShelfForm";
 import ShelfDetailPage from "../pages/ShelfDetailPage";
 
@@ -139,14 +139,15 @@ function App() {
     )
   }
 
-  const currentPage: PageId =
+const currentPage: PageId =
     route === 'home' ||
     route === 'collection-detail' ||
     route === 'collection-record-form' ||
     route === 'shelf-form' ||
-    route === 'shelf-detail' ||
-    route === 'shelves'
+    route === 'shelf-detail'
       ? 'collections'
+      : route === 'shelves'
+      ? 'shelves'
       : route
 
   return (
@@ -160,7 +161,7 @@ function App() {
       ) : route === 'shelf-detail' ? (
         <ShelfDetailPage />
       ) : route === 'shelves' ? (
-        <ShelvesPage />
+        <ShelvesPage onSelectShelf={(id) => navigateTo(`/shelf-detail`)} />
       ) : route === 'collections' ? (
         <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
