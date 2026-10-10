@@ -2,35 +2,49 @@ import type { CollectionGame } from "../../types/CollectionGame";
 
 type CollectionCardProps = {
   game: CollectionGame;
-  onSelect: (id: number) => void;
+  onSelect?: (id: number) => void;
 };
 
-// Card component showing single game details
+// Single game card keeping original classes and layout
 export function CollectionCard({ game, onSelect }: CollectionCardProps) {
   return (
-    <article className="card game-card">
-      <img src={game.image} alt={game.title} className="game-card__image" />
-      <div className="card__body stack">
-        <h3 className="game-card__title">{game.title}</h3>
-        <p className="text-muted">{game.edition}</p>
-
-        <div className="game-card__meta">
-          <span className="badge">{game.status}</span>
-          <span className="text-muted">Plays: {game.playCount}</span>
-          {game.rating && <span className="badge badge--rating">★ {game.rating}</span>}
-        </div>
-
-        {game.notes && <p className="game-card__notes">{game.notes}</p>}
+    <article
+      className="collection-game-card"
+      onClick={() => onSelect?.(game.id)}
+      style={{ cursor: onSelect ? "pointer" : "default" }}
+    >
+      <div className="collection-game-image-wrapper">
+        <img
+          src={game.image}
+          alt={`${game.title} board game`}
+          className="collection-game-image"
+        />
       </div>
 
-      <div className="card__footer">
-        <button
-          type="button"
-          className="button button--secondary"
-          onClick={() => onSelect(game.id)}
-        >
-          View details
-        </button>
+      <div className="collection-game-content">
+        <div className="collection-game-header">
+          <div>
+            <h2>{game.title}</h2>
+            <p className="collection-game-edition">{game.edition}</p>
+          </div>
+
+          <span className="collection-status">{game.status}</span>
+        </div>
+
+        <div className="collection-game-meta">
+          <span>
+            <strong>Plays:</strong> {game.playCount}
+          </span>
+          <span>
+            <strong>Rating:</strong>{" "}
+            {game.rating !== null ? `${game.rating}/10` : "Not rated"}
+          </span>
+        </div>
+
+        <div className="collection-game-notes">
+          <strong>Notes:</strong>
+          <p>{game.notes}</p>
+        </div>
       </div>
     </article>
   );

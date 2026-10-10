@@ -3,20 +3,29 @@ import { CollectionCard } from "./CollectionCard";
 
 type CollectionListProps = {
   games: CollectionGame[];
-  onSelectGame: (id: number) => void;
+  onSelectGame?: (id: number) => void;
 };
 
-// List component mapping games to cards
+// Grid rendering the list of game cards or no-results message
 export function CollectionList({ games, onSelectGame }: CollectionListProps) {
   if (games.length === 0) {
-    return <p className="text-muted">No games found in this collection.</p>;
+    return (
+      <div className="collection-no-results">
+        <h2>No games found</h2>
+        <p>Try a different search term or change the selected status filter.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="games-grid">
+    <section className="collection-game-list" aria-label="Games in your collection">
       {games.map((game) => (
-        <CollectionCard key={game.id} game={game} onSelect={onSelectGame} />
+        <CollectionCard
+          key={game.id}
+          game={game}
+          onSelect={onSelectGame}
+        />
       ))}
-    </div>
+    </section>
   );
 }

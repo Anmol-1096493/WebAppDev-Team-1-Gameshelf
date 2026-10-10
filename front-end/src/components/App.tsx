@@ -7,7 +7,7 @@ import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
-import CollectionPage from '../pages/CollectionPage'
+import { CollectionPage } from '../features/collection/CollectionPage'
 import CollectionDetailPage from '../pages/CollectionDetailPage'
 import CollectionRecordForm from "../pages/CollectionRecordForm";
 import ShelvesPage from "../pages/ShelvesPage";
@@ -38,17 +38,16 @@ function pathToRoute(path: string): Route {
   }
 
   if (segment === 'shelf') {
-  return 'shelf-form'
+    return 'shelf-form'
   }
 
   if (segment === 'shelf-detail') {
-  return 'shelf-detail'
+    return 'shelf-detail'
   }
 
   if (segment === 'shelves') {
-  return 'shelves'
+    return 'shelves'
   }
-
 
   switch (segment) {
     case 'catalogue':
@@ -115,6 +114,11 @@ function App() {
     setMember(null)
   }, [])
 
+  function navigateTo(path: string) {
+    window.history.pushState({}, '', path)
+    setRoute(pathToRoute(path))
+  }
+
   if (!authChecked) {
     return (
       <AppShell currentPage="collections">
@@ -136,14 +140,14 @@ function App() {
   }
 
   const currentPage: PageId =
-  route === 'home' ||
-  route === 'collection-detail' ||
-  route === 'collection-record-form' ||
-  route === 'shelf-form' ||
-  route === 'shelf-detail' ||
-  route === 'shelves'
-    ? 'collections'
-    : route
+    route === 'home' ||
+    route === 'collection-detail' ||
+    route === 'collection-record-form' ||
+    route === 'shelf-form' ||
+    route === 'shelf-detail' ||
+    route === 'shelves'
+      ? 'collections'
+      : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
@@ -158,7 +162,7 @@ function App() {
       ) : route === 'shelves' ? (
         <ShelvesPage />
       ) : route === 'collections' ? (
-        <CollectionPage />
+        <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
         <SessionsPage member={member} />
       ) : route === 'lending' ? (

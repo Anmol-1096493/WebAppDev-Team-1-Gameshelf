@@ -2,58 +2,115 @@ import { useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import type { CollectionGame, CollectionStatus } from "../../types/CollectionGame";
 import { CollectionList } from "./CollectionList";
+import "../../pages/CollectionPage.css";
 
 type CollectionPageProps = {
-  onSelectGame: (id: number) => void;
+  onSelectGame?: (id: number) => void;
 };
 
-// Page component handling data fetching and status filter
-export function CollectionPage({ onSelectGame }: CollectionPageProps) {
-  const [filter, setFilter] = useState<CollectionStatus | "All">("All");
+function EmptyCollectionState() {
+  return (
+    <section className="collection-empty-state" aria-labelledby="empty-collection-title">
+      <h2 id="empty-collection-title">Your collection is empty</h2>
+      <p>You do not have any games in your collection yet. Add a game to get started.</p>
+    </section>
+  );
+}
 
-  // Load games from static JSON mock file
+// Page component connecting the useFetch hook to the original layout
+export function CollectionPage({ onSelectGame }: CollectionPageProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<CollectionStatus | "All">("All");
+
+  // Load games from static JSON mock data
   const { data: games, loading, error } = useFetch<CollectionGame[], CollectionGame[]>(
     "/data/games.json",
     (data) => data
   );
 
   if (loading) {
-    return <p>Loading games...</p>;
+    return (
+      <main className="collection-page">
+        <p className="text-muted">Loading games…</p>
+      </main>
+    );
   }
 
   if (error) {
-    return <p className="alert alert--error">{error}</p>;
+    return (
+      <main className="collection-page">
+        <p className="alert alert--error">{error}</p>
+      </main>
+    );
   }
 
   const allGames = games ?? [];
-  const filteredGames = filter === "All"
-    ? allGames
-    : allGames.filter((g) => g.status === filter);
+
+  // Filter games locally based on search and status dropdown
+  const filteredGames = allGames.filter((game) => {
+    const matchesSearch = game.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || game.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <section className="stack">
-      <header className="page-header">
+    <main className="collection-page">
+      <header className="collection-page-header">
         <div>
-          <p className="eyebrow">Overview</p>
-          <h1>My Game Collection</h1>
+          <p className="collection-page-eyebrow">MY GAMES</p>
+          <h1>My Collection</h1>
+          <p className="collection-page-description">
+            View and manage the games in your personal collection.
+          </p>
         </div>
 
-        {/* Filter buttons */}
-        <div className="filter-group">
-          {(["All", "Played", "In Progress", "Not Played"] as const).map((status) => (
-            <button
-              key={status}
-              type="button"
-              className={`button ${filter === status ? "button--primary" : "button--ghost"}`}
-              onClick={() => setFilter(status)}
-            >
-              {status}
-            </button>
-          ))}
+        <div className="collection-page-header-actions">
+          <a href="/collection-record" className="collection-add-button">
+            Add Game to Collection
+          </a>
+
+          <div className="collection-count">
+            <strong>{filteredGames.length}</strong>
+            <span>Games</span>
+          </div>
         </div>
       </header>
 
-      <CollectionList games={filteredGames} onSelectGame={onSelectGame} />
-    </section>
+      {/* Filter and search controls */}
+      <section className="collection-filters" aria-label="Collection filters">
+        <div className="collection-filter-field">
+          <label htmlFor="collection-search">Search games</label>
+          <input
+            id="collection-search"
+            type="search"
+            placeholder="Search by game name..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </div>
+
+        <div className="collection-filter-field">
+          <label htmlFor="collection-status-filter">Filter by status</label>
+          <select
+            id="collection-status-filter"
+            value={statusFilter}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as CollectionStatus | "All")
+            }
+          >
+            <option value="All">All statuses</option>
+            <option value="Not Played">Not Played</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Played">Played</option>
+          </select>
+        </div>
+      </section>
+
+      {allGames.length === 0 ? (
+        <EmptyCollectionState />
+      ) : (
+        <CollectionList games={filteredGames} onSelectGame={onSelectGame} />
+      )}
+    </main>
   );
 }
