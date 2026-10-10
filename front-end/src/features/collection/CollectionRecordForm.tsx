@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { CollectionStatus } from "../../types/CollectionGame";
-import "../../pages/CollectionRecordForm.css";
+import "./CollectionRecordForm.css";
 
 type CollectionRecordFormProps = {
   mode?: "add" | "edit";

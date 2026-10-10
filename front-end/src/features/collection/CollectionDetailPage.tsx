@@ -1,6 +1,6 @@
 import { useFetch } from "../../hooks/useFetch";
 import type { CollectionGameDetail } from "../../types/CollectionGame";
-import "../../pages/CollectionDetailPage.css";
+import "./CollectionDetailPage.css";
 
 type CollectionDetailPageProps = {
   gameId?: number | string;

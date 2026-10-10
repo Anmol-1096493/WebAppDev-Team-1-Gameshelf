@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { ShelfVisibility } from "../../types/Shelf";
-import "../../pages/ShelfForm.css";
+import "./ShelfForm.css";
 
 type ShelfFormProps = {
   mode?: "create" | "edit";

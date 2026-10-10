@@ -1,6 +1,6 @@
 import { useFetch } from "../../hooks/useFetch";
 import type { Shelf } from "../../types/Shelf";
-import "../../pages/ShelfDetailPage.css";
+import "./ShelfDetailPage.css";
 
 type ShelfDetailPageProps = {
   shelfId?: number;

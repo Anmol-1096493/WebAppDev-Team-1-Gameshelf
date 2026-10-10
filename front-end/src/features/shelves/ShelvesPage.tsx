@@ -1,7 +1,7 @@
 import { useFetch } from "../../hooks/useFetch";
 import type { Shelf } from "../../types/Shelf";
 import { ShelfList } from "./ShelfList";
-import "../../pages/ShelvesPage.css";
+import "./ShelvesPage.css";
 
 type ShelvesPageProps = {
   onSelectShelf?: (id: number) => void;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import type { CollectionGame, CollectionStatus } from "../../types/CollectionGame";
 import { CollectionList } from "./CollectionList";
-import "../../pages/CollectionPage.css";
+import "./CollectionPage.css";
 
 type CollectionPageProps = {
   onSelectGame?: (id: number) => void;
