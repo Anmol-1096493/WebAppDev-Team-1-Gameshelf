@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Azul",
+    "image": "/src/assets/games/azul.svg",
+    "status": "Played",
+    "edition": "English edition · 2015",
+    "playCount": 12,
+    "rating": 9,
+    "notes": "Great game for smaller groups."
+  },
+  {
+    "id": 2,
+    "title": "Carcassonne",
+    "image": "/src/assets/games/carcassonne.svg",
+    "status": "Played",
+    "edition": "English edition · 2015",
+    "playCount": 8,
+    "rating": 8,
+    "notes": "Easy to teach and always fun."
+  },
+  {
+    "id": 3,
+    "title": "Catan",
+    "image": "/src/assets/games/catan.svg",
+    "status": "In Progress",
+    "edition": "English edition · 2015",
+    "playCount": 3,
+    "rating": null,
+    "notes": "Still learning the best strategies."
+  },
+  {
+    "id": 4,
+    "title": "Codenames",
+    "image": "/src/assets/games/codenames.svg",
+    "status": "Not Played",
+    "edition": "English edition · 2015",
+    "playCount": 0,
+    "rating": null,
+    "notes": "Bought recently and waiting for game night."
+  },
+  {
+    "id": 5,
+    "title": "Splendor",
+    "image": "/src/assets/games/splendor.svg",
+    "status": "Played",
+    "edition": "English edition · 2015",
+    "playCount": 6,
+    "rating": 8,
+    "notes": "A quick game that works well with two players."
+  },
+  {
+    "id": 6,
+    "title": "Ticket to Ride",
+    "image": "/src/assets/games/ticket-to-ride.svg",
+    "status": "In Progress",
+    "edition": "English edition · 2015",
+    "playCount": 2,
+    "rating": null,
+    "notes": "Planning to play this again soon."
+  }
+]
