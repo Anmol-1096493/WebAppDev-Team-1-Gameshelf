@@ -8,7 +8,7 @@ import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
 import { CollectionPage } from '../features/collection/CollectionPage'
-import CollectionDetailPage from '../pages/CollectionDetailPage'
+import { CollectionDetailPage } from '../features/collection/CollectionDetailPage'
 import CollectionRecordForm from "../pages/CollectionRecordForm";
 import { ShelvesPage } from "../features/shelves/ShelvesPage";
 import ShelfForm from "../pages/ShelfForm";
@@ -153,7 +153,8 @@ const currentPage: PageId =
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
       {route === 'collection-detail' ? (
-        <CollectionDetailPage />
+        <CollectionDetailPage
+          gameId={window.location.pathname.split('/').filter(Boolean)[1] ?? 1} />
       ) : route === 'collection-record-form' ? (
         <CollectionRecordForm />
       ) : route === 'shelf-form' ? (
