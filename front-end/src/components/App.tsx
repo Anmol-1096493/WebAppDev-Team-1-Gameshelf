@@ -9,10 +9,10 @@ import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
 import { CollectionPage } from '../features/collection/CollectionPage'
 import { CollectionDetailPage } from '../features/collection/CollectionDetailPage'
-import CollectionRecordForm from "../pages/CollectionRecordForm";
+import { CollectionRecordForm } from "../features/collection/CollectionRecordForm";
 import { ShelvesPage } from "../features/shelves/ShelvesPage";
-import ShelfForm from "../pages/ShelfForm";
-import ShelfDetailPage from "../pages/ShelfDetailPage";
+import { ShelfForm } from "../features/shelves/ShelfForm";
+import { ShelfDetailPage } from "../features/shelves/ShelfDetailPage";
 
 import './App.css'
 
