@@ -5,6 +5,7 @@ import './AppShell.css'
 export type PageId =
   | 'catalogue'
   | 'collections'
+  | 'shelves'
   | 'lending'
   | 'sessions'
   | 'wishlists'
@@ -20,6 +21,7 @@ type AppShellProps = {
 const navigationItems: Array<{ id: PageId; label: string; href: string }> = [
   { id: 'catalogue', label: 'Catalogue', href: '/catalogue' },
   { id: 'collections', label: 'Collections', href: '/collections' },
+  { id: 'shelves', label: 'Shelves', href: '/shelves' },
   { id: 'lending', label: 'Lending', href: '/lending' },
   { id: 'sessions', label: 'Sessions', href: '/sessions' },
   { id: 'wishlists', label: 'Wishlists', href: '/wishlists' },

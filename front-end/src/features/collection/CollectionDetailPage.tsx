@@ -1,36 +1,38 @@
+import { useFetch } from "../../hooks/useFetch";
+import type { CollectionGameDetail } from "../../types/CollectionGame";
 import "./CollectionDetailPage.css";
 
-import azulImage from "../assets/games/azul.svg";
-
-// The detail page currently uses static data.
-// This will later be replaced with data from the C# API.
-type CollectionGameDetail = {
-  title: string;
-  image: string;
-  edition: string;
-  owner: string;
-  players: string;
-  time: string;
-  status: "Not Played" | "In Progress" | "Played";
-  playCount: number;
-  rating: number | null;
-  notes: string;
+type CollectionDetailPageProps = {
+  gameId?: number | string;
 };
 
-const game: CollectionGameDetail = {
-  title: "Azul",
-  image: azulImage,
-  edition: "English edition · 2017",
-  owner: "Sanne",
-  players: "2–4 players",
-  time: "30–45 min",
-  status: "Played",
-  playCount: 12,
-  rating: 9,
-  notes: "Great game for smaller groups.",
-};
+// Detail page fetching single game specs and metadata
+export function CollectionDetailPage({ gameId = 1 }: CollectionDetailPageProps) {
+  // Use mock json file created in step 2
+  const { data: game, loading, error } = useFetch<CollectionGameDetail, CollectionGameDetail>(
+    `/data/game-detail-${gameId}.json`,
+    (data) => data
+  );
 
-export default function CollectionDetailPage() {
+  if (loading) {
+    return (
+      <main className="collection-detail-page">
+        <p className="text-muted">Loading game details…</p>
+      </main>
+    );
+  }
+
+  if (error || !game) {
+    return (
+      <main className="collection-detail-page">
+        <a href="/collections" className="collection-detail-back-link">
+          ← Back to My Collection
+        </a>
+        <p className="alert alert--error">{error ?? "Game not found."}</p>
+      </main>
+    );
+  }
+
   return (
     <main className="collection-detail-page">
       <a href="/collections" className="collection-detail-back-link">
@@ -47,15 +49,11 @@ export default function CollectionDetailPage() {
         </div>
 
         <div className="collection-detail-content">
-          <p className="collection-detail-eyebrow">
-            COLLECTION RECORD
-          </p>
+          <p className="collection-detail-eyebrow">COLLECTION RECORD</p>
 
           <h1>{game.title}</h1>
 
-          <p className="collection-detail-edition">
-            {game.edition}
-          </p>
+          <p className="collection-detail-edition">{game.edition}</p>
 
           <dl className="collection-detail-game-info">
             <div>
@@ -74,7 +72,6 @@ export default function CollectionDetailPage() {
             </div>
           </dl>
 
-          {/* The written status makes the state understandable without relying on colour. */}
           <p className="collection-detail-status">
             <strong>Status:</strong> {game.status}
           </p>
@@ -87,11 +84,7 @@ export default function CollectionDetailPage() {
 
             <div>
               <dt>Rating</dt>
-              <dd>
-                {game.rating !== null
-                  ? `${game.rating}/10`
-                  : "Not rated"}
-              </dd>
+              <dd>{game.rating !== null ? `${game.rating}/10` : "Not rated"}</dd>
             </div>
           </dl>
 
