@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace GameShelf.Api.Models;
 
 /// <summary>
@@ -18,16 +16,21 @@ public sealed class Member
 }
 
 /// <summary>
-/// A catalogue game that a member can bring to a session. The catalogue itself
-/// is another team's module; this lightweight stub exists only so sessions can
-/// reference a game and its player range.
+/// One catalogue edition, referenced by all club modules.
 /// </summary>
 public sealed class Game
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string Publisher { get; set; } = string.Empty;
+    public int ReleaseYear { get; set; }
+    public string Category { get; set; } = string.Empty;
+    public string Language { get; set; } = "English";
+    public string Edition { get; set; } = "Standard edition";
     public int MinPlayers { get; set; }
     public int MaxPlayers { get; set; }
+    public int PlayingTimeMinutes { get; set; }
+    public string? ImageUrl { get; set; }
 }
 
 public enum SignupStatus
@@ -66,5 +69,6 @@ public sealed class Session
     public string Place { get; set; } = string.Empty;
     public int Capacity { get; set; }
     public bool IsCancelled { get; set; }
+    public Member Host { get; set; } = null!;
     public List<Signup> Signups { get; set; } = [];
 }

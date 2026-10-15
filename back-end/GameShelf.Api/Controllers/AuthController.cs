@@ -22,9 +22,16 @@ public sealed class AuthController(GameShelfDbContext db, TokenService tokens) :
         if (string.IsNullOrWhiteSpace(dto.UserName) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest(new { error = "Username and password are required." });
 
-        var member = await db.Members.FirstOrDefaultAsync(m => m.UserName == dto.UserName.ToLowerInvariant(), ct);
+        var userName = dto.UserName.Trim().ToLowerInvariant();
+        var member = await db.Members.FirstOrDefaultAsync(m => m.UserName == userName, ct);
         if (member is null || !PasswordHasher.Verify(dto.Password, member.PasswordHash))
             return Unauthorized(new { error = "Unknown username or wrong password." });
+
+        if (PasswordHasher.NeedsRehash(member.PasswordHash))
+        {
+            member.PasswordHash = PasswordHasher.Hash(dto.Password);
+            await db.SaveChangesAsync(ct);
+        }
 
         var token = tokens.Create(member.Id);
         return Ok(new LoginResultDto(new MemberDto(member.Id, member.Name, member.IsCommittee), token));

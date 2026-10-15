@@ -77,7 +77,7 @@ Verwachte HTTP-status: `200 OK`. Verwachte JSON:
 
 De route `/` geeft voorlopig `404`. In de ontwikkelomgeving vind je de interactieve Swagger-documentatie op `http://localhost:5080/swagger` en het OpenAPI-document op `http://localhost:5080/swagger/v1/swagger.json`.
 
-Gebruik eerst `POST /api/auth/login` in Swagger, bijvoorbeeld met het ontwikkelaccount `jeffrey` en wachtwoord `gameshelf123`. Kopieer de waarde van `token` uit het antwoord naar **Authorize**; typ alleen de token, zonder `Bearer` ervoor. Daarna kun je de beveiligde sessie-, leden- en spellenroutes uitproberen. Swagger is alleen ingeschakeld in de `Development`-omgeving.
+Gebruik eerst `POST /api/auth/login` in Swagger, bijvoorbeeld met het ontwikkelaccount `jeffrey` en wachtwoord `Admin001`. Kopieer de waarde van `token` uit het antwoord naar **Authorize**; typ alleen de token, zonder `Bearer` ervoor. Daarna kun je de beveiligde sessie-, leden- en spellenroutes uitproberen. Swagger is alleen ingeschakeld in de `Development`-omgeving.
 
 ### Automatisch herstarten tijdens ontwikkelen
 
@@ -112,7 +112,7 @@ back-end/
 
 `global.json` laat het team een .NET 10 SDK gebruiken en staat nieuwere stabiele .NET 10 feature bands en patches toe. De benodigde basisversie is `10.0.100`. Buildbestanden in `bin/` en `obj/` worden via de bestaande `.gitignore` uitgesloten.
 
-De React-frontend blijft een apart project in `../front-end/` en start in een tweede terminal met `npm run dev`. De sessiepagina gebruikt de API via `../front-end/src/api.ts`.
+De React-frontend blijft een apart project in `../front-end/` en start in een tweede terminal met `npm run dev`. De sessiepagina gebruikt de API via `../front-end/src/features/sessions/sessionsApi.ts`; de gedeelde HTTP-client en login staan in `../front-end/src/api.ts`.
 
 ## Veelvoorkomende problemen
 
@@ -121,3 +121,7 @@ De React-frontend blijft een apart project in `../front-end/` en start in een tw
 - **Visual Studio kan `net10.0` niet bouwen**: update Visual Studio 2026 en de .NET SDK.
 - **Poort 5080 is bezet**: stop de andere API met Ctrl+C of draai tijdelijk `dotnet run --project GameShelf.Api --no-launch-profile --urls http://localhost:5081`. Gebruik dan poort 5081 voor `/health`.
 - **Browser opent geen API**: gebruik `http://localhost:5080/health`, controleer of de API-terminal nog draait en gebruik `http`, niet `https`. Het lokale profiel gebruikt HTTP; er is hiervoor geen ontwikkelcertificaat nodig.
+
+## Volledige clubdatabase
+
+Het schema bevat nu ook collecties, shelves, boxen, uitleenverzoeken, leningen, wensen en ruilaanbiedingen. De [databasehandleiding](../database/README.md) bevat het ERD, de SQL-structuur, demoaccounts, instellingen en een uitleg van welke regels in de database of in de services worden gecontroleerd. De bestaande sessies worden bij de upgrade behouden.
