@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import AppShell, { type PageId } from './AppShell.tsx'
-import SessionsPage from './SessionsPage.tsx'
+import { SessionsPage } from '../features/sessions/SessionsPage'
 import { MockPage } from './MockPages.tsx'
-import LoginScreen from './LoginScreen.tsx'
+import LoginPage from '../features/auth/LoginPage'
+import { HomePage } from '../features/home/HomePage'
+import { PublicLayout } from '../features/home/PublicLayout'
 import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
@@ -31,6 +33,7 @@ type Route =
   | 'trade-offer-form'
   | 'trade-offers'
   | 'home'
+  | 'login'
 
 function pathToRoute(path: string): Route {
   const segments = path.split('/').filter(Boolean)
@@ -82,6 +85,7 @@ function pathToRoute(path: string): Route {
   }
 
   switch (segment) {
+    case 'login':
     case 'catalogue':
     case 'collections':
     case 'lending':
@@ -95,21 +99,20 @@ function pathToRoute(path: string): Route {
 }
 
 function App() {
-  // Bewaar het volledige pad: ook een ander wishlist-id moet de pagina verversen.
   const [path, setPath] = useState(window.location.pathname)
   const route = pathToRoute(path)
-  const boxId = window.location.pathname.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
+  const [returnTo, setReturnTo] = useState(() =>
+    route === 'home' || route === 'login' ? '/sessions' : path,
+  )
+  const boxId = path.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
   const selectedBox = lendingBoxes.find((box) => box.id === boxId)
   const [member, setMember] = useState<Member | null>(null)
-  const [authChecked, setAuthChecked] = useState(false)
+  const [authChecked, setAuthChecked] = useState(() => !localStorage.getItem('gameshelf.token'))
 
   // Restore the session from a stored token on first load.
   useEffect(() => {
     const token = localStorage.getItem('gameshelf.token')
-    if (!token) {
-      setAuthChecked(true)
-      return
-    }
+    if (!token) return
     auth
       .me()
       .then(setMember)
@@ -117,98 +120,81 @@ function App() {
       .finally(() => setAuthChecked(true))
   }, [])
 
-  // Lightweight client-side router: intercept internal nav links and popstate.
+  // Kleine router voor bestaande links, inclusief terug/vooruit in de browser.
+  const navigateTo = useCallback((destination: string) => {
+    window.history.pushState({}, '', destination)
+    setPath(window.location.pathname)
+  }, [])
+
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
-      const target = (e.target as HTMLElement)?.closest('a')
-      if (!target) return
-      const href = target.getAttribute('href') ?? ''
-      if (!href.startsWith('/') || href.startsWith('//')) {
-        return
-      }
-
-      if (target.hasAttribute('download')) return
-
-      if (target.target && target.target !== '_self') {
-        return
-      }
-
-      e.preventDefault()
-      const url = new URL(target.href, window.location.href)
-      if (url.pathname !== window.location.pathname) {
-        window.history.pushState({}, '', url.pathname)
-        setPath(url.pathname)
-      }
+    function onClick(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const anchor = (event.target as Element)?.closest('a')
+      if (!anchor || anchor.hasAttribute('download') || (anchor.target && anchor.target !== '_self')) return
+      const href = anchor.getAttribute('href') ?? ''
+      if (!href.startsWith('/') || href.startsWith('//')) return
+      const url = new URL(anchor.href, window.location.href)
+      if (url.origin !== window.location.origin) return
+      event.preventDefault()
+      if (url.href !== window.location.href) navigateTo(url.pathname + url.search + url.hash)
     }
-    function onPop() {
-      setPath(window.location.pathname)
-    }
+    function onPop() { setPath(window.location.pathname) }
     document.addEventListener('click', onClick)
     window.addEventListener('popstate', onPop)
     return () => {
       document.removeEventListener('click', onClick)
       window.removeEventListener('popstate', onPop)
     }
-  }, [])
+  }, [navigateTo])
 
   const logout = useCallback(() => {
     clearToken()
     setMember(null)
-  }, [])
+    setReturnTo('/sessions')
+    navigateTo('/')
+  }, [navigateTo])
 
-  function navigateTo(path: string) {
-    window.history.pushState({}, '', path)
-    setPath(path)
+  function loggedIn(signedInMember: Member) {
+    setMember(signedInMember)
+    navigateTo(returnTo)
   }
 
   if (!authChecked) {
-    return (
-      <AppShell currentPage="collections">
-        <section aria-labelledby="page-title">
-          <p className="eyebrow">Your games</p>
-          <h1 id="page-title">Collections</h1>
-          <p className="text-muted">Loading…</p>
-        </section>
-      </AppShell>
-    )
+    return <PublicLayout><p role="status">Checking your sign-in…</p></PublicLayout>
   }
 
+  // Bezoekers beginnen op de homepagina; het formulier staat apart op /login.
+  // De backend blijft alle beveiligde API-aanroepen zelf controleren.
   if (!member) {
     return (
-      <AppShell currentPage="collections">
-        <LoginScreen onLoggedIn={setMember} />
-      </AppShell>
+      <PublicLayout>
+        {route === 'login' ? <LoginPage onLoggedIn={loggedIn} /> : <HomePage />}
+      </PublicLayout>
     )
   }
 
-  //Wishlist & Trading routes under Wishlists menu item.
-  const currentPage: PageId =
-    route === 'wishlist-detail' ||
-    route === 'trade-offer-form' ||
-    route === 'trade-offers'
-      ? 'wishlists'
-      : route === 'home' ||
-          route === 'collection-detail' ||
-          route === 'collection-record-form' ||
-          route === 'shelf-form' ||
-          route === 'shelf-detail'
-        ? 'collections'
-        : route === 'shelves' ? 'shelves' : route
+  const currentPage: PageId | undefined =
+    route === 'home' || route === 'login' ? undefined
+      : route === 'collection-detail' || route === 'collection-record-form' ? 'collections'
+      : route === 'shelf-form' || route === 'shelf-detail' ? 'shelves'
+      : route === 'wishlist-detail' || route === 'trade-offer-form' || route === 'trade-offers' ? 'wishlists'
+      : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
-      {route === 'collection-detail' ? (
+      {route === 'home' || route === 'login' ? (
+        <HomePage signedIn />
+      ) : route === 'collection-detail' ? (
         <CollectionDetailPage
-          gameId={window.location.pathname.split('/').filter(Boolean)[1] ?? 1} />
+          gameId={path.split('/').filter(Boolean)[1] ?? 1} />
       ) : route === 'collection-record-form' ? (
         <CollectionRecordForm />
       ) : route === 'shelf-form' ? (
         <ShelfForm />
       ) : route === 'shelf-detail' ? (
-        <ShelfDetailPage />
+        <ShelfDetailPage shelfId={Number(path.split('/')[2]) || 1} />
       ) : route === 'shelves' ? (
-        <ShelvesPage onSelectShelf={() => navigateTo(`/shelf-detail`)} />
+        <ShelvesPage onSelectShelf={(id) => navigateTo(`/shelf-detail/${id}`)} />
       ) : route === 'collections' ? (
         <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
@@ -228,7 +214,7 @@ function App() {
       ) : route === 'trade-offers' ? (
         <TradeOffersPage />
       ) : (
-        <MockPage page={currentPage} member={member} />
+        <MockPage page={currentPage ?? 'collections'} member={member} />
       )}
     </AppShell>
   )

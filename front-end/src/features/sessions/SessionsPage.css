@@ -1,18 +1,21 @@
 /* ---------- Layout helpers ---------- */
 
-.stack {
-  gap: var(--space-4);
+.session-form-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.cluster--tight {
+:where(.sessions-page, .session-modal) .cluster--tight {
   gap: var(--space-2);
 }
 
-.cluster--form {
+:where(.sessions-page, .session-modal) .cluster--form {
   gap: var(--space-3);
 }
 
-.cluster--form .form-field {
+:where(.sessions-page, .session-modal) .cluster--form .form-field {
   flex: 1 1 10rem;
   min-width: 0;
 }
@@ -156,49 +159,21 @@
 
 /* ---------- Modal ---------- */
 
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: var(--space-5) var(--space-3);
-  overflow-y: auto;
-}
-
-.modal__backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgb(23 32 51 / 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  animation: modal-fade 180ms ease;
-}
-
-.modal__dialog {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  margin: auto 0;
-  max-height: calc(100vh - 2 * var(--space-5));
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--radius-lg);
+.session-modal {
+  width: min(calc(100% - 2rem), 32rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   background: var(--color-surface-raised);
-  box-shadow: 0 24px 60px rgb(23 32 51 / 0.28);
-  animation: modal-rise 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--color-text);
 }
 
-.modal--md .modal__dialog {
-  max-width: 32rem;
-}
+.session-modal--lg { width: min(calc(100% - 2rem), 48rem); }
+.session-modal::backdrop { background: rgb(23 32 51 / .55); }
+.session-modal__content { display: flex; flex-direction: column; }
 
-.modal--lg .modal__dialog {
-  max-width: 48rem;
-}
-
-.modal__header {
+.session-modal .modal__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -209,11 +184,11 @@
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-.modal__heading h2 {
+.session-modal .modal__heading h2 {
   margin: 0;
 }
 
-.modal__close {
+.session-modal .modal__close {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
@@ -231,17 +206,17 @@
   transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-.modal__close:hover {
+.session-modal .modal__close:hover {
   background: var(--color-highlight);
   color: #ffffff;
 }
 
-.modal__body {
+.session-modal .modal__body {
   padding: var(--space-5);
   overflow-y: auto;
 }
 
-.modal__footer {
+.session-modal .modal__footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -341,7 +316,7 @@
 
 /* ---------- Empty state ---------- */
 
-.empty-state {
+.sessions-page .empty-state {
   margin-top: var(--space-5);
   max-width: 30rem;
 }
@@ -353,11 +328,11 @@
     grid-template-columns: 1fr;
   }
 
-  .cluster--form {
+  :where(.sessions-page, .session-modal) .cluster--form {
     flex-direction: column;
   }
 
-  .cluster--form .form-field {
+  :where(.sessions-page, .session-modal) .cluster--form .form-field {
     flex: 1 1 auto;
   }
 }

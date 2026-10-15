@@ -1,15 +1,38 @@
 using GameShelf.Api.Data;
 using GameShelf.Api.Services;
+using GameShelf.Api.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
-var builder = WebApplication.CreateBuilder(args);
+var initializeOnly = args.Contains("--initialize-database");
+var builder = WebApplication.CreateBuilder(args.Where(arg => arg != "--initialize-database").ToArray());
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "GameShelf API",
+        Version = "v1",
+        Description = "Authentication and game session endpoints for GameShelf."
+    });
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "GameShelf.Api.xml"));
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        Description = "Enter the token returned by POST /api/auth/login."
+    });
+    options.OperationFilter<BearerSecurityOperationFilter>();
+});
 
-// SQLite database stored in gameshelf.db next to the project file.
-var dbPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "gameshelf.db");
-builder.Services.AddDbContext<GameShelfDbContext>(o => o.UseSqlite($"Data Source={dbPath}"));
+// Keep the database location stable for development and published builds.
+var dbPath = Path.Combine(builder.Environment.ContentRootPath, "gameshelf.db");
+var connectionString = builder.Configuration.GetConnectionString("GameShelf")
+    ?? new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = dbPath }.ToString();
+builder.Services.AddDbContext<GameShelfDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddSingleton<TokenService>();
 
@@ -30,6 +53,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -41,10 +70,15 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedAsync(db);
 }
 
-// Eenvoudige controle om te zien of de API lokaal draait.
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+// Creates/upgrades a database without starting HTTP (also used to create demo exports).
+if (initializeOnly) return;
 
-// De controllers voor de GameShelf-modules worden later toegevoegd.
+// Lightweight health check for local development.
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }))
+    .WithName("Health")
+    .WithSummary("Checks whether the API is running.");
+
+// Map authentication, session, member and game controllers.
 app.MapControllers();
 
 app.Run();

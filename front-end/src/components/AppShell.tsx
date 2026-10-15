@@ -13,7 +13,7 @@ export type PageId =
 
 type AppShellProps = {
   children: ReactNode
-  currentPage: PageId
+  currentPage?: PageId
   user?: { name: string } | null
   onLogout?: () => void
 }

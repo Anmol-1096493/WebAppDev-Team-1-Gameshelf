@@ -1,0 +1,155 @@
+digraph GameShelf {
+graph [rankdir=LR, bgcolor="#f5f7ff", pad="0.4", nodesep="0.45", ranksep="1.3", fontname="Arial", fontsize=18, label="GameShelf · database ERD", labelloc=t];
+node [shape=plain, fontname="Arial"];
+edge [fontname="Arial", fontsize=9, color="#8791aa", arrowsize=0.7];
+subgraph cluster_0 { label="Accounts & catalogue"; color="#cbd2e8"; style="rounded";
+Members [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#4338ca"><FONT COLOR="white"><B>Members</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">IsCommittee</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">bool</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Name</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">PasswordHash</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">UserName</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+</TABLE>>];
+Games [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#4338ca"><FONT COLOR="white"><B>Games</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Category</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Edition</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ImageUrl ?</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Language</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">MaxPlayers</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">MinPlayers</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">PlayingTimeMinutes</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Publisher</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ReleaseYear</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#4338ca">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Title</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+</TABLE>>];
+}
+subgraph cluster_1 { label="Collections & shelves"; color="#cbd2e8"; style="rounded";
+CollectionRecords [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#0e7490"><FONT COLOR="white"><B>CollectionRecords</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OwnerId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">GameId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Status</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">PlayCount</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Rating ?</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Note</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+</TABLE>>];
+Shelves [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#0e7490"><FONT COLOR="white"><B>Shelves</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OwnerId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Name</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Description</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">IsPublic</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">bool</FONT></TD></TR>
+</TABLE>>];
+ShelfGames [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#0e7490"><FONT COLOR="white"><B>ShelfGames</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">PK / FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ShelfId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#0e7490">PK / FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">CollectionRecordId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+</TABLE>>];
+}
+subgraph cluster_2 { label="Lending"; color="#cbd2e8"; style="rounded";
+LendingBoxes [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#237a57"><FONT COLOR="white"><B>LendingBoxes</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OwnerId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">GameId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Condition</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ConditionDescription</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+</TABLE>>];
+LoanRequests [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#237a57"><FONT COLOR="white"><B>LoanRequests</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">BoxId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">RequesterId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Status</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">CreatedAt</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">datetime</FONT></TD></TR>
+</TABLE>>];
+Loans [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#237a57"><FONT COLOR="white"><B>Loans</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">RequestId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">BoxId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">BorrowerId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">StartedOn</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">date</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">DueOn</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">date</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">IsExtended</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">bool</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ReturnedOn ?</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">date</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#237a57">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">ReturnRecordedById ?</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+</TABLE>>];
+}
+subgraph cluster_3 { label="Sessions"; color="#cbd2e8"; style="rounded";
+Sessions [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#9d3e60"><FONT COLOR="white"><B>Sessions</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Capacity</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">HostId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">IsCancelled</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">bool</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Place</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">StartAt</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">datetime</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Title</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+</TABLE>>];
+Signups [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#9d3e60"><FONT COLOR="white"><B>Signups</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">CreatedAt</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">datetime</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">GameId ?</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">MemberId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">SessionId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9d3e60">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Status</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+</TABLE>>];
+}
+subgraph cluster_4 { label="Wishlists & trades"; color="#cbd2e8"; style="rounded";
+WishlistItems [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#9a5800"><FONT COLOR="white"><B>WishlistItems</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OwnerId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">GameId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Priority</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Note</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">text</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">IsFulfilled</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">bool</FONT></TD></TR>
+</TABLE>>];
+TradeOffers [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#9a5800"><FONT COLOR="white"><B>TradeOffers</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">WishlistItemId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OfferedById</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">FK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">RequestedGameId</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">uuid</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">CreatedAt</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">datetime</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#9a5800">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Status</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+</TABLE>>];
+}
+subgraph cluster_5 { label="Club limits"; color="#cbd2e8"; style="rounded";
+ClubPolicies [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+<TR><TD COLSPAN="3" BGCOLOR="#566078"><FONT COLOR="white"><B>ClubPolicies</B></FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#566078">PK</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">Id</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#566078">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">MaximumLoanDays</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+<TR><TD BGCOLOR="white"><FONT COLOR="#566078">&#160;</FONT></TD><TD ALIGN="LEFT" BGCOLOR="white">OfferValidityDays</TD><TD ALIGN="LEFT" BGCOLOR="white"><FONT COLOR="#566078">integer</FONT></TD></TR>
+</TABLE>>];
+}
+Members -> CollectionRecords [label="OwnerId", taillabel="1", headlabel="0..*"];
+Games -> CollectionRecords [label="GameId", taillabel="1", headlabel="0..*"];
+Members -> Shelves [label="OwnerId", taillabel="1", headlabel="0..*"];
+Shelves -> ShelfGames [label="ShelfId", taillabel="1", headlabel="0..*"];
+CollectionRecords -> ShelfGames [label="CollectionRecordId", taillabel="1", headlabel="0..*"];
+Members -> LendingBoxes [label="OwnerId", taillabel="1", headlabel="0..*"];
+Games -> LendingBoxes [label="GameId", taillabel="1", headlabel="0..*"];
+Members -> LoanRequests [label="RequesterId", taillabel="1", headlabel="0..*"];
+LendingBoxes -> LoanRequests [label="BoxId", taillabel="1", headlabel="0..*"];
+Members -> Loans [label="ReturnRecordedById", taillabel="0..1", headlabel="0..*"];
+Members -> Loans [label="BorrowerId", taillabel="1", headlabel="0..*"];
+LoanRequests -> Loans [label="RequestId", taillabel="1", headlabel="0..1"];
+LendingBoxes -> Loans [label="BoxId", taillabel="1", headlabel="0..*"];
+Members -> Sessions [label="HostId", taillabel="1", headlabel="0..*"];
+Sessions -> Signups [label="SessionId", taillabel="1", headlabel="0..*"];
+Members -> Signups [label="MemberId", taillabel="1", headlabel="0..*"];
+Games -> Signups [label="GameId", taillabel="0..1", headlabel="0..*"];
+Members -> WishlistItems [label="OwnerId", taillabel="1", headlabel="0..*"];
+Games -> WishlistItems [label="GameId", taillabel="1", headlabel="0..*"];
+WishlistItems -> TradeOffers [label="WishlistItemId", taillabel="1", headlabel="0..*"];
+Members -> TradeOffers [label="OfferedById", taillabel="1", headlabel="0..*"];
+Games -> TradeOffers [label="RequestedGameId", taillabel="1", headlabel="0..*"];
+}

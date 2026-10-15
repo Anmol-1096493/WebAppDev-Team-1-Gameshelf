@@ -15,23 +15,32 @@ public sealed record LoginResultDto(MemberDto Member, string Token);
 [Route("api/auth")]
 public sealed class AuthController(GameShelfDbContext db, TokenService tokens) : ControllerBase
 {
+    /// <summary>Checks a member's credentials and returns a bearer token.</summary>
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken ct)
+    public async Task<ActionResult<LoginResultDto>> Login([FromBody] LoginDto dto, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(dto.UserName) || string.IsNullOrWhiteSpace(dto.Password))
             return BadRequest(new { error = "Username and password are required." });
 
-        var member = await db.Members.FirstOrDefaultAsync(m => m.UserName == dto.UserName.ToLowerInvariant(), ct);
+        var userName = dto.UserName.Trim().ToLowerInvariant();
+        var member = await db.Members.FirstOrDefaultAsync(m => m.UserName == userName, ct);
         if (member is null || !PasswordHasher.Verify(dto.Password, member.PasswordHash))
             return Unauthorized(new { error = "Unknown username or wrong password." });
+
+        if (PasswordHasher.NeedsRehash(member.PasswordHash))
+        {
+            member.PasswordHash = PasswordHasher.Hash(dto.Password);
+            await db.SaveChangesAsync(ct);
+        }
 
         var token = tokens.Create(member.Id);
         return Ok(new LoginResultDto(new MemberDto(member.Id, member.Name, member.IsCommittee), token));
     }
 
+    /// <summary>Returns the member identified by the bearer token.</summary>
     [Authorize]
     [HttpGet("me")]
-    public async Task<IActionResult> Me(CancellationToken ct)
+    public async Task<ActionResult<MemberDto>> Me(CancellationToken ct)
     {
         var id = CurrentMemberId;
         if (id is null) return Unauthorized();
