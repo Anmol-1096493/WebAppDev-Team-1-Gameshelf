@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import type { BoxCondition } from '../data/lendingBoxes'
-import { lendingBoxes } from '../data/lendingBoxes'
+import type { BoxCondition } from '../../data/lendingBoxes.ts'
+import { lendingBoxes } from '../../data/lendingBoxes.ts'
 import './LendingPages.css'
 
 type AvailabilityFilter = 'all' | 'available' | 'unavailable'

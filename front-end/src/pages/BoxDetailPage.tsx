@@ -1,5 +1,5 @@
 import type { LendingBox } from '../data/lendingBoxes'
-import './LendingPages.css'
+import '../features/lending/LendingPages.css'
 
 type BoxDetailPageProps = {
   box: LendingBox
