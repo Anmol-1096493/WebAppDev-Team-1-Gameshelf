@@ -9,6 +9,10 @@ import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
+import WishlistPage from '../pages/WishlistPage'
+import WishlistDetailsPage from '../pages/WishlistDetailsPage'
+import TradeOfferFormPage from '../pages/TradeOfferFormPage'
+import TradeOffersPage from '../pages/TradeOffersPage'
 import { CollectionPage } from '../features/collection/CollectionPage'
 import { CollectionDetailPage } from '../features/collection/CollectionDetailPage'
 import { CollectionRecordForm } from "../features/collection/CollectionRecordForm";
@@ -25,15 +29,43 @@ type Route =
   | 'shelf-form'
   | 'shelf-detail'
   | 'shelves'
+  | 'wishlist-detail'
+  | 'trade-offer-form'
+  | 'trade-offers'
   | 'home'
   | 'login'
 
 function pathToRoute(path: string): Route {
-  const segment = path.replace(/^\//, '').split('/')[0] ?? ''
+  const segments = path.split('/').filter(Boolean)
+  const segment = segments[0] ?? ''
 
   // Collection detail pages use the /collections/:id URL structure.
-  if (segment === 'collections' && path.split('/').filter(Boolean).length > 1) {
+  if (segment === 'collections' && segments.length > 1) {
     return 'collection-detail'
+  }
+
+  // Trade offer form: /wishlists/:id/offer
+  if (
+    segment === 'wishlists' &&
+    segments.length === 3 &&
+    /^\d+$/.test(segments[1]) &&
+    segments[2] === 'offer'
+  ) {
+    return 'trade-offer-form'
+  }
+
+  // Wishlist detail: /wishlists/:id
+  if (
+    segment === 'wishlists' &&
+    segments.length === 2 &&
+    /^\d+$/.test(segments[1])
+  ) {
+    return 'wishlist-detail'
+  }
+
+  // Trade offers overview: /trade-offers
+  if (segment === 'trade-offers' && segments.length === 1) {
+    return 'trade-offers'
   }
 
   if (segment === 'collection-record') {
@@ -145,6 +177,7 @@ function App() {
     route === 'home' || route === 'login' ? undefined
       : route === 'collection-detail' || route === 'collection-record-form' ? 'collections'
       : route === 'shelf-form' || route === 'shelf-detail' ? 'shelves'
+      : route === 'wishlist-detail' || route === 'trade-offer-form' || route === 'trade-offers' ? 'wishlists'
       : route
 
   return (
@@ -172,6 +205,14 @@ function App() {
         ) : (
           <LendingListPage />
         )
+      ) : route === 'wishlists' ? (
+        <WishlistPage />
+      ) : route === 'wishlist-detail' ? (
+        <WishlistDetailsPage />
+      ) : route === 'trade-offer-form' ? (
+        <TradeOfferFormPage />
+      ) : route === 'trade-offers' ? (
+        <TradeOffersPage />
       ) : (
         <MockPage page={currentPage ?? 'collections'} member={member} />
       )}

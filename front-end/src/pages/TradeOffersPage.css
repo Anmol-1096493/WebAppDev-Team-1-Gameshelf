@@ -1,0 +1,169 @@
+
+.trade-offers-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.trade-offers-header {
+  margin-bottom: 1.5rem;
+}
+
+.trade-offers-header h1 {
+  margin: 0.5rem 0;
+}
+
+.trade-offers-back {
+  display: inline-block;
+  margin-top: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.trade-offers-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.trade-offers-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.trade-offer-card {
+  padding: 1.5rem;
+  min-width: 0;
+}
+
+.trade-offer-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.trade-offer-card-header h2 {
+  margin: 0.4rem 0;
+  font-size: 1.25rem;
+}
+
+.trade-offer-status {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trade-offer-status-open {
+  background: #e0efff;
+  color: #174c89;
+}
+
+.trade-offer-status-accepted {
+  background: #dff4e5;
+  color: #236239;
+}
+
+.trade-offer-status-rejected {
+  background: #ffe4e4;
+  color: #9d2020;
+}
+
+.trade-offer-status-cancelled {
+  background: #ededed;
+  color: #555;
+}
+
+.trade-offer-status-expired {
+  background: #fff0d5;
+  color: #885200;
+}
+
+.trade-offer-exchange {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.trade-offer-exchange > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1.25rem;
+  border-radius: 10px;
+  background: #eef2fa;
+  color: #26354b;
+}
+
+.trade-offer-exchange > div span {
+  font-size: 0.8rem;
+  color: #526176;
+}
+
+.trade-offer-exchange strong {
+  overflow-wrap: anywhere;
+}
+
+.trade-offer-exchange-arrow {
+  font-size: 1.5rem;
+}
+
+.trade-offer-date {
+  font-size: 0.875rem;
+}
+
+.trade-offer-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+
+.trade-offer-expired {
+  margin-top: 1rem;
+  color: #885200;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .trade-offer-card {
+    padding: 1rem;
+  }
+
+  .trade-offers-tabs {
+    flex-direction: column;
+  }
+
+  .trade-offers-tabs .button {
+    width: 100%;
+  }
+
+  .trade-offer-card-header {
+    flex-direction: column;
+  }
+
+  .trade-offer-exchange {
+    grid-template-columns: 1fr;
+  }
+
+  .trade-offer-exchange-arrow {
+    text-align: center;
+    transform: rotate(90deg);
+  }
+
+  .trade-offer-actions {
+    flex-direction: column;
+  }
+
+  .trade-offer-actions .button {
+    width: 100%;
+    text-align: center;
+  }
+}
