@@ -1,4 +1,4 @@
-import { wishlistItems } from './WishlistPage'
+import { wishlistItems } from './WishlistPage.tsx'
 import './WishlistDetailsPage.css'
 
 export default function WishlistDetailsPage() {

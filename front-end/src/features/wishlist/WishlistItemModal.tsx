@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { WishlistItem } from './WishlistPage'
+import type { WishlistItem } from './WishlistPage.tsx'
 import './WishlistItemModal.css'
 
 export type WishlistDraft = {

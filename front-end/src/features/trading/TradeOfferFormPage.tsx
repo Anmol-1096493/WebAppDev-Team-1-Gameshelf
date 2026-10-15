@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { wishlistItems } from './WishlistPage'
+import { wishlistItems } from '../wishlist/WishlistPage.tsx'
 import './TradeOfferFormPage.css'
 
 const catalogueGames = [

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import WishlistItemModal, {
   type WishlistDraft,
-} from './WishlistItemModal'
+} from './WishlistItemModal.tsx'
 import './WishlistPage.css'
 
 export type WishlistItem = {
