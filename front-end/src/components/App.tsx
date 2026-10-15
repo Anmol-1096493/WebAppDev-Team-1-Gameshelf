@@ -7,6 +7,10 @@ import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
+import WishlistPage from '../pages/WishlistPage'
+import WishlistDetailsPage from '../pages/WishlistDetailsPage'
+import TradeOfferFormPage from '../pages/TradeOfferFormPage'
+import TradeOffersPage from '../pages/TradeOffersPage'
 import { CollectionPage } from '../features/collection/CollectionPage'
 import { CollectionDetailPage } from '../features/collection/CollectionDetailPage'
 import { CollectionRecordForm } from "../features/collection/CollectionRecordForm";
@@ -23,14 +27,42 @@ type Route =
   | 'shelf-form'
   | 'shelf-detail'
   | 'shelves'
+  | 'wishlist-detail'
+  | 'trade-offer-form'
+  | 'trade-offers'
   | 'home'
 
 function pathToRoute(path: string): Route {
-  const segment = path.replace(/^\//, '').split('/')[0] ?? ''
+  const segments = path.split('/').filter(Boolean)
+  const segment = segments[0] ?? ''
 
   // Collection detail pages use the /collections/:id URL structure.
-  if (segment === 'collections' && path.split('/').filter(Boolean).length > 1) {
+  if (segment === 'collections' && segments.length > 1) {
     return 'collection-detail'
+  }
+
+  // Trade offer form: /wishlists/:id/offer
+  if (
+    segment === 'wishlists' &&
+    segments.length === 3 &&
+    /^\d+$/.test(segments[1]) &&
+    segments[2] === 'offer'
+  ) {
+    return 'trade-offer-form'
+  }
+
+  // Wishlist detail: /wishlists/:id
+  if (
+    segment === 'wishlists' &&
+    segments.length === 2 &&
+    /^\d+$/.test(segments[1])
+  ) {
+    return 'wishlist-detail'
+  }
+
+  // Trade offers overview: /trade-offers
+  if (segment === 'trade-offers' && segments.length === 1) {
+    return 'trade-offers'
   }
 
   if (segment === 'collection-record') {
@@ -63,7 +95,9 @@ function pathToRoute(path: string): Route {
 }
 
 function App() {
-  const [route, setRoute] = useState<Route>(() => pathToRoute(window.location.pathname))
+  // Bewaar het volledige pad: ook een ander wishlist-id moet de pagina verversen.
+  const [path, setPath] = useState(window.location.pathname)
+  const route = pathToRoute(path)
   const boxId = window.location.pathname.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
   const selectedBox = lendingBoxes.find((box) => box.id === boxId)
   const [member, setMember] = useState<Member | null>(null)
@@ -90,16 +124,25 @@ function App() {
       const target = (e.target as HTMLElement)?.closest('a')
       if (!target) return
       const href = target.getAttribute('href') ?? ''
-      if (!href.startsWith('/') || href.startsWith('//')) return
+      if (!href.startsWith('/') || href.startsWith('//')) {
+        return
+      }
+
+      if (target.hasAttribute('download')) return
+
+      if (target.target && target.target !== '_self') {
+        return
+      }
+
       e.preventDefault()
       const url = new URL(target.href, window.location.href)
       if (url.pathname !== window.location.pathname) {
         window.history.pushState({}, '', url.pathname)
-        setRoute(pathToRoute(url.pathname))
+        setPath(url.pathname)
       }
     }
     function onPop() {
-      setRoute(pathToRoute(window.location.pathname))
+      setPath(window.location.pathname)
     }
     document.addEventListener('click', onClick)
     window.addEventListener('popstate', onPop)
@@ -116,7 +159,7 @@ function App() {
 
   function navigateTo(path: string) {
     window.history.pushState({}, '', path)
-    setRoute(pathToRoute(path))
+    setPath(path)
   }
 
   if (!authChecked) {
@@ -139,16 +182,19 @@ function App() {
     )
   }
 
-const currentPage: PageId =
-    route === 'home' ||
-    route === 'collection-detail' ||
-    route === 'collection-record-form' ||
-    route === 'shelf-form' ||
-    route === 'shelf-detail'
-      ? 'collections'
-      : route === 'shelves'
-      ? 'shelves'
-      : route
+  //Wishlist & Trading routes under Wishlists menu item.
+  const currentPage: PageId =
+    route === 'wishlist-detail' ||
+    route === 'trade-offer-form' ||
+    route === 'trade-offers'
+      ? 'wishlists'
+      : route === 'home' ||
+          route === 'collection-detail' ||
+          route === 'collection-record-form' ||
+          route === 'shelf-form' ||
+          route === 'shelf-detail'
+        ? 'collections'
+        : route === 'shelves' ? 'shelves' : route
 
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
@@ -162,7 +208,7 @@ const currentPage: PageId =
       ) : route === 'shelf-detail' ? (
         <ShelfDetailPage />
       ) : route === 'shelves' ? (
-        <ShelvesPage onSelectShelf={(id) => navigateTo(`/shelf-detail`)} />
+        <ShelvesPage onSelectShelf={() => navigateTo(`/shelf-detail`)} />
       ) : route === 'collections' ? (
         <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
@@ -173,6 +219,14 @@ const currentPage: PageId =
         ) : (
           <LendingListPage />
         )
+      ) : route === 'wishlists' ? (
+        <WishlistPage />
+      ) : route === 'wishlist-detail' ? (
+        <WishlistDetailsPage />
+      ) : route === 'trade-offer-form' ? (
+        <TradeOfferFormPage />
+      ) : route === 'trade-offers' ? (
+        <TradeOffersPage />
       ) : (
         <MockPage page={currentPage} member={member} />
       )}

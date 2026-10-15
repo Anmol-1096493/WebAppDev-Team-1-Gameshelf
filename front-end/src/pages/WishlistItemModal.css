@@ -1,0 +1,103 @@
+.wishlist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.65);
+}
+
+.wishlist-modal {
+  width: min(100%, 540px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1.75rem;
+  border-radius: 14px;
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.wishlist-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.wishlist-modal-header h2 {
+  margin: 0.5rem 0;
+}
+
+.wishlist-modal-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #26354b;
+}
+
+.wishlist-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wishlist-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.wishlist-modal-field label {
+  font-weight: 600;
+}
+
+.wishlist-modal-field .form-control {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wishlist-modal-field textarea {
+  resize: vertical;
+}
+
+.wishlist-modal-field small {
+  color: #687486;
+}
+
+.wishlist-modal-error {
+  padding: 1rem;
+  border: 1px solid #d83242;
+  border-radius: 8px;
+  background: #fff0f0;
+  color: #a31c2a;
+}
+
+.wishlist-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .wishlist-modal {
+    padding: 1rem;
+  }
+
+  .wishlist-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .wishlist-modal-actions .button {
+    width: 100%;
+    text-align: center;
+  }
+}
