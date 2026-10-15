@@ -1,16 +1,20 @@
+/* Zorgt dat de wishlist-pagina de beschikbare breedte gebruikt. */
 .wishlist-page {
   width: 100%;
   min-width: 0;
 }
 
+/* Geeft ruimte onder de paginakop. */
 .wishlist-page-header {
   margin-bottom: 1.5rem;
 }
 
+/* Geeft extra ruimte onder de hoofdtitel. */
 .wishlist-page-header h1 {
   margin-bottom: 0.5rem;
 }
 
+/* Zet de tabknoppen naast elkaar en laat ze zo nodig naar een nieuwe regel gaan. */
 .wishlist-tabs {
   display: flex;
   gap: 0.75rem;
@@ -18,6 +22,7 @@
   margin-bottom: 2rem;
 }
 
+/* Zet de sectietitel en eventuele knop naast elkaar, met ruimte ertussen. */
 .wishlist-section-heading {
   display: flex;
   justify-content: space-between;
@@ -26,10 +31,13 @@
   margin-bottom: 1.5rem;
 }
 
+/* Regelt de ruimte onder de sectietitel. */
 .wishlist-section-heading h2 {
   margin-bottom: 0.4rem;
 }
 
+/* Plaatst de filters in een grid met drie kolommen.
+   De eerste kolom is twee keer zo breed als elk van de andere kolommen. */
 .wishlist-filters {
   display: grid;
   grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
@@ -38,18 +46,22 @@
   margin-bottom: 1rem;
 }
 
+/* Voorkomt dat filtervelden hun beschikbare ruimte overschrijden. */
 .wishlist-filters .form-field {
   min-width: 0;
 }
 
+/* Laat de invoervelden de volledige breedte van hun kolom gebruiken. */
 .wishlist-filters .form-control {
   width: 100%;
 }
 
+/* Geeft ruimte onder de tekst met het aantal wishlist-items. */
 .wishlist-count {
   margin-bottom: 1.25rem;
 }
 
+/* Toont de wishlist-kaarten in drie gelijk verdeelde kolommen. */
 .wishlist-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -59,6 +71,7 @@
   margin: 0;
 }
 
+/* Zet de inhoud van iedere kaart onder elkaar en verbergt overlopende inhoud. */
 .wishlist-card {
   display: flex;
   flex-direction: column;
@@ -66,6 +79,7 @@
   overflow: hidden;
 }
 
+/* Centreert de game-emoji in een gekleurde cover bovenaan de kaart. */
 .wishlist-card-cover {
   display: flex;
   align-items: center;
@@ -75,78 +89,95 @@
   font-size: 3.5rem;
 }
 
+/* Laat lange gametitels afbreken zodat ze niet buiten de kaart lopen. */
 .wishlist-card h3 {
   overflow-wrap: anywhere;
 }
 
+/* Laat de inhoud van de kaart de beschikbare ruimte innemen. */
 .wishlist-card-body {
   flex: 1;
 }
 
+/* Zet statuslabels en andere badges naast elkaar, met ruimte ertussen. */
 .wishlist-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
+/* Geeft extra ruimte boven de notitie bij een wishlist-item. */
 .wishlist-card-note {
   margin-top: 1.25rem;
 }
 
+/* Zet het label boven de tekst van de notitie. */
 .wishlist-card-note strong {
   display: block;
   margin-bottom: 0.4rem;
 }
 
+/* Behoudt regeleinden in notities en zorgt dat lange woorden kunnen afbreken. */
 .wishlist-card-note p {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   line-height: 1.6;
 }
 
+/* Houdt de voettekst onderaan de flexkaart. */
 .wishlist-card-footer {
   margin-top: auto;
 }
 
+/* Laat knoppen in de voettekst de volledige breedte gebruiken. */
 .wishlist-card-footer .button {
   width: 100%;
   text-align: center;
 }
 
+/* Geeft de lege wishlist-melding ruimte en centreert de inhoud. */
 .wishlist-empty {
   padding: 3rem 1.5rem;
   text-align: center;
 }
 
+/* Regelt de verticale ruimte rond de tekst van de lege melding. */
 .wishlist-empty p {
   margin: 1rem 0;
 }
 
+/* Bij schermen smaller dan 1000px worden de kaarten verdeeld over twee kolommen. */
 @media (max-width: 1000px) {
   .wishlist-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
+/* Bij schermen smaller dan 650px wordt de indeling aangepast voor mobiel. */
 @media (max-width: 650px) {
+  /* Zet de tabknoppen onder elkaar. */
   .wishlist-tabs {
     flex-direction: column;
   }
 
+  /* Laat iedere tabknop de volledige beschikbare breedte gebruiken. */
   .wishlist-tabs .button {
     width: 100%;
     text-align: center;
   }
 
+  /* Zet de sectietitel en knop onder elkaar. */
   .wishlist-section-heading {
     flex-direction: column;
     align-items: stretch;
   }
 
+  /* Zet de filters onder elkaar in één kolom. */
   .wishlist-filters {
     grid-template-columns: 1fr;
   }
 
+  /* Zet de wishlist-kaarten onder elkaar in één kolom. */
   .wishlist-grid {
     grid-template-columns: 1fr;
   }
