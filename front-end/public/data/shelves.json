@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Game Night Favorites",
+    "description": "Games that are great for relaxed game nights.",
+    "visibility": "Public",
+    "gameCount": 6
+  },
+  {
+    "id": 2,
+    "name": "Two Player Games",
+    "description": "Games that work especially well with two players.",
+    "visibility": "Private",
+    "gameCount": 4
+  },
+  {
+    "id": 3,
+    "name": "Games to Learn",
+    "description": "Games that I still want to learn and play more often.",
+    "visibility": "Private",
+    "gameCount": 5
+  }
+]

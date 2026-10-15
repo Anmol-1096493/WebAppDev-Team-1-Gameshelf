@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "title": "Azul",
+  "image": "/src/assets/games/azul.svg",
+  "edition": "English edition · 2017",
+  "owner": "Sanne",
+  "players": "2–4 players",
+  "time": "30–45 min",
+  "status": "Played",
+  "playCount": 12,
+  "rating": 9,
+  "notes": "Great game for smaller groups."
+}

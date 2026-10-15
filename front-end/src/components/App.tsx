@@ -7,16 +7,17 @@ import { auth, clearToken, type Member } from '../api.ts'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../pages/LendingListPage'
 import { lendingBoxes } from '../data/lendingBoxes'
-import CollectionPage from '../pages/CollectionPage'
-import CollectionDetailPage from '../pages/CollectionDetailPage'
-import CollectionRecordForm from "../pages/CollectionRecordForm";
-import ShelvesPage from "../pages/ShelvesPage";
-import ShelfForm from "../pages/ShelfForm";
-import ShelfDetailPage from "../pages/ShelfDetailPage";
 import WishlistPage from '../pages/WishlistPage'
 import WishlistDetailsPage from '../pages/WishlistDetailsPage'
 import TradeOfferFormPage from '../pages/TradeOfferFormPage'
 import TradeOffersPage from '../pages/TradeOffersPage'
+import { CollectionPage } from '../features/collection/CollectionPage'
+import { CollectionDetailPage } from '../features/collection/CollectionDetailPage'
+import { CollectionRecordForm } from "../features/collection/CollectionRecordForm";
+import { ShelvesPage } from "../features/shelves/ShelvesPage";
+import { ShelfForm } from "../features/shelves/ShelfForm";
+import { ShelfDetailPage } from "../features/shelves/ShelfDetailPage";
+
 import './App.css'
 
 type Route =
@@ -69,17 +70,16 @@ function pathToRoute(path: string): Route {
   }
 
   if (segment === 'shelf') {
-  return 'shelf-form'
+    return 'shelf-form'
   }
 
   if (segment === 'shelf-detail') {
-  return 'shelf-detail'
+    return 'shelf-detail'
   }
 
   if (segment === 'shelves') {
-  return 'shelves'
+    return 'shelves'
   }
-
 
   switch (segment) {
     case 'catalogue':
@@ -155,6 +155,11 @@ function App() {
     setMember(null)
   }, [])
 
+  function navigateTo(path: string) {
+    window.history.pushState({}, '', path)
+    setRoute(pathToRoute(path))
+  }
+
   if (!authChecked) {
     return (
       <AppShell currentPage="collections">
@@ -193,7 +198,8 @@ function App() {
   return (
     <AppShell currentPage={currentPage} user={member} onLogout={logout}>
       {route === 'collection-detail' ? (
-        <CollectionDetailPage />
+        <CollectionDetailPage
+          gameId={window.location.pathname.split('/').filter(Boolean)[1] ?? 1} />
       ) : route === 'collection-record-form' ? (
         <CollectionRecordForm />
       ) : route === 'shelf-form' ? (
@@ -201,9 +207,9 @@ function App() {
       ) : route === 'shelf-detail' ? (
         <ShelfDetailPage />
       ) : route === 'shelves' ? (
-        <ShelvesPage />
+        <ShelvesPage onSelectShelf={(id) => navigateTo(`/shelf-detail`)} />
       ) : route === 'collections' ? (
-        <CollectionPage />
+        <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
         <SessionsPage member={member} />
       ) : route === 'lending' ? (

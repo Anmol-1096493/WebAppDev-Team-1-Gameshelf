@@ -1,32 +1,40 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
+import type { ShelfVisibility } from "../../types/Shelf";
 import "./ShelfForm.css";
 
 type ShelfFormProps = {
   mode?: "create" | "edit";
+  onSubmitShelf?: (shelf: {
+    name: string;
+    description: string;
+    visibility: ShelfVisibility;
+  }) => void;
 };
 
-export default function ShelfForm({
+export function ShelfForm({
   mode = "create",
+  onSubmitShelf,
 }: ShelfFormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
-  const [visibility, setVisibility] = useState<
-    "Public" | "Private"
-  >("Private");
+  const [visibility, setVisibility] = useState<ShelfVisibility>("Private");
 
   const isEditMode = mode === "edit";
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onSubmitShelf?.({ name, description, visibility });
+  }
+
   return (
-    <form className="shelf-form">
+    <form className="shelf-form" onSubmit={handleSubmit}>
       <header className="shelf-form-header">
         <p className="shelf-form-eyebrow">
           {isEditMode ? "EDIT SHELF" : "CREATE SHELF"}
         </p>
 
-        <h1>
-          {isEditMode ? "Edit Shelf" : "Create Shelf"}
-        </h1>
+        <h1>{isEditMode ? "Edit Shelf" : "Create Shelf"}</h1>
 
         <p>
           {isEditMode
@@ -51,17 +59,13 @@ export default function ShelfForm({
       </div>
 
       <div className="shelf-form-field">
-        <label htmlFor="shelf-description">
-          Description
-        </label>
+        <label htmlFor="shelf-description">Description</label>
 
         <textarea
           id="shelf-description"
           rows={5}
           value={description}
-          onChange={(event) =>
-            setDescription(event.target.value)
-          }
+          onChange={(event) => setDescription(event.target.value)}
           placeholder="Describe this shelf..."
         />
       </div>
