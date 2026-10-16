@@ -33,7 +33,7 @@ Open de lokale URL die Vite toont, meestal `http://localhost:5173`.
 | `src/types/Session.ts` | TypeScript-types voor de schermgegevens. |
 
 Sessions doet geen netwerkverzoeken en bewaart niets permanent. Een paginaherlading
-of **Reset examples** herstelt de vaste voorbeelden. Het voorbeeldprofiel is Jeffrey.
+herstelt de vaste voorbeelden. Het voorbeeldprofiel is Jeffrey.
 
 Collections en Shelves laden lokale JSON-bestanden via `useFetch`; dit zijn statische
 bestanden in `public/data/`. Wishlist, Trading en Lending gebruiken voorbeeldgegevens.

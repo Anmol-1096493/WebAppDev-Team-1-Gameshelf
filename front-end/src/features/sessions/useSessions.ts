@@ -101,6 +101,5 @@ export function useSessions() {
     openCreate: () => setCreating(true), closeCreate: () => setCreating(false),
     openDetail: setOpenSessionId, closeDetail: () => setOpenSessionId(null),
     cancelSession: () => changeSelected((session) => ({ ...session, isCancelled: true })),
-    reset: () => { setSessions(structuredClone(exampleSessions)); setOpenSessionId(null) },
   }
 }

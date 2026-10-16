@@ -22,9 +22,6 @@ export function SessionsPage() {
         <button className="button button--primary" type="button" onClick={sessions.openCreate}>
           + Host a session
         </button>
-        <button className="button button--secondary" type="button" onClick={sessions.reset}>
-          Reset examples
-        </button>
       </div>
 
       {/* map in SessionList maakt een kaart voor iedere sessie in de voorbeeldlijst. */}
