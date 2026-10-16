@@ -19,7 +19,6 @@ type AppShellProps = {
 }
 
 const navigationItems: Array<{ id: PageId; label: string; href: string }> = [
-  { id: 'catalogue', label: 'Catalogue', href: '/catalogue' },
   { id: 'collections', label: 'Collections', href: '/collections' },
   { id: 'shelves', label: 'Shelves', href: '/shelves' },
   { id: 'lending', label: 'Lending', href: '/lending' },

@@ -137,9 +137,12 @@ public sealed class SessionService
         return await ToDetailAsync(session, actorId, ct);
     }
 
+    // Aanmelden: controleer de aanvraag, kies een status en sla de inschrijving op.
+    // memberId is door de controller uit de identiteit van het ingelogde lid gehaald.
     public async Task<SessionDetailDto> SignUpAsync(Guid sessionId, SignUpDto dto, Guid memberId, CancellationToken ct)
     {
         var session = await RequireSessionAsync(sessionId, ct);
+        // Een geannuleerde sessie accepteert geen nieuwe deelnemers.
         AssertNotCancelled(session);
         // Controleert in de database of het aangemelde lid bestaat.
         if (!await _db.Members.AnyAsync(m => m.Id == memberId, ct)) throw new ForbiddenException("Only members can sign up.");
@@ -152,10 +155,11 @@ public sealed class SessionService
 
         // Telt lokaal de bevestigde aanmeldingen om te bepalen of er een plek vrij is.
         var confirmedCount = session.Signups.Count(s => s.Status == SignupStatus.Confirmed);
+        // Vrije plaats = Confirmed; volle tafel = Waiting. De frontend beslist dit niet zelf.
         var status = confirmedCount < session.Capacity ? SignupStatus.Confirmed : SignupStatus.Waiting;
 
-        // Add via the DbSet so EF treats it as a new row (INSERT), not an update
-        // of an existing key.
+        // Add markeert dit object als een nieuwe rij voor Entity Framework.
+        // CreatedAt bewaart de aanmeldtijd voor de volgorde op de wachtlijst.
         _db.Signups.Add(new Signup
         {
             Id = Guid.NewGuid(),
@@ -165,8 +169,9 @@ public sealed class SessionService
             CreatedAt = DateTimeOffset.UtcNow,
             GameId = dto.GameId,
         });
-        // Schrijft de nieuwe aanmelding naar de database.
+        // SaveChangesAsync voert de INSERT uit in SQLite; Add alleen slaat nog niets op.
         await _db.SaveChangesAsync(ct);
+        // Stuur de bijgewerkte gegevens terug zodat de frontend direct kan verversen.
         return await ToDetailAsync(session, memberId, ct);
     }
 
@@ -178,6 +183,7 @@ public sealed class SessionService
             ?? throw new NotFoundException("This member is not signed up for the session.");
 
         session.Signups.Remove(signup);
+        // Alleen een bevestigde aanmelding maakt bij afmelden een zitplaats vrij.
         if (signup.Status == SignupStatus.Confirmed) PromoteEarliestWaiting(session);
         // Verwijdert de aanmelding uit de database en slaat een eventuele promotie op.
         await _db.SaveChangesAsync(ct);
@@ -221,6 +227,7 @@ public sealed class SessionService
                 .OrderBy(s => s.CreatedAt)
                 .FirstOrDefault();
             if (next is null) return;
+            // De statuswijziging wordt opgeslagen door SaveChangesAsync in de aanroepende methode.
             next.Status = SignupStatus.Confirmed;
         }
     }

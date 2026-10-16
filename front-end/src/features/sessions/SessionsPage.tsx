@@ -8,6 +8,7 @@ import './SessionsPage.css'
 
 // Verbindt het overzicht en de formulieren met de sessiegegevens uit de hook.
 export function SessionsPage({ member }: { member: Member }) {
+  // De hook bewaart de gegevens, laadstatus en acties; dit component bepaalt de weergave.
   const sessions = useSessions()
 
   return (
@@ -19,6 +20,7 @@ export function SessionsPage({ member }: { member: Member }) {
         you can join the waiting list.
       </p>
 
+      {/* Bij een open formulier staat de foutmelding in de pop-up zelf. */}
       {sessions.error && !sessions.openSessionId && !sessions.creating && (
         <p className="alert alert--error" role="alert">{sessions.error}</p>
       )}
@@ -33,20 +35,24 @@ export function SessionsPage({ member }: { member: Member }) {
         </button>
       </div>
 
+      {/* Toon tijdens ophalen een laadmelding en daarna de lijst met sessiekaarten. */}
       {sessions.loading ? (
         <p className="text-muted" role="status">Loading sessions…</p>
       ) : (
         <SessionList sessions={sessions.summaries} onSelect={sessions.openDetail} />
       )}
 
+      {/* Het aanmaakformulier verschijnt alleen als de gebruiker op Host a session klikt. */}
       {sessions.creating && (
         <CreateSessionModal
           error={sessions.error}
           busy={sessions.busy}
           onCancel={sessions.closeCreate}
           onSubmit={async (input) => {
+            // Wacht op de API; run vangt fouten op en voorkomt dubbele aanvragen.
             const result = await sessions.run(() => sessionsApi.createSession(input))
             if (result) {
+              // Na succes: sluit het formulier, werk het overzicht bij en open de nieuwe sessie.
               sessions.closeCreate()
               sessions.applyDetail(result)
               sessions.setOpenSessionId(result.id)
@@ -55,6 +61,7 @@ export function SessionsPage({ member }: { member: Member }) {
         />
       )}
 
+      {/* Het geselecteerde id bepaalt welke sessie in de detailpop-up wordt getoond. */}
       {sessions.openSessionId && (
         <SessionDetailModal
           detail={sessions.detail}

@@ -3,7 +3,9 @@ import { SessionCard } from './SessionCard'
 
 // Toont de sessiekaarten of een melding wanneer er nog geen sessies zijn.
 export function SessionList({ sessions, onSelect }: {
+  // De pagina geeft de opgehaalde sessies door als props.
   sessions: SessionSummary[]
+  // De callback geeft het gekozen id terug aan de pagina om de details te openen.
   onSelect: (id: string) => void
 }) {
   if (sessions.length === 0) {
@@ -19,6 +21,7 @@ export function SessionList({ sessions, onSelect }: {
 
   return (
     <ul className="session-grid">
+      {/* map maakt één kaart per sessie; key helpt React de kaarten te herkennen bij wijzigingen. */}
       {sessions.map((session) => (
         <SessionCard key={session.id} session={session} onSelect={onSelect} />
       ))}

@@ -7,6 +7,7 @@ import { messageOf } from './sessionUtils'
 // Beheert API-gegevens, laden, fouten en het openen van sessiedetails.
 // De pagina en losse componenten hoeven hierdoor zelf geen gegevens op te halen.
 export function useSessions() {
+  // useState bewaart gegevens tussen renders; een setter laat React de weergave bijwerken.
   const [members, setMembers] = useState<Member[]>([])
   const [games, setGames] = useState<Game[]>([])
   const [summaries, setSummaries] = useState<SessionSummary[]>([])
@@ -22,6 +23,7 @@ export function useSessions() {
   const listRequest = useRef(0)
   const detailRequest = useRef(0)
 
+  // Maak lopende antwoorden ongeldig wanneer de pagina sluit of opnieuw gaat laden.
   const invalidateRequests = useCallback(() => {
     listRequest.current++
     detailRequest.current++
@@ -30,6 +32,7 @@ export function useSessions() {
   // Een volgnummer voorkomt dat een ouder antwoord nieuwere gegevens overschrijft.
   useEffect(() => {
     const requestId = ++listRequest.current
+    // Deze drie onafhankelijke aanvragen starten tegelijk; daarna vullen we de state.
     Promise.all([
       sessionsApi.listMembers(), sessionsApi.listGames(), sessionsApi.listSessions(),
     ]).then(([memberList, gameList, sessionList]) => {
@@ -45,12 +48,14 @@ export function useSessions() {
     return invalidateRequests
   }, [refreshVersion, invalidateRequests])
 
+  // Een gewijzigd refreshVersion laat het effect de gegevens opnieuw ophalen.
   function reload() {
     setLoading(true)
     setError(null)
     setRefreshVersion((version) => version + 1)
   }
 
+  // Vernieuwt alleen de kaarten na een actie, zonder alle keuzelijsten opnieuw te laden.
   async function refreshList() {
     const requestId = ++listRequest.current
     try {
@@ -61,6 +66,7 @@ export function useSessions() {
     }
   }
 
+  // Wis eerst de vorige sessie; accepteer alleen het antwoord voor de laatste selectie.
   async function openDetail(id: string) {
     const requestId = ++detailRequest.current
     setOpenSessionId(id)
@@ -77,6 +83,7 @@ export function useSessions() {
     }
   }
 
+  // Voorkom sluiten tijdens opslaan en negeer een eventueel laat detailantwoord.
   function closeDetail() {
     if (pending.current) return
     detailRequest.current++
