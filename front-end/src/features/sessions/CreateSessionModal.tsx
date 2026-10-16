@@ -7,11 +7,7 @@ import { Modal } from './Modal'
 export function CreateSessionModal({
   onCancel,
   onSubmit,
-  error,
-  busy,
 }: {
-  error: string | null
-  busy: boolean
   onCancel: () => void
   onSubmit: (input: CreateSessionInput) => void
 }) {
@@ -36,18 +32,17 @@ export function CreateSessionModal({
       onClose={onCancel}
       footer={
         <>
-          <button type="button" className="button" onClick={onCancel} disabled={busy}>
+          <button type="button" className="button" onClick={onCancel}>
             Cancel
           </button>
-          <button type="submit" form="create-session-form" className="button button--primary" disabled={busy}>
-            {busy ? 'Saving…' : 'Create session'}
+          <button type="submit" form="create-session-form" className="button button--primary">
+            Create session
           </button>
         </>
       }
     >
-      {error && <p className="alert alert--error" role="alert">{error}</p>}
-      <form id="create-session-form" onSubmit={submit} aria-busy={busy}>
-        <fieldset className="session-form-fields stack" disabled={busy}>
+      <form id="create-session-form" onSubmit={submit}>
+        <fieldset className="session-form-fields stack">
           <label className="form-field">
             <span className="form-label">Title</span>
             <input

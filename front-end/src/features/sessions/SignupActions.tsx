@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Game } from '../../api'
+import type { Game } from '../../types/Game'
 import type { SessionDetail } from '../../types/Session'
 import { CONFIRMED } from './sessionUtils'
 
@@ -17,7 +17,7 @@ export function SignupActions({
   onSignUp: (gameId: string | null) => void
   onCancelSignup: () => void
 }) {
-  // Een lege spelkeuze wordt bij aanmelden als null naar de API gestuurd.
+  // Een lege spelkeuze wordt bij aanmelden als null doorgegeven.
   const [gameId, setGameId] = useState('')
 
   if (signedUp) {

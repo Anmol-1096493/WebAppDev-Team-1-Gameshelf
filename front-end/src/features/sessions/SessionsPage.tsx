@@ -1,14 +1,12 @@
-import type { Member } from '../../api'
-import { sessionsApi } from './sessionsApi'
+import { demoMember, sessionGames, sessionMembers } from '../../data/sessions'
 import { useSessions } from './useSessions'
 import { SessionList } from './SessionList'
 import { CreateSessionModal } from './CreateSessionModal'
 import { SessionDetailModal } from './SessionDetailModal'
 import './SessionsPage.css'
 
-// Verbindt het overzicht en de formulieren met de sessiegegevens uit de hook.
-export function SessionsPage({ member }: { member: Member }) {
-  // De hook bewaart de gegevens, laadstatus en acties; dit component bepaalt de weergave.
+// Verbindt de losse componenten met de tijdelijke voorbeeldgegevens uit de hook.
+export function SessionsPage() {
   const sessions = useSessions()
 
   return (
@@ -20,61 +18,34 @@ export function SessionsPage({ member }: { member: Member }) {
         you can join the waiting list.
       </p>
 
-      {/* Bij een open formulier staat de foutmelding in de pop-up zelf. */}
-      {sessions.error && !sessions.openSessionId && !sessions.creating && (
-        <p className="alert alert--error" role="alert">{sessions.error}</p>
-      )}
-
       <div className="cluster session-toolbar">
-        <button className="button button--primary" type="button" disabled={sessions.loading} onClick={sessions.openCreate}>
+        <button className="button button--primary" type="button" onClick={sessions.openCreate}>
           + Host a session
         </button>
-        <button className="button button--secondary" type="button"
-          disabled={sessions.loading} onClick={sessions.reload}>
-          Refresh
+        <button className="button button--secondary" type="button" onClick={sessions.reset}>
+          Reset examples
         </button>
       </div>
 
-      {/* Toon tijdens ophalen een laadmelding en daarna de lijst met sessiekaarten. */}
-      {sessions.loading ? (
-        <p className="text-muted" role="status">Loading sessions…</p>
-      ) : (
-        <SessionList sessions={sessions.summaries} onSelect={sessions.openDetail} />
-      )}
+      {/* map in SessionList maakt een kaart voor iedere sessie in de voorbeeldlijst. */}
+      <SessionList sessions={sessions.summaries} onSelect={sessions.openDetail} />
 
-      {/* Het aanmaakformulier verschijnt alleen als de gebruiker op Host a session klikt. */}
       {sessions.creating && (
-        <CreateSessionModal
-          error={sessions.error}
-          busy={sessions.busy}
-          onCancel={sessions.closeCreate}
-          onSubmit={async (input) => {
-            // Wacht op de API; run vangt fouten op en voorkomt dubbele aanvragen.
-            const result = await sessions.run(() => sessionsApi.createSession(input))
-            if (result) {
-              // Na succes: sluit het formulier, werk het overzicht bij en open de nieuwe sessie.
-              sessions.closeCreate()
-              sessions.applyDetail(result)
-              sessions.setOpenSessionId(result.id)
-            }
-          }}
-        />
+        <CreateSessionModal onCancel={sessions.closeCreate} onSubmit={sessions.createSession} />
       )}
 
-      {/* Het geselecteerde id bepaalt welke sessie in de detailpop-up wordt getoond. */}
-      {sessions.openSessionId && (
+      {sessions.detail && (
         <SessionDetailModal
           detail={sessions.detail}
-          loading={sessions.detailLoading}
-          error={sessions.error}
-          busy={sessions.busy}
-          onRetry={() => void sessions.openDetail(sessions.openSessionId!)}
-          currentMember={member}
-          members={sessions.members}
-          games={sessions.games}
+          currentMember={demoMember}
+          members={sessionMembers}
+          games={sessionGames}
           onClose={sessions.closeDetail}
-          onChanged={sessions.applyDetail}
-          run={sessions.run}
+          onSignUp={sessions.signUp}
+          onCancelSignup={sessions.cancelSignup}
+          onUpdated={sessions.updateSession}
+          onTransfer={sessions.transferHost}
+          onCancel={sessions.cancelSession}
         />
       )}
     </section>

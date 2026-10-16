@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Member } from '../../api'
+import type { Member } from '../../types/Member'
 import type { SessionDetail } from '../../types/Session'
 import { CONFIRMED, localDateFields } from './sessionUtils'
 
@@ -13,7 +13,7 @@ export function HostControls({
 }: {
   detail: SessionDetail
   members: Member[]
-  onUpdated: (input: { title?: string; startAt?: string; place?: string; capacity?: number }) => Promise<boolean>
+  onUpdated: (input: { title?: string; startAt?: string; place?: string; capacity?: number }) => boolean
   onTransfer: (newHostId: string) => void
   onCancel: () => void
 }) {
@@ -39,11 +39,11 @@ export function HostControls({
       <div className="card__body stack">
         {editing ? (
           <form
-            onSubmit={async (e) => {
+            onSubmit={(e) => {
               e.preventDefault()
-              // Zet de ingevoerde datum en tijd om en geeft de wijzigingen door aan de API-callback.
+              // Zet de ingevoerde datum en tijd om en geeft de wijzigingen door aan de pagina.
               const startAt = new Date(`${date}T${time}:00`).toISOString()
-              const saved = await onUpdated({ title: title.trim(), startAt, place: place.trim(), capacity })
+              const saved = onUpdated({ title: title.trim(), startAt, place: place.trim(), capacity })
               if (saved) setEditing(false)
             }}
             className="stack"

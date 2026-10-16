@@ -2,10 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import AppShell, { type PageId } from './AppShell.tsx'
 import { SessionsPage } from '../features/sessions/SessionsPage'
 import { MockPage } from './MockPages.tsx'
-import LoginPage from '../features/auth/LoginPage'
-import { HomePage } from '../features/home/HomePage'
-import { PublicLayout } from '../features/home/PublicLayout'
-import { auth, clearToken, type Member } from '../api.ts'
+import { demoMember } from '../data/sessions'
 import BoxDetailPage from '../pages/BoxDetailPage'
 import LendingListPage from '../features/lending/LendingListPage.tsx'
 import { lendingBoxes } from '../data/lendingBoxes'
@@ -32,8 +29,6 @@ type Route =
   | 'wishlist-detail'
   | 'trade-offer-form'
   | 'trade-offers'
-  | 'home'
-  | 'login'
 
 function pathToRoute(path: string): Route {
   const segments = path.split('/').filter(Boolean)
@@ -85,7 +80,6 @@ function pathToRoute(path: string): Route {
   }
 
   switch (segment) {
-    case 'login':
     case 'catalogue':
     case 'collections':
     case 'lending':
@@ -94,31 +88,15 @@ function pathToRoute(path: string): Route {
     case 'profile':
       return segment
     default:
-      return 'home'
+      return 'collections'
   }
 }
 
 function App() {
   const [path, setPath] = useState(window.location.pathname)
   const route = pathToRoute(path)
-  const [returnTo, setReturnTo] = useState(() =>
-    route === 'home' || route === 'login' ? '/sessions' : path,
-  )
   const boxId = path.match(/^\/lending\/boxes\/([^/]+)\/?$/)?.[1]
   const selectedBox = lendingBoxes.find((box) => box.id === boxId)
-  const [member, setMember] = useState<Member | null>(null)
-  const [authChecked, setAuthChecked] = useState(() => !localStorage.getItem('gameshelf.token'))
-
-  // Restore the session from a stored token on first load.
-  useEffect(() => {
-    const token = localStorage.getItem('gameshelf.token')
-    if (!token) return
-    auth
-      .me()
-      .then(setMember)
-      .catch(() => clearToken())
-      .finally(() => setAuthChecked(true))
-  }, [])
 
   // Kleine router voor bestaande links, inclusief terug/vooruit in de browser.
   const navigateTo = useCallback((destination: string) => {
@@ -147,44 +125,15 @@ function App() {
     }
   }, [navigateTo])
 
-  const logout = useCallback(() => {
-    clearToken()
-    setMember(null)
-    setReturnTo('/sessions')
-    navigateTo('/')
-  }, [navigateTo])
-
-  function loggedIn(signedInMember: Member) {
-    setMember(signedInMember)
-    navigateTo(returnTo)
-  }
-
-  if (!authChecked) {
-    return <PublicLayout><p role="status">Checking your sign-in…</p></PublicLayout>
-  }
-
-  // Bezoekers beginnen op de homepagina; het formulier staat apart op /login.
-  // De backend blijft alle beveiligde API-aanroepen zelf controleren.
-  if (!member) {
-    return (
-      <PublicLayout>
-        {route === 'login' ? <LoginPage onLoggedIn={loggedIn} /> : <HomePage />}
-      </PublicLayout>
-    )
-  }
-
-  const currentPage: PageId | undefined =
-    route === 'home' || route === 'login' ? undefined
-      : route === 'collection-detail' || route === 'collection-record-form' ? 'collections'
+  const currentPage: PageId =
+    route === 'collection-detail' || route === 'collection-record-form' ? 'collections'
       : route === 'shelf-form' || route === 'shelf-detail' ? 'shelves'
       : route === 'wishlist-detail' || route === 'trade-offer-form' || route === 'trade-offers' ? 'wishlists'
       : route
 
   return (
-    <AppShell currentPage={currentPage} user={member} onLogout={logout}>
-      {route === 'home' || route === 'login' ? (
-        <HomePage signedIn />
-      ) : route === 'collection-detail' ? (
+    <AppShell currentPage={currentPage}>
+      {route === 'collection-detail' ? (
         <CollectionDetailPage
           gameId={path.split('/').filter(Boolean)[1] ?? 1} />
       ) : route === 'collection-record-form' ? (
@@ -198,7 +147,7 @@ function App() {
       ) : route === 'collections' ? (
         <CollectionPage onSelectGame={(id) => navigateTo(`/collections/${id}`)} />
       ) : route === 'sessions' ? (
-        <SessionsPage member={member} />
+        <SessionsPage />
       ) : route === 'lending' ? (
         selectedBox ? (
           <BoxDetailPage box={selectedBox} />
@@ -214,7 +163,7 @@ function App() {
       ) : route === 'trade-offers' ? (
         <TradeOffersPage />
       ) : (
-        <MockPage page={currentPage ?? 'collections'} member={member} />
+        <MockPage page={currentPage} member={demoMember} />
       )}
     </AppShell>
   )

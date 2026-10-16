@@ -14,8 +14,6 @@ export type PageId =
 type AppShellProps = {
   children: ReactNode
   currentPage?: PageId
-  user?: { name: string } | null
-  onLogout?: () => void
 }
 
 const navigationItems: Array<{ id: PageId; label: string; href: string }> = [
@@ -27,7 +25,7 @@ const navigationItems: Array<{ id: PageId; label: string; href: string }> = [
   { id: 'profile', label: 'Profile', href: '/profile' },
 ]
 
-function AppShell({ children, currentPage, user, onLogout }: AppShellProps) {
+function AppShell({ children, currentPage }: AppShellProps) {
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -50,14 +48,6 @@ function AppShell({ children, currentPage, user, onLogout }: AppShellProps) {
               placeholder="Search games, members or sessions…"
             />
           </label>
-          {user && (
-            <div className="account">
-              <span className="account__name">{user.name}</span>
-              <button type="button" className="button account__logout" onClick={onLogout}>
-                Log out
-              </button>
-            </div>
-          )}
         </div>
       </header>
 

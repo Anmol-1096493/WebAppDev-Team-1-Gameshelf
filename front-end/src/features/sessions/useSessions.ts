@@ -1,135 +1,106 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { ApiError, type Game, type Member } from '../../api'
-import type { SessionDetail, SessionSummary } from '../../types/Session'
-import { sessionsApi } from './sessionsApi'
-import { messageOf } from './sessionUtils'
+import { useState } from 'react'
+import { demoMember, exampleSessions, sessionGames, sessionMembers } from '../../data/sessions'
+import type { CreateSessionInput, SessionDetail, UpdateSessionInput } from '../../types/Session'
+import { CONFIRMED, WAITING } from './sessionUtils'
 
-// Beheert API-gegevens, laden, fouten en het openen van sessiedetails.
-// De pagina en losse componenten hoeven hierdoor zelf geen gegevens op te halen.
+// Werkt uitsluitend met voorbeeldgegevens in React-state.
+// Aanpassingen zijn tijdelijk en verdwijnen wanneer de pagina opnieuw wordt geladen.
 export function useSessions() {
-  // useState bewaart gegevens tussen renders; een setter laat React de weergave bijwerken.
-  const [members, setMembers] = useState<Member[]>([])
-  const [games, setGames] = useState<Game[]>([])
-  const [summaries, setSummaries] = useState<SessionSummary[]>([])
-  const [detail, setDetail] = useState<SessionDetail | null>(null)
+  const [sessions, setSessions] = useState(() => structuredClone(exampleSessions))
   const [openSessionId, setOpenSessionId] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [detailLoading, setDetailLoading] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [refreshVersion, setRefreshVersion] = useState(0)
-  const pending = useRef(false)
-  const listRequest = useRef(0)
-  const detailRequest = useRef(0)
 
-  // Maak lopende antwoorden ongeldig wanneer de pagina sluit of opnieuw gaat laden.
-  const invalidateRequests = useCallback(() => {
-    listRequest.current++
-    detailRequest.current++
-  }, [])
-
-  // Een volgnummer voorkomt dat een ouder antwoord nieuwere gegevens overschrijft.
-  useEffect(() => {
-    const requestId = ++listRequest.current
-    // Deze drie onafhankelijke aanvragen starten tegelijk; daarna vullen we de state.
-    Promise.all([
-      sessionsApi.listMembers(), sessionsApi.listGames(), sessionsApi.listSessions(),
-    ]).then(([memberList, gameList, sessionList]) => {
-      if (requestId !== listRequest.current) return
-      setMembers(memberList)
-      setGames(gameList)
-      setSummaries(sessionList)
-    }).catch((e: unknown) => {
-      if (requestId === listRequest.current) setError(messageOf(e))
-    }).finally(() => {
-      if (requestId === listRequest.current) setLoading(false)
-    })
-    return invalidateRequests
-  }, [refreshVersion, invalidateRequests])
-
-  // Een gewijzigd refreshVersion laat het effect de gegevens opnieuw ophalen.
-  function reload() {
-    setLoading(true)
-    setError(null)
-    setRefreshVersion((version) => version + 1)
-  }
-
-  // Vernieuwt alleen de kaarten na een actie, zonder alle keuzelijsten opnieuw te laden.
-  async function refreshList() {
-    const requestId = ++listRequest.current
-    try {
-      const list = await sessionsApi.listSessions()
-      if (requestId === listRequest.current) setSummaries(list)
-    } catch (e) {
-      if (requestId === listRequest.current) setError(messageOf(e))
+  // Werk de aantallen, eigen aanmelding en spelindicatie bij na een schermactie.
+  function updateCounts(session: SessionDetail): SessionDetail {
+    const confirmedSeats = session.signups.filter((signup) => signup.status === CONFIRMED).length
+    const ownSignup = session.signups.find((signup) => signup.memberId === demoMember.id)
+    return {
+      ...session, confirmedSeats,
+      currentMemberSignedUp: Boolean(ownSignup),
+      currentMemberSignupStatus: ownSignup?.status ?? null,
+      signups: session.signups.map((signup) => ({
+        ...signup, gameFits: !signup.broughtGame || signup.broughtGame.minPlayers <= confirmedSeats,
+      })),
     }
   }
 
-  // Wis eerst de vorige sessie; accepteer alleen het antwoord voor de laatste selectie.
-  async function openDetail(id: string) {
-    const requestId = ++detailRequest.current
-    setOpenSessionId(id)
-    setDetail(null)
-    setError(null)
-    setDetailLoading(true)
-    try {
-      const result = await sessionsApi.getSession(id)
-      if (requestId === detailRequest.current) setDetail(result)
-    } catch (e) {
-      if (requestId === detailRequest.current) setError(messageOf(e))
-    } finally {
-      if (requestId === detailRequest.current) setDetailLoading(false)
+  function changeSelected(change: (session: SessionDetail) => SessionDetail) {
+    setSessions((current) => current.map((session) =>
+      session.id === openSessionId ? updateCounts(change(session)) : session,
+    ))
+  }
+
+  function createSession(input: CreateSessionInput) {
+    const session: SessionDetail = {
+      ...input, id: crypto.randomUUID(), hostId: demoMember.id, hostName: demoMember.name,
+      isCancelled: false, confirmedSeats: 0, currentMemberSignedUp: false,
+      currentMemberSignupStatus: null, signups: [],
     }
-  }
-
-  // Voorkom sluiten tijdens opslaan en negeer een eventueel laat detailantwoord.
-  function closeDetail() {
-    if (pending.current) return
-    detailRequest.current++
-    setOpenSessionId(null)
-    setDetail(null)
-    setError(null)
-  }
-
-  // Na een wijziging worden zowel de details als de aantallen op de kaarten bijgewerkt.
-  function applyDetail(result: SessionDetail) {
-    setDetail(result)
-    void refreshList()
-  }
-
-  // Voorkomt dubbele acties en toont API-fouten ook binnen het geopende formulier.
-  async function run<T>(fn: () => Promise<T>, onError?: (e: ApiError) => void): Promise<T | undefined> {
-    if (pending.current) return undefined
-    pending.current = true
-    setBusy(true)
-    setError(null)
-    try {
-      return await fn()
-    } catch (e) {
-      setError(messageOf(e))
-      if (e instanceof ApiError) onError?.(e)
-      return undefined
-    } finally {
-      pending.current = false
-      setBusy(false)
-    }
-  }
-
-  function openCreate() {
-    setError(null)
-    setCreating(true)
-  }
-
-  function closeCreate() {
-    if (pending.current) return
+    setSessions((current) => [session, ...current])
     setCreating(false)
-    setError(null)
+    setOpenSessionId(session.id)
+  }
+
+  function signUp(gameId: string | null) {
+    const id = crypto.randomUUID()
+    changeSelected((session) => {
+      if (session.isCancelled || session.currentMemberSignedUp) return session
+      return {
+        ...session,
+        signups: [...session.signups, {
+          id, memberId: demoMember.id, memberName: demoMember.name,
+          status: session.confirmedSeats < session.capacity ? CONFIRMED : WAITING,
+          createdAt: new Date().toISOString(),
+          broughtGame: sessionGames.find((game) => game.id === gameId) ?? null,
+          gameFits: true,
+        }],
+      }
+    })
+  }
+
+  function cancelSignup() {
+    changeSelected((session) => {
+      const signups = session.signups.filter((signup) => signup.memberId !== demoMember.id)
+      const confirmed = signups.filter((signup) => signup.status === CONFIRMED).length
+      const next = signups.filter((signup) => signup.status === WAITING)
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0]
+      return {
+        ...session,
+        signups: signups.map((signup) => next && confirmed < session.capacity && signup.id === next.id
+          ? { ...signup, status: CONFIRMED } : signup),
+      }
+    })
+  }
+
+  function updateSession(input: UpdateSessionInput) {
+    changeSelected((session) => {
+      const capacity = input.capacity ?? session.capacity
+      // Toon hoe de verdeling van plaatsen verandert bij een andere capaciteit.
+      const ordered = [...session.signups.filter((s) => s.status === CONFIRMED),
+        ...session.signups.filter((s) => s.status === WAITING)]
+      const confirmedIds = new Set(ordered.slice(0, capacity).map((signup) => signup.id))
+      return { ...session, ...input, signups: session.signups.map((signup) => ({
+        ...signup, status: confirmedIds.has(signup.id) ? CONFIRMED : WAITING,
+      })) }
+    })
+    return true
+  }
+
+  function transferHost(memberId: string) {
+    const member = sessionMembers.find((candidate) => candidate.id === memberId)
+    if (!member) return
+    changeSelected((session) => ({ ...session, hostId: member.id, hostName: member.name }))
   }
 
   return {
-    members, games, summaries, detail, openSessionId, creating, error,
-    loading, detailLoading, busy, reload, openDetail, closeDetail,
-    applyDetail, run, openCreate, closeCreate, setOpenSessionId,
+    summaries: sessions.map((session) => ({
+      ...session, waitingCount: session.signups.filter((signup) => signup.status === WAITING).length,
+    })),
+    detail: sessions.find((session) => session.id === openSessionId) ?? null,
+    creating, openSessionId, createSession, signUp, cancelSignup, updateSession, transferHost,
+    openCreate: () => setCreating(true), closeCreate: () => setCreating(false),
+    openDetail: setOpenSessionId, closeDetail: () => setOpenSessionId(null),
+    cancelSession: () => changeSelected((session) => ({ ...session, isCancelled: true })),
+    reset: () => { setSessions(structuredClone(exampleSessions)); setOpenSessionId(null) },
   }
 }

@@ -1,8 +1,9 @@
 # GameShelf frontend
 
 React en TypeScript met Vite. Het entrypoint is `src/components/main.tsx`.
-`src/components/App.tsx` regelt de routes en controleert de opgeslagen login.
-De vormgeving gebruikt gewone CSS-bestanden; er wordt geen Tailwind gebruikt.
+`src/components/App.tsx` regelt de routes. De startpagina toont direct Collections.
+Alle pagina's zijn toegankelijk zonder account.
+De vormgeving gebruikt gewone CSS-bestanden, zonder Tailwind.
 
 ## Starten
 
@@ -11,45 +12,35 @@ npm ci
 npm run dev
 ```
 
-Start daarnaast de backend op `http://localhost:5080` (zie `../back-end/README.md`).
-Open `http://localhost:5173`. Zonder login zie je eerst de homepagina.
-Klik op **Sign in** om naar `/login` te gaan. Na inloggen opent standaard `/sessions`.
-Na uitloggen ga je terug naar de openbare homepagina.
-Demo: gebruikersnaam `jeffrey` of `artur`, wachtwoord `Admin001`.
+Open de lokale URL die Vite toont, meestal `http://localhost:5173`.
 
-## Indeling
+## Sessions
 
-De features volgen dezelfde opzet als collection en shelves: losse pagina's,
-lijsten, kaarten en formulieren, met CSS bij de betreffende feature.
-
-| Bestand of map | Wat staat erin? |
+| Bestand | Verantwoordelijkheid |
 | --- | --- |
-| `src/features/home/` | Openbare homepagina, eenvoudige header en footer, eigen CSS. |
-| `src/features/auth/` | Inlogformulier en bijbehorende CSS. |
-| `src/features/sessions/SessionsPage.tsx` | Verbindt het overzicht, de hook en de formulieren. |
-| `src/features/sessions/SessionList.tsx` | Sessieoverzicht en melding bij een lege lijst. |
-| `src/features/sessions/SessionCard.tsx` | Eén sessiekaart met host, locatie en bezetting. |
-| `src/features/sessions/useSessions.ts` | Laden, verversen, foutmeldingen en sessiedetails. |
-| `src/features/sessions/sessionsApi.ts` | HTTP-aanroepen voor sessies, deelnemers, hostacties en keuzelijsten. |
-| `src/features/sessions/CreateSessionModal.tsx` | Formulier om een sessie aan te maken. |
+| `src/data/sessions.ts` | Vaste voorbeeldsessies, leden en spellen. |
+| `src/features/sessions/SessionsPage.tsx` | Verbindt de lijst en formulieren met de schermgegevens. |
+| `src/features/sessions/useSessions.ts` | Tijdelijke React-state voor de demonstratie van schermacties. |
+| `src/features/sessions/SessionList.tsx` | Overzicht van sessies. |
+| `src/features/sessions/SessionCard.tsx` | Eén kaart met locatie, organisator en bezette plaatsen. |
+| `src/features/sessions/CreateSessionModal.tsx` | Formulier voor een nieuwe voorbeeldsessie. |
 | `src/features/sessions/SessionDetailModal.tsx` | Details, deelnemers, wachtlijst en meegenomen spellen. |
-| `src/features/sessions/SignupActions.tsx` | Aanmelden, een spel kiezen en afmelden. |
-| `src/features/sessions/HostControls.tsx` | Wijzigen, hostschap overdragen en annuleren. |
-| `src/features/sessions/SignupRow.tsx` | Eén bevestigde deelnemer en het meegenomen spel. |
-| `src/features/sessions/Modal.tsx` | Gedeelde pop-up met het native HTML-dialog-element. |
-| `src/features/sessions/sessionUtils.ts` | Statuswaarden, foutmeldingen en lokale datumnotatie. |
-| `src/features/sessions/SessionsPage.css` | Handmatige CSS voor sessiekaarten, formulieren en pop-ups. |
-| `src/types/Session.ts` | TypeScript-types van sessies en inschrijvingen. |
-| `src/api.ts` | Gedeelde HTTP-client, bearer-token en login-aanroepen. |
-| `src/features/collection/`, `src/features/shelves/` | De onderdelen die vanuit main zijn overgenomen. |
+| `src/features/sessions/SignupActions.tsx` | Aanmelden en afmelden in het schermvoorbeeld. |
+| `src/features/sessions/HostControls.tsx` | Wijzigen, overdragen en annuleren in het schermvoorbeeld. |
+| `src/features/sessions/SignupRow.tsx` | Eén deelnemer. |
+| `src/features/sessions/Modal.tsx` | Gedeelde pop-up met het native dialog-element. |
+| `src/features/sessions/SessionsPage.css` | Handmatige CSS. |
+| `src/types/Session.ts` | TypeScript-types voor de schermgegevens. |
 
-Login en sessions gebruiken de echte backend en database. De overige pagina's
-gebruiken voorlopig statische demogegevens; collection en shelves laden JSON uit
-`public/data/`. De sidebar blijft na inloggen beschikbaar voor alle onderdelen.
+Sessions doet geen netwerkverzoeken en bewaart niets permanent. Een paginaherlading
+of **Reset examples** herstelt de vaste voorbeelden. Het voorbeeldprofiel is Jeffrey.
+
+Collections en Shelves laden lokale JSON-bestanden via `useFetch`; dit zijn statische
+bestanden in `public/data/`. Wishlist, Trading en Lending gebruiken voorbeeldgegevens.
 
 ## Scripts
 
-- `npm run dev`: lokale ontwikkelserver met automatische updates.
-- `npm run lint`: code controleren met Oxlint.
-- `npm run build`: TypeScript controleren en de webapp bouwen in `dist/`.
-- `npm run preview`: de gebouwde webapp lokaal bekijken.
+- `npm run dev`: ontwikkelserver.
+- `npm run lint`: code controleren.
+- `npm run build`: TypeScript controleren en de website bouwen in `dist/`.
+- `npm run preview`: de gebouwde website bekijken.

@@ -1,4 +1,4 @@
-import type { Game } from '../api'
+import type { Game } from './Game'
 
 export type SignupStatus = 0 | 1 // 0 = Confirmed, 1 = Waiting
 

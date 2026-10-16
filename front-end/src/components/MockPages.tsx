@@ -1,4 +1,4 @@
-import type { Member } from '../api.ts'
+import type { Member } from '../types/Member'
 import type { PageId } from './AppShell.tsx'
 import './MockPages.css'
 

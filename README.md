@@ -1,40 +1,30 @@
-# WebAppDev-Team-1-Gameshelf
+# GameShelf
 
-Webapplicatie voor GameShelf.
+React-frontend voor de GameShelf bordspellenclub, met voorbeeldgegevens en handmatige CSS.
+De website opent direct op Collections. Alle pagina's zijn bereikbaar via de sidebar.
 
-- `front-end/`: React + TypeScript met Vite.
-- `back-end/`: ASP.NET Core Web API in C# (.NET 10). Zie de [backend-README](back-end/README.md) voor installatie en lokaal starten op Windows en macOS.
-
-## Frontend starten
-
-Voer vanuit deze projectmap uit:
+## Starten
 
 ```sh
 cd front-end
-npm install
+npm ci
 npm run dev
 ```
 
-Open de lokale URL die Vite in de terminal toont.
+Open de lokale URL die Vite toont. Er is geen account of aparte server nodig.
 
 ## Controleren
 
-Voer vanuit `front-end/` uit:
-
 ```sh
+cd front-end
 npm run lint
 npm run build
 ```
 
-De styling, functionaliteit en koppeling met de backend worden later toegevoegd.
+Sessions gebruikt vaste voorbeeldgegevens uit `front-end/src/data/sessions.ts`.
+Formulieren en knoppen passen tijdelijk de React-state aan; bij het herladen
+begin je weer met de oorspronkelijke voorbeelden.
 
-## Backend starten
-
-Na het installeren van de .NET 10 SDK:
-
-```sh
-cd back-end
-dotnet run --project GameShelf.Api --launch-profile http
-```
-
-Controleer de API op http://localhost:5080/health. Uitgebreide uitleg staat in [back-end/README.md](back-end/README.md).
+Collections en Shelves lezen lokale JSON-bestanden uit `front-end/public/data/`.
+Wishlist, Trading en Lending gebruiken eveneens voorbeeldgegevens.
+Het ontwerp van het datamodel staat in `database/`.
