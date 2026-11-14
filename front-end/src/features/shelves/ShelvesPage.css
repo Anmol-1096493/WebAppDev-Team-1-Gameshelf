@@ -11,7 +11,8 @@
 
 .shelves-page-header {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
+  flex-direction: column;
   justify-content: space-between;
   gap: 2rem;
 }
@@ -48,6 +49,14 @@
   font-weight: 700;
 }
 
+.shelves-create-button {
+  width: 100%;
+}
+
+.shelf-view-button {
+  width: 100%;
+}
+
 .shelves-create-button:focus-visible,
 .shelf-view-button:focus-visible {
   outline: 3px solid currentColor;
@@ -60,7 +69,7 @@
 
 .shelves-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
 }
 
@@ -93,6 +102,7 @@
 .shelf-card-header {
   display: flex;
   align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
 }
@@ -127,35 +137,35 @@
    Responsive: Tablet
    ======================================== */
 
-@media (max-width: 900px) {
+@media (min-width: 651px) {
+  .shelves-page-header {
+    align-items: flex-end;
+    flex-direction: row;
+  }
+
+  .shelves-create-button {
+    width: auto;
+  }
+
   .shelves-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shelf-card-header {
+    flex-direction: row;
+  }
+
+  .shelf-view-button {
+    width: auto;
   }
 }
 
 /* ========================================
-   Responsive: Mobile
+   Responsive: Desktop
    ======================================== */
 
-@media (max-width: 650px) {
-  .shelves-page-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .shelves-create-button {
-    width: 100%;
-  }
-
+@media (min-width: 901px) {
   .shelves-list {
-    grid-template-columns: 1fr;
-  }
-
-  .shelf-card-header {
-    flex-direction: column;
-  }
-
-  .shelf-view-button {
-    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

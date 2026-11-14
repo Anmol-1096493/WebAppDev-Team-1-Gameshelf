@@ -1,7 +1,7 @@
 .shelf-detail-page {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 /* ========================================
@@ -11,8 +11,9 @@
 .shelf-detail-header {
   display: flex;
   align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -68,7 +69,8 @@
 /* Game List Header */
 .shelf-game-list-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
@@ -92,7 +94,8 @@
 
 .shelf-game-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
@@ -114,6 +117,7 @@
 
 /* Remove Button */
 .shelf-game-item button {
+  width: 100%;
   flex-shrink: 0;
   min-height: 40px;
   padding: 0.6rem 0.9rem;
@@ -135,30 +139,30 @@
 }
 
 /* ========================================
-   Responsive: Mobile
+   Responsive: Tablet / Desktop
    ======================================== */
 
-@media (max-width: 650px) {
+@media (min-width: 651px) {
   .shelf-detail-page {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .shelf-detail-header {
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row;
+    gap: 2rem;
   }
 
   .shelf-game-list-header {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
   .shelf-game-item {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
   }
 
   .shelf-game-item button {
-    width: 100%;
+    width: auto;
   }
 }
