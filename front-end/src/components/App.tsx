@@ -39,7 +39,7 @@ function pathToRoute(path: string): Route {
   const segments = path.split('/').filter(Boolean)
   const segment = segments[0] ?? ''
 
-  // Collection detail pages use the /collections/:id URL structure.
+  // Collection detail: /collections/:id
   if (segment === 'collections' && segments.length > 1) {
     return 'collection-detail'
   }
@@ -48,7 +48,7 @@ function pathToRoute(path: string): Route {
   if (
     segment === 'wishlists' &&
     segments.length === 3 &&
-    /^\d+$/.test(segments[1]) &&
+    segments[1].length > 0 &&
     segments[2] === 'offer'
   ) {
     return 'trade-offer-form'
@@ -58,7 +58,7 @@ function pathToRoute(path: string): Route {
   if (
     segment === 'wishlists' &&
     segments.length === 2 &&
-    /^\d+$/.test(segments[1])
+    segments[1].length > 0
   ) {
     return 'wishlist-detail'
   }
