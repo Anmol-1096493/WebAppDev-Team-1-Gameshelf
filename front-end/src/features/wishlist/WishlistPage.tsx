@@ -1,8 +1,8 @@
-import { useState } from 'react'
-// useState bewaart gegevens binnen de React-component.
+import { useEffect, useState } from 'react'
 import WishlistItemModal, {
   type WishlistDraft,
 } from './WishlistItemModal.tsx'
+import {wishlistApi, type WishlistItem as ApiWishlistItem,} from './wishlistApi.ts'
 import './WishlistPage.css'
 
 // Dit bepaalt welke velden elk wishlist-item moet hebben.
@@ -16,7 +16,12 @@ export type WishlistItem = {
   emoji: string
 }
 
-// Voorbeeldgegevens van de community-wishlists.
+type DisplayWishlistItem = Omit<WishlistItem, 'id'> & {
+  id: string | number
+}
+
+// Bestaande voorbeeldgegevens blijven tijdelijk beschikbaar
+// voor andere pagina's die wishlistItems importeren.
 export const wishlistItems: WishlistItem[] = [
   {
     id: 1,
@@ -86,12 +91,40 @@ const gameEmojis: Record<string, string> = {
   Carcassonne: '🏰',
 }
 
-// Hoofdcomponent van de wishlist-pagina. Beheert tabbladen, filters en het toevoegen/bewerken.
+// Zet backendgegevens om naar het bestaande frontendformaat.
+function convertWishlistItem(
+  item: ApiWishlistItem
+): DisplayWishlistItem {
+  const priorities: Record<number, WishlistItem['priority']> = {
+    0: 'Low',
+    1: 'Medium',
+    2: 'High',
+  }
+
+  return {
+    id: item.id,
+    memberName: item.memberName,
+    gameTitle: item.gameTitle,
+    priority: priorities[item.priority] ?? 'Low',
+    notes: item.note,
+    isFulfilled: item.isFulfilled,
+    emoji: gameEmojis[item.gameTitle] ?? '🎲',
+  }
+}
+
 export default function WishlistPage() {
 // Het actieve tabblad: community of eigen wishlist. Standaard opent community.
   const [tab, setTab] = useState<'community' | 'mine'>('community')
-  // myItems bevat de eigen wishlist-items.
-  // Wijzigingen zijn niet permanent opgeslagen, na opnieuw laden begint deze state opnieuw.
+
+  // Echte communitygegevens uit de backend.
+  const [communityItems, setCommunityItems] = useState<
+    DisplayWishlistItem[]
+  >([])
+
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  // Eigen wishlist gebruikt voorlopig nog de bestaande demo-state.
   const [myItems, setMyItems] = useState<WishlistItem[]>([
     {
       id: 101,
@@ -110,9 +143,46 @@ export default function WishlistPage() {
   const [priority, setPriority] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null)
-  // Bepaal welke lijst gebruikt wordt op basis van het geselecteerde tabblad.
-  const items = tab === 'community' ? wishlistItems : myItems
-  // filter() maakt een nieuwe lijst met alleen de items die aan de filters voldoen.
+
+  // Haal de community-wishlists op wanneer de pagina opent.
+  useEffect(() => {
+    let active = true
+
+    async function loadWishlists() {
+      try {
+        const data = await wishlistApi.getAll()
+
+        if (active) {
+          setCommunityItems(data.map(convertWishlistItem))
+          setLoadError('')
+        }
+      } catch (error) {
+        if (active) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : 'Could not load wishlists.'
+          )
+        }
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadWishlists()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  // Kies de juiste gegevens voor het actieve tabblad.
+  const items: DisplayWishlistItem[] =
+    tab === 'community' ? communityItems : myItems
+
+  // Zoeken en filteren.
   const filteredItems = items.filter((item) => {
     // Maak de zoekterm kleine letters en verwijder spaties aan het begin en einde.
     const query = search.toLowerCase().trim()
@@ -162,9 +232,7 @@ export default function WishlistPage() {
     setEditingItem(null)
   }
 
-
-  // bevat ingevulde formuliergegevens.
-  // draft bevat de ingevulde gametitel, prioriteit en opmerkingen.
+  //  demo-opslag voor My Wishlist.
   function saveItem(draft: WishlistDraft) {
 
     // Als editingItem bestaat, wordt een bestaand item aangepast.
@@ -209,7 +277,6 @@ export default function WishlistPage() {
   // Hier komen de gegevens, functies en interacties samen.
   return (
     <section className="wishlist-page" aria-labelledby="page-title">
-      {/* De header bevat de naam en korte beschrijving van de pagina. */}
       <header className="wishlist-page-header">
         <p className="eyebrow">GameShelf Community</p>
         <h1 id="page-title">Wishlists</h1>
@@ -254,7 +321,9 @@ export default function WishlistPage() {
       {/* De titel en beschrijving veranderen afhankelijk van het tabblad. */}
       <div className="wishlist-section-heading">
         <div>
-          <h2>{tab === 'community' ? "Members' Wishes" : 'My Wishlist'}</h2>
+          <h2>
+            {tab === 'community' ? "Members' Wishes" : 'My Wishlist'}
+          </h2>
           <p className="text-muted">
             {tab === 'community'
               ? 'Public wishlist items from GameShelf members.'
@@ -318,14 +387,19 @@ export default function WishlistPage() {
         </label>
       </div>
 
-      {/* Toon hoeveel items na het toepassen van de filters overblijven. */}
+      {/* Aantal resultaten */}
       <p className="wishlist-count text-muted">
         {filteredItems.length} wishlist item(s) found
       </p>
 
-      {/* Als er resultaten zijn, worden de wishlist-kaarten weergegeven.
-          Anders verschijnt er een melding dat er geen resultaten zijn. */}
-      {filteredItems.length > 0 ? (
+      {/* Resultaten */}
+      {tab === 'community' && loading ? (
+        <p className="text-muted">Loading wishlists...</p>
+      ) : tab === 'community' && loadError ? (
+        <p role="alert">
+          Could not load wishlists: {loadError}
+        </p>
+      ) : filteredItems.length > 0 ? (
         <ul className="wishlist-grid" role="list">
           {/* map() maakt voor ieder gefilterd item een kaart.
               key={item.id} helpt React om items te herkennen bij wijzigingen. */}
@@ -378,7 +452,7 @@ export default function WishlistPage() {
                   <button
                     type="button"
                     className="button button--secondary"
-                    onClick={() => openEdit(item)}
+                    onClick={() => openEdit(item as WishlistItem)}
                   >
                     Edit Wishlist Item
                   </button>
@@ -417,10 +491,7 @@ export default function WishlistPage() {
         </div>
       )}
 
-
-      {/* De modal wordt alleen weergegeven wanneer modalOpen true is.
-          Het geselecteerde item en de functies worden als props doorgegeven.
-          onClose sluit de modal; onSave verwerkt de formuliergegevens. */}
+      {/* Modal voor toevoegen en bewerken */}
       {modalOpen && (
         <WishlistItemModal
           item={editingItem}
