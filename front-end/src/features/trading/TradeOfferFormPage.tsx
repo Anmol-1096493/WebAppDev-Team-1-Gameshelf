@@ -1,5 +1,8 @@
-import { useState, type FormEvent } from 'react'
-import { wishlistItems } from '../wishlist/WishlistPage.tsx'
+import { useEffect, useState, type FormEvent } from 'react'
+import {
+  wishlistApi,
+  type WishlistItem,
+} from '../wishlist/wishlistApi.ts'
 import './TradeOfferFormPage.css'
 
 // Lijst met games die de gebruiker kan kiezen als ruilgame.
@@ -14,25 +17,85 @@ const catalogueGames = [
   'Carcassonne',
 ]
 
-export default function TradeOfferFormPage() {
-  // Haalt de URL op, splitst deze in onderdelen en verwijdert lege onderdelen.
-  const segments = window.location.pathname.split('/').filter(Boolean)
-  // Zet het tweede onderdeel van de URL om naar een nummer.
-  const itemId = Number(segments[1])
-  // Zoekt in de wishlist naar het item met het bijbehorende ID.
-  const item = wishlistItems.find((wish) => wish.id === itemId)
+const gameEmojis: Record<string, string> = {
+  'Ark Nova': '🦁',
+  'Spirit Island': '🏝️',
+  'Terraforming Mars': '🪐',
+  Wingspan: '🪶',
+  Catan: '🏔️',
+  Azul: '🟦',
+  'Ticket to Ride': '🚂',
+  Carcassonne: '🏰',
+}
 
-  // Bewaart de gekozen game, een eventuele foutmelding en of de preview succesvol is.
+export default function TradeOfferFormPage() {
+  // Haal de GUID van het wishlistitem uit de URL.
+  const segments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+
+  const itemId = segments[1]
+
+  // Bewaar het wishlistitem uit de backend.
+  const [item, setItem] = useState<WishlistItem | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  // Bewaar de gekozen game en formulierstatus.
   const [requestedGame, setRequestedGame] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  // Wordt uitgevoerd wanneer het formulier wordt ingediend.
+  // Haal het geselecteerde wishlistitem op uit SQLite.
+  useEffect(() => {
+    let active = true
+
+    async function loadWishlistItem() {
+      if (!itemId) {
+        setLoadError('Invalid wishlist item ID.')
+        setLoading(false)
+        return
+      }
+
+      try {
+        const data = await wishlistApi.getById(itemId)
+
+        if (active) {
+          setItem(data)
+          setLoadError('')
+        }
+      } catch (err) {
+        if (active) {
+          setLoadError(
+            err instanceof Error
+              ? err.message
+              : 'Could not load wishlist item.'
+          )
+        }
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadWishlistItem()
+
+    return () => {
+      active = false
+    }
+  }, [itemId])
+
+  // Controleer het formulier wanneer de gebruiker klikt.
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    // Voorkomt dat de pagina opnieuw wordt geladen bij het indienen.
     event.preventDefault()
 
-    // Controleert of de gebruiker een game heeft gekozen.
+    if (!item) {
+      setError('Wishlist item not found.')
+      setSuccess(false)
+      return
+    }
+
     if (!requestedGame) {
       setError('Please select the game you want in return.')
       setSuccess(false)
@@ -46,16 +109,28 @@ export default function TradeOfferFormPage() {
       return
     }
 
-    // Als de controles slagen, wordt de foutmelding verwijderd en de preview getoond.
     setError('')
     setSuccess(true)
   }
 
-  // Als het wishlist-item niet bestaat, wordt een aparte melding getoond.
-  if (!item) {
+  // Laadmelding.
+  if (loading) {
+    return (
+      <section className="trade-form-page">
+        <a href="/wishlists">← Back to Wishlists</a>
+        <p className="text-muted">Loading trade offer...</p>
+      </section>
+    )
+  }
+
+  // Foutmelding als het wishlistitem niet bestaat.
+  if (loadError || !item) {
     return (
       <section className="trade-form-page">
         <h1>Wishlist Item Not Found</h1>
+        <p className="text-muted">
+          {loadError || 'The requested wishlist item does not exist.'}
+        </p>
         <a href="/wishlists">Back to Wishlists</a>
       </section>
     )
@@ -67,15 +142,21 @@ export default function TradeOfferFormPage() {
       <section className="trade-form-page">
         <h1>Trade Unavailable</h1>
         <p>This wishlist item has already been fulfilled.</p>
-        <a href={`/wishlists/${item.id}`}>Back to Wishlist Item</a>
+        <a href={`/wishlists/${item.id}`}>
+          Back to Wishlist Item
+        </a>
       </section>
     )
   }
 
-  // De normale pagina met het formulier wordt getoond als de controles slagen.
+  const emoji = gameEmojis[item.gameTitle] ?? '🎲'
+
   return (
-    <section className="trade-form-page" aria-labelledby="page-title">
-      {/* Link om terug te gaan naar het geselecteerde wishlist-item. */}
+    <section
+      className="trade-form-page"
+      aria-labelledby="page-title"
+    >
+      {/* Terug naar het wishlistitem */}
       <a
         href={`/wishlists/${item.id}`}
         className="trade-form-back"
@@ -83,7 +164,6 @@ export default function TradeOfferFormPage() {
         ← Back to Wishlist Item
       </a>
 
-      {/* Titel en korte uitleg van de pagina. */}
       <header className="trade-form-header">
         <p className="eyebrow">Wishlist & Trading</p>
         <h1 id="page-title">Make Trade Offer</h1>
@@ -92,18 +172,18 @@ export default function TradeOfferFormPage() {
         </p>
       </header>
 
-      {/* Formulier waarin de gebruiker de ruil samenstelt. */}
+      {/* Formulier */}
       <form
         className="card trade-form-card"
         onSubmit={handleSubmit}
         noValidate
       >
-        {/* Sectie 1: toont de game uit de wishlist die wordt aangeboden. */}
+        {/* Sectie 1: aangeboden game */}
         <div className="trade-form-section">
           <h2>1. Game You Are Offering</h2>
 
           <div className="trade-form-offered">
-            <span aria-hidden="true">{item.emoji}</span>
+            <span aria-hidden="true">{emoji}</span>
             <div>
               <strong>{item.gameTitle}</strong>
               <p>Wanted by {item.memberName}</p>
@@ -115,7 +195,7 @@ export default function TradeOfferFormPage() {
           </p>
         </div>
 
-        {/* Sectie 2: laat de gebruiker kiezen welke game die terug wil. */}
+        {/* Sectie 2: gewenste game */}
         <div className="trade-form-section">
           <h2>2. Game You Want in Return</h2>
 
@@ -185,7 +265,7 @@ export default function TradeOfferFormPage() {
           </p>
         </div>
 
-        {/* Verschijnt alleen als er een foutmelding is. */}
+        {/* Validatiefout */}
         {error && (
           <p
             id="trade-form-error"
@@ -196,7 +276,7 @@ export default function TradeOfferFormPage() {
           </p>
         )}
 
-        {/* Verschijnt alleen als de invoer geldig is en de preview is voltooid. */}
+        {/* Preview van het ruilvoorstel */}
         {success && (
           <div className="trade-form-success" role="status">
             <strong>Trade Offer Preview Completed!</strong>
@@ -208,7 +288,7 @@ export default function TradeOfferFormPage() {
           </div>
         )}
 
-        {/* Onderaan staan de annuleerlink en de knop om het formulier in te dienen. */}
+        {/* Actieknoppen */}
         <div className="trade-form-actions">
           <a
             href={`/wishlists/${item.id}`}
@@ -218,7 +298,7 @@ export default function TradeOfferFormPage() {
           </a>
 
           <button type="submit" className="button button--primary">
-            Send Trade Offer
+            Preview Trade Offer
           </button>
         </div>
       </form>
