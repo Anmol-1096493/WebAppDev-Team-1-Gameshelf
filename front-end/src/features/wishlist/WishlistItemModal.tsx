@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import type { Game } from '../../api.ts'
 import type { WishlistItem } from './WishlistPage.tsx'
 import './WishlistItemModal.css'
 
@@ -6,164 +7,199 @@ import './WishlistItemModal.css'
 // WishlistDraft beschrijft welke gegevens het formulier doorgeeft.
 // Dit bevat alleen de velden die ingevuld of aangepast kunnen worden.
 export type WishlistDraft = {
-  gameTitle: string
+  gameId: string
   priority: WishlistItem['priority']
   notes: string
 }
 
-type WishlistItemModalProps = {
-  item?: WishlistItem | null // Het bestaande item, of null/undefined bij een nieuw item.
-  onClose: () => void // Functie om de modal te sluiten.
-  onSave: (draft: WishlistDraft) => void // Functie om de ingevulde gegevens door te geven.
+type EditableItem = Omit<WishlistItem, 'id'> & {
+  id: string | number
 }
 
-// Lijst met bordspellen die in het keuzemenu geselecteerd kunnen worden.
-const catalogueGames = [
-  'Ark Nova',
-  'Spirit Island',
-  'Terraforming Mars',
-  'Wingspan',
-  'Catan',
-  'Azul',
-  'Ticket to Ride',
-  'Carcassonne',
-]
+type WishlistItemModalProps = {
+  item?: EditableItem | null
+  games: Game[]
+  gamesLoading: boolean
+  gamesError: string
+  saving: boolean
+  saveError: string
+  onClose: () => void
+  onSave: (draft: WishlistDraft) => void | Promise<void>
+}
 
-// Deze component toont het formulier voor het toevoegen of bewerken van een wishlist-item.
+// Modal voor het toevoegen en bewerken van wishlistitems.
 export default function WishlistItemModal({
   item,
+  games,
+  gamesLoading,
+  gamesError,
+  saving,
+  saveError,
   onClose,
   onSave,
 }: WishlistItemModalProps) {
-  // Als er een bestaand item is, staat de modal in de bewerkmodus.
+  // Bepaal of de gebruiker een bestaand item bewerkt.
   const isEditing = Boolean(item)
 
-  // Vul de beginwaarden in op basis van het bestaande item.
-  const [game, setGame] = useState(item?.gameTitle ?? '')
-  const [priority, setPriority] = useState<WishlistItem['priority']>(
-    item?.priority ?? 'Medium'
-  )
+  // Formuliergegevens.
+  const [gameId, setGameId] = useState('')
+  const [priority, setPriority] =
+    useState<WishlistItem['priority']>(
+      item?.priority ?? 'Medium'
+    )
   const [notes, setNotes] = useState(item?.notes ?? '')
   const [error, setError] = useState('')
 
+  // Zoek bij bewerken de echte game-GUID in de catalogus.
+  useEffect(() => {
+    if (item) {
+      const selectedGame = games.find(
+        (game) => game.title === item.gameTitle
+      )
+
+      setGameId(selectedGame?.id ?? '')
+    }
+  }, [item, games])
+
+  // Sluit de modal met Escape, behalve tijdens opslaan.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape' && !saving) {
+        onClose()
+      }
     }
 
     document.addEventListener('keydown', handleKeyDown)
 
-    // Cleanup: verwijder de event listener wanneer het effect wordt opgeruimd.
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [onClose])
+  }, [onClose, saving])
 
-  // Deze functie wordt uitgevoerd wanneer het formulier wordt verzonden.
+  // Verwerk het formulier.
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    // Voorkom dat de browser de pagina opnieuw laadt bij het verzenden.
     event.preventDefault()
 
-    // Controleer of er een spel is geselecteerd.
-    if (!game) {
+    // Controleer of een game geselecteerd is.
+    if (!gameId) {
       setError('Please select a game from the catalogue.')
-      return // Stop de functie als er geen spel is geselecteerd.
+      return
     }
 
-    // Geef de ingevulde gegevens door aan de onSave-functie.
-    onSave({
-      gameTitle: game,
+    // Controleer of de game bestaat in de catalogus.
+    const selectedGame = games.find(
+      (game) => game.id === gameId
+    )
+
+    if (!selectedGame) {
+      setError('The selected game is not available.')
+      return
+    }
+
+    // Wis eerdere foutmeldingen.
+    setError('')
+
+    // Geef de echte game-GUID en formuliergegevens door.
+    void onSave({
+      gameId,
       priority,
       notes: notes.trim(),
     })
   }
 
-  // JSX beschrijft de structuur van de modal en de inhoud van het formulier.
   return (
     <div className="wishlist-modal-overlay">
-
-      {/* De section vormt het dialoogvenster van de modal. */}
+      {/* Dialoogvenster */}
       <section
         className="wishlist-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="wishlist-modal-title"
       >
-        {/* De titel verandert afhankelijk van toevoegen of bewerken. */}
+        {/* Header */}
         <header className="wishlist-modal-header">
           <div>
             <p className="eyebrow">My Wishlist</p>
+
             <h2 id="wishlist-modal-title">
-              {isEditing ? 'Edit Wishlist Item' : 'Add Wishlist Item'}
+              {isEditing
+                ? 'Edit Wishlist Item'
+                : 'Add Wishlist Item'}
             </h2>
           </div>
 
-          {/* Deze knop sluit de modal via de meegegeven onClose-functie. */}
           <button
             type="button"
             className="wishlist-modal-close"
             onClick={onClose}
+            disabled={saving}
             aria-label="Close form"
           >
             ×
           </button>
         </header>
 
-        {/* Het formulier roept handleSubmit aan wanneer het wordt verzonden.
-            noValidate schakelt de standaard HTML-formuliervalidatie uit. */}
+        {/* Formulier */}
         <form
           className="wishlist-modal-form"
           onSubmit={handleSubmit}
           noValidate
         >
-          {/* Keuzemenu voor de gametitel. */}
+          {/* Game selecteren */}
           <div className="wishlist-modal-field">
-            <label htmlFor="wishlist-game">Game *</label>
+            <label htmlFor="wishlist-game">
+              Game *
+            </label>
+
             <select
               id="wishlist-game"
               className="form-control"
-              value={game}
-              // Bewaar de geselecteerde game en wis een oude foutmelding.
+              value={gameId}
+              disabled={
+                gamesLoading ||
+                Boolean(gamesError) ||
+                saving
+              }
               onChange={(event) => {
-                setGame(event.target.value)
+                setGameId(event.target.value)
                 setError('')
               }}
-              // Geef aan of er een fout is en koppel de eventuele foutmelding.
               aria-invalid={Boolean(error)}
               aria-describedby={
                 error ? 'wishlist-game-error' : undefined
               }
             >
-              <option value="">Select a game</option>
-              {/* Als het bestaande spel niet in de catalogus staat,
-                  wordt het toch als optie toegevoegd tijdens het bewerken. */}
-              {item?.gameTitle &&
-                !catalogueGames.includes(item.gameTitle) && (
-                  <option value={item.gameTitle}>
-                    {item.gameTitle}
-                  </option>
-                )}
-              {/* map() maakt een option voor iedere game in de catalogus. */}
-              {catalogueGames.map((title) => (
-                <option key={title} value={title}>
-                  {title}
+              <option value="">
+                {gamesLoading
+                  ? 'Loading games...'
+                  : 'Select a game'}
+              </option>
+
+              {/* games uit de backend */}
+              {games.map((game) => (
+                <option key={game.id} value={game.id}>
+                  {game.title}
                 </option>
               ))}
             </select>
           </div>
-          {/* Keuzemenu voor de prioriteit van het wishlist-item. */}
+
+          {/* Prioriteit */}
           <div className="wishlist-modal-field">
-            <label htmlFor="wishlist-priority">Priority *</label>
+            <label htmlFor="wishlist-priority">
+              Priority *
+            </label>
+
             <select
               id="wishlist-priority"
               className="form-control"
               value={priority}
-              onChange={(event) =>
-                // TypeScript krijgt hiermee het verwachte prioriteitstype.
+              disabled={saving}
+              onChange={(event) => {
                 setPriority(
                   event.target.value as WishlistItem['priority']
                 )
-              }
+              }}
             >
               <option value="High">High</option>
               <option value="Medium">Medium</option>
@@ -171,7 +207,7 @@ export default function WishlistItemModal({
             </select>
           </div>
 
-          {/* Optioneel tekstveld voor extra informatie over het spel. */}
+          {/* Notitie */}
           <div className="wishlist-modal-field">
             <label htmlFor="wishlist-note">Note (optional)</label>
             <textarea
@@ -181,35 +217,53 @@ export default function WishlistItemModal({
               maxLength={500}
               placeholder="Edition, condition, preferences..."
               value={notes}
-              onChange={(event) => setNotes(event.target.value)}
+              disabled={saving}
+              onChange={(event) => {
+                setNotes(event.target.value)
+              }}
             />
-            {/* Toon hoeveel tekens er zijn ingevuld. */}
-            <small>{notes.length}/500 characters</small>
+
+            <small>
+              {notes.length}/500 characters
+            </small>
           </div>
-          {/* Toon de foutmelding alleen als error een waarde bevat. */}
-          {error && (
+
+          {/* Validatie- en backendfouten */}
+          {(error || saveError || gamesError) && (
             <p
               id="wishlist-game-error"
               className="wishlist-modal-error"
               role="alert"
             >
-              ⚠ {error}
+              ⚠ {error || saveError || gamesError}
             </p>
           )}
 
-          {/* Onderaan staan de knoppen om te annuleren of op te slaan. */}
+          {/* Knoppen */}
           <div className="wishlist-modal-actions">
             <button
               type="button"
               className="button button--secondary"
               onClick={onClose}
+              disabled={saving}
             >
               Cancel
             </button>
 
-            {/* De tekst van de verzendknop hangt af van de modus. */}
-            <button type="submit" className="button button--primary">
-              {isEditing ? 'Save Changes' : 'Add to Wishlist'}
+            <button
+              type="submit"
+              className="button button--primary"
+              disabled={
+                saving ||
+                gamesLoading ||
+                Boolean(gamesError)
+              }
+            >
+              {saving
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save Changes'
+                  : 'Add to Wishlist'}
             </button>
           </div>
         </form>

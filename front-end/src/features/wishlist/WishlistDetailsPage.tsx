@@ -14,6 +14,7 @@ const gameEmojis: Record<string, string> = {
   Catan: '🏔️',
   Azul: '🟦',
   'Ticket to Ride': '🚂',
+  Cascadia: '🌲',
   Carcassonne: '🏰',
 }
 
