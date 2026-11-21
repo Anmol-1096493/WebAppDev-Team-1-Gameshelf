@@ -2,20 +2,15 @@ import { useEffect, useState, type FormEvent } from 'react'
 import {
   wishlistApi,
   type WishlistItem,
-} from '../wishlist/wishlistApi.ts'
+} from '../wishlist/wishlistApi'
+import { tradingApi } from './tradingApi'
+import { request } from '../../api'
 import './TradeOfferFormPage.css'
 
-// Lijst met games die de gebruiker kan kiezen als ruilgame.
-const catalogueGames = [
-  'Ark Nova',
-  'Spirit Island',
-  'Terraforming Mars',
-  'Wingspan',
-  'Catan',
-  'Azul',
-  'Ticket to Ride',
-  'Carcassonne',
-]
+interface CatalogueGame {
+  id: string
+  title: string
+}
 
 const gameEmojis: Record<string, string> = {
   'Ark Nova': '🦁',
@@ -36,21 +31,23 @@ export default function TradeOfferFormPage() {
 
   const itemId = segments[1]
 
-  // Bewaar het wishlistitem uit de backend.
+  // Wishlistitem uit de backend.
   const [item, setItem] = useState<WishlistItem | null>(null)
+
+  const [catalogueGames, setCatalogueGames] =
+    useState<CatalogueGame[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
-
-  // Bewaar de gekozen game en formulierstatus.
-  const [requestedGame, setRequestedGame] = useState('')
+  const [requestedGameId, setRequestedGameId] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-  // Haal het geselecteerde wishlistitem op uit SQLite.
+  // Laad wishlistitem en games uit SQLite.
   useEffect(() => {
     let active = true
 
-    async function loadWishlistItem() {
+    async function loadData() {
       if (!itemId) {
         setLoadError('Invalid wishlist item ID.')
         setLoading(false)
@@ -58,18 +55,22 @@ export default function TradeOfferFormPage() {
       }
 
       try {
-        const data = await wishlistApi.getById(itemId)
+        const [wishlistItem, games] = await Promise.all([
+          wishlistApi.getById(itemId),
+          request<CatalogueGame[]>('/api/games'),
+        ])
 
         if (active) {
-          setItem(data)
+          setItem(wishlistItem)
+          setCatalogueGames(games)
           setLoadError('')
         }
-      } catch (err) {
+      } catch (err: unknown) {
         if (active) {
           setLoadError(
             err instanceof Error
               ? err.message
-              : 'Could not load wishlist item.'
+              : 'Could not load trade offer information.'
           )
         }
       } finally {
@@ -79,38 +80,66 @@ export default function TradeOfferFormPage() {
       }
     }
 
-    void loadWishlistItem()
+    void loadData()
 
     return () => {
       active = false
     }
   }, [itemId])
 
-  // Controleer het formulier wanneer de gebruiker klikt.
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  // Zoek de titel van het geselecteerde spel.
+  const selectedGame = catalogueGames.find(
+    (game) => game.id === requestedGameId
+  )
+
+  const requestedGameTitle =
+    selectedGame?.title ?? ''
+
+  // Verstuur de aanbieding naar de backend.
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault()
+
+    if (submitting || success) {
+      return
+    }
 
     if (!item) {
       setError('Wishlist item not found.')
-      setSuccess(false)
       return
     }
 
-    if (!requestedGame) {
+    if (!requestedGameId) {
       setError('Please select the game you want in return.')
-      setSuccess(false)
       return
     }
 
-    // Voorkomt dat dezelfde game wordt aangeboden en teruggevraagd.
-    if (requestedGame === item?.gameTitle) {
+    if (requestedGameId === item.gameId) {
       setError('Please choose a different game for the exchange.')
-      setSuccess(false)
       return
     }
 
     setError('')
-    setSuccess(true)
+    setSubmitting(true)
+
+    try {
+      await tradingApi.create({
+        wishlistItemId: item.id,
+        requestedGameId: requestedGameId,
+      })
+
+      setSuccess(true)
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not send trade offer. Please try again.'
+      )
+      setSuccess(false)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   // Laadmelding.
@@ -123,14 +152,16 @@ export default function TradeOfferFormPage() {
     )
   }
 
-  // Foutmelding als het wishlistitem niet bestaat.
   if (loadError || !item) {
     return (
       <section className="trade-form-page">
         <h1>Wishlist Item Not Found</h1>
+
         <p className="text-muted">
-          {loadError || 'The requested wishlist item does not exist.'}
+          {loadError ||
+            'The requested wishlist item does not exist.'}
         </p>
+
         <a href="/wishlists">Back to Wishlists</a>
       </section>
     )
@@ -165,28 +196,40 @@ export default function TradeOfferFormPage() {
       </a>
 
       <header className="trade-form-header">
-        <p className="eyebrow">Wishlist & Trading</p>
-        <h1 id="page-title">Make Trade Offer</h1>
+        <p className="eyebrow">
+          Wishlist & Trading
+        </p>
+
+        <h1 id="page-title">
+          Make Trade Offer
+        </h1>
+
         <p className="text-muted">
-          Propose a game-for-game exchange with {item.memberName}.
+          Propose a game-for-game exchange with{' '}
+          {item.memberName}.
         </p>
       </header>
 
-      {/* Formulier */}
       <form
         className="card trade-form-card"
         onSubmit={handleSubmit}
         noValidate
       >
-        {/* Sectie 1: aangeboden game */}
+        {/* aangeboden game */}
         <div className="trade-form-section">
           <h2>1. Game You Are Offering</h2>
 
           <div className="trade-form-offered">
-            <span aria-hidden="true">{emoji}</span>
+            <span aria-hidden="true">
+              {emoji}
+            </span>
+
             <div>
               <strong>{item.gameTitle}</strong>
-              <p>Wanted by {item.memberName}</p>
+
+              <p>
+                Wanted by {item.memberName}
+              </p>
             </div>
           </div>
 
@@ -195,7 +238,7 @@ export default function TradeOfferFormPage() {
           </p>
         </div>
 
-        {/* Sectie 2: gewenste game */}
+        {/* gewenste game. */}
         <div className="trade-form-section">
           <h2>2. Game You Want in Return</h2>
 
@@ -207,27 +250,33 @@ export default function TradeOfferFormPage() {
             <select
               id="requested-return-game"
               className="form-control"
-              value={requestedGame}
-              // Bij een nieuwe keuze wordt de state bijgewerkt en verdwijnen oude meldingen.
+              value={requestedGameId}
+              disabled={submitting || success}
               onChange={(event) => {
-                setRequestedGame(event.target.value)
+                setRequestedGameId(event.target.value)
                 setError('')
-                setSuccess(false)
               }}
-              // Geeft aan of er een fout is en koppelt de juiste uitleg aan het veld.
               aria-invalid={Boolean(error)}
               aria-describedby={
-                error ? 'trade-form-error' : 'return-game-help'
+                error
+                  ? 'trade-form-error'
+                  : 'return-game-help'
               }
             >
-              <option value="">Select a catalogue game</option>
+              <option value="">
+                Select a catalogue game
+              </option>
 
-              {/* Maakt voor iedere game uit de catalogus een keuzemogelijkheid. */}
-              {catalogueGames.map((game) => (
-                <option key={game} value={game}>
-                  {game}
-                </option>
-              ))}
+              {catalogueGames
+                .filter((game) => game.id !== item.gameId)
+                .map((game) => (
+                  <option
+                    key={game.id}
+                    value={game.id}
+                  >
+                    {game.title}
+                  </option>
+                ))}
             </select>
 
             <small id="return-game-help">
@@ -236,25 +285,30 @@ export default function TradeOfferFormPage() {
           </div>
         </div>
 
-        {/* Sectie 3: geeft een overzicht van beide kanten van de ruil. */}
+        {/* overzicht van de ruil. */}
         <div className="trade-form-section">
           <h2>3. Trade Summary</h2>
 
           <div className="trade-form-exchange">
             <div>
               <span>You Offer</span>
-              <strong>{item.gameTitle}</strong>
+              <strong>
+                {item.gameTitle}
+              </strong>
             </div>
 
-            <span className="trade-form-arrow" aria-hidden="true">
+            <span
+              className="trade-form-arrow"
+              aria-hidden="true"
+            >
               ⇄
             </span>
 
             <div>
               <span>You Request</span>
-              {/* Toont de gekozen game of een standaardtekst als er nog niets is gekozen. */}
               <strong>
-                {requestedGame || 'No game selected'}
+                {requestedGameTitle ||
+                  'No game selected'}
               </strong>
             </div>
           </div>
@@ -265,7 +319,6 @@ export default function TradeOfferFormPage() {
           </p>
         </div>
 
-        {/* Validatiefout */}
         {error && (
           <p
             id="trade-form-error"
@@ -276,19 +329,27 @@ export default function TradeOfferFormPage() {
           </p>
         )}
 
-        {/* Preview van het ruilvoorstel */}
         {success && (
-          <div className="trade-form-success" role="status">
-            <strong>Trade Offer Preview Completed!</strong>
+          <div
+            className="trade-form-success"
+            role="status"
+          >
+            <strong>
+              Trade Offer Sent Successfully!
+            </strong>
+
             <p>
-              You offered {item.gameTitle} and requested {requestedGame}.
-              This is a frontend demo, so no offer has been sent or saved.
+              You offered {item.gameTitle} and requested{' '}
+              {requestedGameTitle}.
+              Your trade offer has been saved.
             </p>
-            <a href="/trade-offers">View Example Trade Offers →</a>
+
+            <a href="/trade-offers">
+              View My Trade Offers →
+            </a>
           </div>
         )}
 
-        {/* Actieknoppen */}
         <div className="trade-form-actions">
           <a
             href={`/wishlists/${item.id}`}
@@ -297,8 +358,20 @@ export default function TradeOfferFormPage() {
             Cancel
           </a>
 
-          <button type="submit" className="button button--primary">
-            Preview Trade Offer
+          <button
+            type="submit"
+            className="button button--primary"
+            disabled={
+              submitting ||
+              success ||
+              catalogueGames.length === 0
+            }
+          >
+            {submitting
+              ? 'Sending...'
+              : success
+                ? 'Offer Sent'
+                : 'Send Trade Offer'}
           </button>
         </div>
       </form>

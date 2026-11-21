@@ -1,142 +1,126 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import {
+  tradingApi,
+  TradeOfferStatus,
+  type TradeOffer,
+} from './tradingApi'
 import './TradeOffersPage.css'
 
+// Bepaalt welk tabblad actief is.
+type OfferTab = 'incoming' | 'outgoing'
 
-// Dit type bepaalt welke statussen een trade offer kan hebben.
-type OfferStatus =
-  | 'OPEN'
-  | 'ACCEPTED'
-  | 'REJECTED'
-  | 'CANCELLED'
+// Bepaalt welke actie uitgevoerd wordt.
+type OfferAction = 'accept' | 'reject' | 'cancel'
 
-// Dit type beschrijft de structuur van één trade offer.
-type TradeOffer = {
-  id: number
-  direction: 'incoming' | 'outgoing'
-  member: string
-  offeredGame: string
-  requestedGame: string
-  status: OfferStatus
-  expired: boolean
-  createdAt: string
+//  numerieke status uit  backend omgezet naar tekst.
+function getStatusLabel(status: TradeOfferStatus): string {
+  switch (status) {
+    case TradeOfferStatus.Open:
+      return 'OPEN'
+    case TradeOfferStatus.Accepted:
+      return 'ACCEPTED'
+    case TradeOfferStatus.Rejected:
+      return 'REJECTED'
+    case TradeOfferStatus.Cancelled:
+      return 'CANCELLED'
+    default:
+      return 'UNKNOWN'
+  }
 }
 
-// Voorbeeldgegevens van ontvangen en verzonden ruilvoorstellen.
-const exampleOffers: TradeOffer[] = [
-  {
-    id: 1,
-    direction: 'incoming',
-    member: 'Emma',
-    offeredGame: 'Wingspan',
-    requestedGame: 'Catan',
-    status: 'OPEN',
-    expired: false,
-    createdAt: '2026-10-08',
-  },
-  {
-    id: 2,
-    direction: 'incoming',
-    member: 'Noah',
-    offeredGame: 'Spirit Island',
-    requestedGame: 'Azul',
-    status: 'ACCEPTED',
-    expired: false,
-    createdAt: '2026-10-02',
-  },
-  {
-    id: 3,
-    direction: 'incoming',
-    member: 'Olivia',
-    offeredGame: 'Ark Nova',
-    requestedGame: 'Carcassonne',
-    status: 'REJECTED',
-    expired: false,
-    createdAt: '2026-10-01',
-  },
-  {
-    id: 4,
-    direction: 'outgoing',
-    member: 'Liam',
-    offeredGame: 'Catan',
-    requestedGame: 'Wingspan',
-    status: 'OPEN',
-    expired: false,
-    createdAt: '2026-10-07',
-  },
-  {
-    id: 5,
-    direction: 'outgoing',
-    member: 'Sophie',
-    offeredGame: 'Azul',
-    requestedGame: 'Terraforming Mars',
-    status: 'CANCELLED',
-    expired: false,
-    createdAt: '2026-10-03',
-  },
-  {
-    id: 6,
-    direction: 'outgoing',
-    member: 'Emma',
-    offeredGame: 'Ark Nova',
-    requestedGame: 'Ticket to Ride',
-    status: 'OPEN',
-    expired: true,
-    createdAt: '2026-09-01',
-  },
-]
+function formatDate(value: string): string {
+  return new Date(value).toLocaleDateString('nl-NL')
+}
 
-// Deze React-component toont de pagina met ontvangen en verzonden ruilvoorstellen.
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error
+    ? error.message
+    : 'Something went wrong. Please try again.'
+}
+
 export default function TradeOffersPage() {
-  // tab bepaalt welke aanbiedingen zichtbaar zijn.
-  const [tab, setTab] = useState<'incoming' | 'outgoing'>('incoming')
-  // offers bevat de lijst met ruilvoorstellen.
-  const [offers, setOffers] = useState<TradeOffer[]>(exampleOffers)
-  // filter() toont alleen aanbiedingen waarvan direction overeenkomt met de actieve tab.
-  const visibleOffers = offers.filter(
-    (offer) => offer.direction === tab
-  )
+  const [tab, setTab] = useState<OfferTab>('incoming')
+  // Aanbiedingen uit de database.
+  const [receivedOffers, setReceivedOffers] = useState<TradeOffer[]>([])
+  const [sentOffers, setSentOffers] = useState<TradeOffer[]>([])
 
-  // Deze functie past de status van een ruilvoorstel aan.
-  // De ID bepaalt welk aanbod gewijzigd moet worden.
-  function changeStatus(id: number, status: OfferStatus) {
-    setOffers((current) =>
-      // map() loopt door de lijst en maakt een nieuwe array.
-      current.map((offer) => {
+  // Status van het ophalen en aanpassen.
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [busyOfferId, setBusyOfferId] = useState<string | null>(null)
 
-        // Sla het aanbod over als:
-        // - de ID niet overeenkomt;
-        // - de status niet OPEN is;
-        // - of het aanbod verlopen is.
-        if (
-          offer.id !== id ||
-          offer.status !== 'OPEN' ||
-          offer.expired
-        ) {
-          return offer
-        }
+  // Haalt beide lijsten opnieuw op uit de backend.
+  const loadOffers = useCallback(async () => {
+    setLoading(true)
+    setError(null)
 
-        // Maak een nieuw object met dezelfde gegevens,
-        // maar met de nieuwe status.
-        return { ...offer, status }
-      })
-    )
+    try {
+      const [received, sent] = await Promise.all([
+        tradingApi.getReceived(),
+        tradingApi.getSent(),
+      ])
+
+      setReceivedOffers(received)
+      setSentOffers(sent)
+    } catch (err: unknown) {
+      setError(getErrorMessage(err))
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Laad aanbiedingen zodra pagina opent.
+  useEffect(() => {
+    void loadOffers()
+  }, [loadOffers])
+
+  // Kies de lijst die bij het actieve tabblad hoort.
+  const visibleOffers =
+    tab === 'incoming' ? receivedOffers : sentOffers
+
+  async function handleAction(
+    offerId: string,
+    action: OfferAction
+  ) {
+    setBusyOfferId(offerId)
+    setError(null)
+
+    try {
+      if (action === 'accept') {
+        await tradingApi.accept(offerId)
+      } else if (action === 'reject') {
+        await tradingApi.reject(offerId)
+      } else {
+        await tradingApi.cancel(offerId)
+      }
+
+      await loadOffers()
+    } catch (err: unknown) {
+      setError(getErrorMessage(err))
+    } finally {
+      setBusyOfferId(null)
+    }
   }
 
-  // JSX beschrijft de structuur van de interface.
   return (
-    <section className="trade-offers-page" aria-labelledby="page-title">
-      {/* De header bevat de titel, beschrijving en teruglink. */}
+    <section
+      className="trade-offers-page"
+      aria-labelledby="page-title"
+    >
       <header className="trade-offers-header">
         <p className="eyebrow">Wishlist & Trading</p>
+
         <h1 id="page-title">My Trade Offers</h1>
+
         <p className="text-muted">
           View and manage trade offers you have received and sent.
         </p>
+
         <a href="/wishlists" className="trade-offers-back">
           ← Back to Wishlists
         </a>
       </header>
-      {/* Met de tabbladen wissel je tussen ontvangen en verzonden aanbiedingen. */}
+
       <div
         className="trade-offers-tabs"
         role="group"
@@ -144,7 +128,6 @@ export default function TradeOffersPage() {
       >
         <button
           type="button"
-          // De actieve tab krijgt de primary-styling.
           className={`button ${
             tab === 'incoming'
               ? 'button--primary'
@@ -170,121 +153,158 @@ export default function TradeOffersPage() {
         </button>
       </div>
 
+      {/* Foutmelding bij een mislukte API-aanroep. */}
+      {error && (
+        <div role="alert">
+          <p>{error}</p>
 
-      {/* Toon een kaart voor ieder aanbod dat bij de geselecteerde tab hoort. */}
-      <div className="trade-offers-list">
-        {visibleOffers.map((offer) => {
+          <button
+            type="button"
+            className="button button--secondary"
+            onClick={() => void loadOffers()}
+          >
+            Try Again
+          </button>
+        </div>
+      )}
 
-          // Een open aanbod dat verlopen is, wordt als EXPIRED weergegeven.
-          // De oorspronkelijke status in het object blijft OPEN.
-          const displayStatus =
-            offer.status === 'OPEN' && offer.expired
-              ? 'EXPIRED'
-              : offer.status
+      {loading && (
+        <p className="text-muted" role="status">
+          Loading trade offers...
+        </p>
+      )}
 
-          // Alleen open en niet verlopen aanbiedingen kunnen acties uitvoeren.
-          const canAct =
-            offer.status === 'OPEN' && !offer.expired
+      {/* Lege lijst wanneer er geen aanbiedingen zijn. */}
+      {!loading && visibleOffers.length === 0 && (
+        <div className="card trade-offer-card">
+          <h2>
+            {tab === 'incoming'
+              ? 'No received offers yet'
+              : 'No sent offers yet'}
+          </h2>
 
-          return (
-            // key={offer.id} helpt React om de verschillende aanbiedingen te herkennen.
-            <article
-              key={offer.id}
-              className="card trade-offer-card"
-            >
+          <p className="text-muted">
+            {tab === 'incoming'
+              ? 'Trade offers from other members will appear here.'
+              : 'Trade offers you send will appear here.'}
+          </p>
+        </div>
+      )}
 
-              {/* Toon van wie het aanbod komt of naar wie het is gestuurd. */}
-              <div className="trade-offer-card-header">
-                <div>
-                  <p className="eyebrow">
-                    {tab === 'incoming' ? 'From' : 'To'} {offer.member}
-                  </p>
-                  <h2>Trade Offer #{offer.id}</h2>
+      {/* Aanbiedingen uit de backend. */}
+      {!loading && (
+        <div className="trade-offers-list">
+          {visibleOffers.map((offer) => {
+            const displayStatus = getStatusLabel(offer.status)
+
+            // Alleen open aanbiedingen krijgen actieknoppen.
+            const canAct =
+              offer.status === TradeOfferStatus.Open
+
+            // geen dubbel klikken tijdens een API-aanroep.
+            const isBusy = busyOfferId !== null
+
+            const memberName =
+              tab === 'incoming'
+                ? offer.offeredByName
+                : offer.wishlistOwnerName
+
+            return (
+              <article
+                key={offer.id}
+                className="card trade-offer-card"
+              >
+                <div className="trade-offer-card-header">
+                  <div>
+                    <p className="eyebrow">
+                      {tab === 'incoming' ? 'From' : 'To'}{' '}
+                      {memberName}
+                    </p>
+
+                    <h2>
+                      Trade Offer #{offer.id.slice(0, 8)}
+                    </h2>
+                  </div>
+
+                  <span
+                    className={`trade-offer-status trade-offer-status-${displayStatus.toLowerCase()}`}
+                  >
+                    {displayStatus}
+                  </span>
                 </div>
 
-                {/* Toon de status */}
-                <span
-                  className={`trade-offer-status trade-offer-status-${displayStatus.toLowerCase()}`}
-                >
-                  {displayStatus}
-                </span>
-              </div>
+                <div className="trade-offer-exchange">
+                  <div>
+                    <span>Offered Game</span>
+                    <strong>{offer.offeredGameTitle}</strong>
+                  </div>
 
-              {/* Toon welk spel wordt aangeboden en welk spel ervoor wordt gevraagd. */}
-              <div className="trade-offer-exchange">
-                <div>
-                  <span>Offered Game</span>
-                  <strong>{offer.offeredGame}</strong>
+                  <span
+                    className="trade-offer-exchange-arrow"
+                    aria-hidden="true"
+                  >
+                    ⇄
+                  </span>
+
+                  <div>
+                    <span>Requested Return Game</span>
+                    <strong>{offer.requestedGameTitle}</strong>
+                  </div>
                 </div>
 
-                <span
-                  className="trade-offer-exchange-arrow"
-                  aria-hidden="true"
-                >
-                  ⇄
-                </span>
+                <p className="trade-offer-date text-muted">
+                  Created: {formatDate(offer.createdAt)}
+                </p>
 
-                <div>
-                  <span>Requested Return Game</span>
-                  <strong>{offer.requestedGame}</strong>
-                </div>
-              </div>
-              {/* Toon de datum waarop het aanbod is aangemaakt. */}
-              <p className="trade-offer-date text-muted">
-                Created: {offer.createdAt}
-              </p>
-              {/* Toon de actieknoppen alleen als het aanbod nog behandeld kan worden. */}
-              {canAct && (
-                <div className="trade-offer-actions">
+                {canAct && (
+                  <div className="trade-offer-actions">
+                    {tab === 'incoming' ? (
+                      <>
+                        <button
+                          type="button"
+                          className="button button--primary"
+                          disabled={isBusy}
+                          onClick={() =>
+                            void handleAction(offer.id, 'accept')
+                          }
+                        >
+                          {busyOfferId === offer.id
+                            ? 'Processing...'
+                            : 'Accept'}
+                        </button>
 
-                  {/* Bij ontvangen aanbiedingen kan het aanbod worden geaccepteerd of afgewezen. */}
-                  {tab === 'incoming' ? (
-                    <>
-                      <button
-                        type="button"
-                        className="button button--primary"
-                        onClick={() =>
-                          changeStatus(offer.id, 'ACCEPTED')
-                        }
-                      >
-                        Accept
-                      </button>
-
+                        <button
+                          type="button"
+                          className="button button--secondary"
+                          disabled={isBusy}
+                          onClick={() =>
+                            void handleAction(offer.id, 'reject')
+                          }
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
                       <button
                         type="button"
                         className="button button--secondary"
+                        disabled={isBusy}
                         onClick={() =>
-                          changeStatus(offer.id, 'REJECTED')
+                          void handleAction(offer.id, 'cancel')
                         }
                       >
-                        Reject
+                        {busyOfferId === offer.id
+                          ? 'Processing...'
+                          : 'Cancel Offer'}
                       </button>
-                    </>
-                  ) : (
-                    // Bij verzonden aanbiedingen kan het aanbod worden geannuleerd.
-                    <button
-                      type="button"
-                      className="button button--secondary"
-                      onClick={() =>
-                        changeStatus(offer.id, 'CANCELLED')
-                      }
-                    >
-                      Cancel Offer
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Toon een aparte melding als het aanbod verlopen is. */}
-              {displayStatus === 'EXPIRED' && (
-                <p className="trade-offer-expired">
-                  This offer has expired and can no longer be accepted.
-                </p>
-              )}
-            </article>
-          )
-        })}
-      </div>
+                    )}
+                  </div>
+                )}
+              </article>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }
