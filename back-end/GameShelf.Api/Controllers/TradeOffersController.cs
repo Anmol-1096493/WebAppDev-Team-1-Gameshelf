@@ -152,10 +152,14 @@ public sealed class TradeOffersController(
                 .ThenInclude(w => w.Game)
             .Include(o => o.RequestedGame)
             .Where(o => o.OfferedById == CurrentMemberId)
-            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);
 
-        return Ok(offers.Select(ToDto).ToList());
+        var result = offers
+            .OrderByDescending(o => o.CreatedAt)
+            .Select(ToDto)
+            .ToList();
+
+        return Ok(result);
     }
 
     // GET /api/trade-offers/received
@@ -177,10 +181,14 @@ public sealed class TradeOffersController(
                 .ThenInclude(w => w.Game)
             .Include(o => o.RequestedGame)
             .Where(o => o.WishlistItem.OwnerId == CurrentMemberId)
-            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);
 
-        return Ok(offers.Select(ToDto).ToList());
+        var result = offers
+            .OrderByDescending(o => o.CreatedAt)
+            .Select(ToDto)
+            .ToList();
+
+        return Ok(result);
     }
 
     // Zet een TradeOffer uit de database om naar een DTO.
