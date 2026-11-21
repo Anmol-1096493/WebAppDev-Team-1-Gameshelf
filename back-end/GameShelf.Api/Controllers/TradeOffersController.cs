@@ -132,4 +132,73 @@ public sealed class TradeOffersController(
 
         return StatusCode(201, result);
     }
+
+    // GET /api/trade-offers/sent
+    [HttpGet("sent")]
+    public async Task<ActionResult<List<TradeOfferDto>>> GetSent(
+        CancellationToken ct)
+    {
+        if (CurrentMemberId == Guid.Empty)
+        {
+            return Unauthorized();
+        }
+
+        var offers = await db.TradeOffers
+            .AsNoTracking()
+            .Include(o => o.OfferedBy)
+            .Include(o => o.WishlistItem)
+                .ThenInclude(w => w.Owner)
+            .Include(o => o.WishlistItem)
+                .ThenInclude(w => w.Game)
+            .Include(o => o.RequestedGame)
+            .Where(o => o.OfferedById == CurrentMemberId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync(ct);
+
+        return Ok(offers.Select(ToDto).ToList());
+    }
+
+    // GET /api/trade-offers/received
+    [HttpGet("received")]
+    public async Task<ActionResult<List<TradeOfferDto>>> GetReceived(
+        CancellationToken ct)
+    {
+        if (CurrentMemberId == Guid.Empty)
+        {
+            return Unauthorized();
+        }
+
+        var offers = await db.TradeOffers
+            .AsNoTracking()
+            .Include(o => o.OfferedBy)
+            .Include(o => o.WishlistItem)
+                .ThenInclude(w => w.Owner)
+            .Include(o => o.WishlistItem)
+                .ThenInclude(w => w.Game)
+            .Include(o => o.RequestedGame)
+            .Where(o => o.WishlistItem.OwnerId == CurrentMemberId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync(ct);
+
+        return Ok(offers.Select(ToDto).ToList());
+    }
+
+    // Zet een TradeOffer uit de database om naar een DTO.
+    private static TradeOfferDto ToDto(TradeOffer offer)
+    {
+        return new TradeOfferDto(
+            Id: offer.Id,
+            WishlistItemId: offer.WishlistItemId,
+            OfferedById: offer.OfferedById,
+            OfferedByName: offer.OfferedBy.Name,
+            WishlistOwnerId: offer.WishlistItem.OwnerId,
+            WishlistOwnerName: offer.WishlistItem.Owner.Name,
+            OfferedGameId: offer.WishlistItem.GameId,
+            OfferedGameTitle: offer.WishlistItem.Game.Title,
+            RequestedGameId: offer.RequestedGameId,
+            RequestedGameTitle: offer.RequestedGame.Title,
+            CreatedAt: offer.CreatedAt,
+            Status: offer.Status
+        );
+    }
 }
