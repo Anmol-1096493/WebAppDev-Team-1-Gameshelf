@@ -41,6 +41,9 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddScoped<SessionService>();
 
+// Register the service that handles shelves.
+builder.Services.AddScoped<ShelfService>();
+
 // Register the service that handles collection records.
 builder.Services.AddScoped<CollectionService>();
 
