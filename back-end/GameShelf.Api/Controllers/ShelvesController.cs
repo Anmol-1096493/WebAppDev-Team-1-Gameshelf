@@ -96,4 +96,37 @@ public sealed class ShelvesController(ShelfService service) : AuthenticatedContr
     }
 
 
+    /// <summary>Adds a game from the member's collection to a shelf.</summary>
+    [HttpPost("{id:guid}/games")]
+    public async Task<IActionResult> AddGame(
+        Guid id,
+        AddGameToShelfDto request,
+        CancellationToken ct)
+    {
+        try
+        {
+            await _service.AddGameToShelfAsync(
+                CurrentMemberId,
+                id,
+                request,
+                ct);
+
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+    }
+
+
+
 }

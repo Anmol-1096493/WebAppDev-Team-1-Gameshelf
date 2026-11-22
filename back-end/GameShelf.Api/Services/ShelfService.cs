@@ -147,5 +147,68 @@ public sealed class ShelfService(GameShelfDbContext db)
     }
 
 
+    // Add a game from the member's collection to a shelf.
+    public async Task AddGameToShelfAsync(
+        Guid ownerId,
+        Guid shelfId,
+        AddGameToShelfDto request,
+        CancellationToken ct)
+    {
+        // Find the shelf in the database.
+        var shelf = await _db.Shelves
+            .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+
+        // Check that the shelf exists.
+        if (shelf is null)
+        {
+            throw new NotFoundException("Shelf not found.");
+        }
+
+        // Check that the shelf belongs to the signed-in member.
+        if (shelf.OwnerId != ownerId)
+        {
+            throw new ForbiddenException("You cannot update this shelf.");
+        }
+
+        // Find the game in the member's collection.
+        var collectionRecord = await _db.CollectionRecords
+            .FirstOrDefaultAsync(
+                record => record.Id == request.CollectionRecordId
+                    && record.OwnerId == ownerId,
+                ct);
+
+        // Check that the game belongs to the member.
+        if (collectionRecord is null)
+        {
+            throw new NotFoundException(
+                "Game not found in your collection.");
+        }
+
+        // Check that the game is not already on this shelf.
+        var alreadyAdded = await _db.ShelfGames
+            .AnyAsync(
+                game => game.ShelfId == shelfId
+                    && game.CollectionRecordId == request.CollectionRecordId,
+                ct);
+
+        if (alreadyAdded)
+        {
+            throw new ConflictException(
+                "This game is already on the shelf.");
+        }
+
+        // Create the link between the shelf and the collection record.
+        _db.ShelfGames.Add(new GameShelf.Api.Models.ShelfGame
+        {
+            ShelfId = shelfId,
+            CollectionRecordId = request.CollectionRecordId
+        });
+
+        // Save the changes in the database.
+        await _db.SaveChangesAsync(ct);
+    }
+
+
+
 
 }

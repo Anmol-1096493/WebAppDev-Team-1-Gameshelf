@@ -26,3 +26,9 @@ public sealed record UpdateShelfDto(
     string Name, 
     string Description, 
     bool IsPublic);
+
+/// <summary>
+/// Contains the information needed to add a game to a shelf.
+/// </summary>
+public sealed record AddGameToShelfDto(
+    Guid CollectionRecordId);
