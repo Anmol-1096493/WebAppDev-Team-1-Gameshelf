@@ -116,6 +116,12 @@ public sealed class CollectionService(
             throw new ValidationException("Play count cannot be negative.");
         }
 
+        // Check that the play count does not decrease.
+        if (request.PlayCount < record.PlayCount)
+        {
+            throw new ValidationException("Play count cannot decrease.");
+        }
+
         // Check that the rating is between 1 and 10.
         if (request.Rating is not null &&
             (request.Rating < 1 || request.Rating > 10))
