@@ -31,4 +31,41 @@ public sealed class ShelfService(GameShelfDbContext db)
 
         return shelves;
     }
+
+
+    // Create a new shelf for one member.
+    public async Task<ShelfDto> CreateShelfAsync(
+        Guid ownerId,
+        CreateShelfDto request,
+        CancellationToken ct)
+    {
+        // Check that the shelf has a name.
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ValidationException("A shelf name is required.");
+        }
+
+        // Create the new shelf.
+        var shelf = new GameShelf.Api.Models.Shelf
+        {
+            Id = Guid.NewGuid(),
+            OwnerId = ownerId,
+            Name = request.Name.Trim(),
+            Description = request.Description?.Trim() ?? string.Empty,
+            IsPublic = request.IsPublic
+        };
+
+        // Save the new shelf in the database.
+        _db.Shelves.Add(shelf);
+        await _db.SaveChangesAsync(ct);
+
+        // Return the new shelf.
+        return new ShelfDto(
+            shelf.Id,
+            shelf.Name,
+            shelf.Description,
+            shelf.IsPublic,
+            0);
+    }
+
 }
