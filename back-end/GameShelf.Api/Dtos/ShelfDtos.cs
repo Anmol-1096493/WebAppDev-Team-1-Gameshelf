@@ -18,3 +18,11 @@ public sealed record CreateShelfDto(
     string Name,
     string Description,
     bool IsPublic);
+
+/// <summary>
+/// Contains the information needed to update a shelf.
+/// </summary>
+public sealed record UpdateShelfDto(
+    string Name, 
+    string Description, 
+    bool IsPublic);

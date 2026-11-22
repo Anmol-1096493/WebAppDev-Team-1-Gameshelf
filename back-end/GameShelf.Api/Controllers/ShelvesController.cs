@@ -39,4 +39,37 @@ public sealed class ShelvesController(ShelfService service) : AuthenticatedContr
             return BadRequest(new { error = ex.Message });
         }
     }
+
+
+    /// <summary>Updates a shelf owned by the signed-in member.</summary>
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<ShelfDto>> Update(
+        Guid id,
+        UpdateShelfDto request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var shelf = await _service.UpdateShelfAsync(
+                CurrentMemberId,
+                id,
+                request,
+                ct);
+
+            return Ok(shelf);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
 }

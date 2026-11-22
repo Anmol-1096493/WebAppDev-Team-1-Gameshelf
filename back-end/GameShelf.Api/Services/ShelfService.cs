@@ -68,4 +68,53 @@ public sealed class ShelfService(GameShelfDbContext db)
             0);
     }
 
+
+    // Update an existing shelf owned by one member.
+    public async Task<ShelfDto> UpdateShelfAsync(
+        Guid ownerId,
+        Guid shelfId,
+        UpdateShelfDto request,
+        CancellationToken ct)
+    {
+        // Find the shelf in the database.
+        var shelf = await _db.Shelves
+            .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+
+        // Check that the shelf exists.
+        if (shelf is null)
+        {
+            throw new NotFoundException("Shelf not found.");
+        }
+
+        // Check that the shelf belongs to the signed-in member.
+        if (shelf.OwnerId != ownerId)
+        {
+            throw new ForbiddenException("You cannot update this shelf.");
+        }
+
+        // Check that the shelf has a name.
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ValidationException("A shelf name is required.");
+        }
+
+        // Update the shelf details.
+        shelf.Name = request.Name.Trim();
+        shelf.Description = request.Description?.Trim() ?? string.Empty;
+        shelf.IsPublic = request.IsPublic;
+
+        // Save the changes in the database.
+        await _db.SaveChangesAsync(ct);
+
+        // Return the updated shelf.
+        return new ShelfDto(
+            shelf.Id,
+            shelf.Name,
+            shelf.Description,
+            shelf.IsPublic,
+            await _db.ShelfGames.CountAsync(
+                game => game.ShelfId == shelf.Id, ct));
+    }
+
+
 }
