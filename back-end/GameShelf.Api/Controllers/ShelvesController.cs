@@ -154,6 +154,31 @@ public sealed class ShelvesController(ShelfService service) : AuthenticatedContr
         }
     }
 
+        /// <summary>Gets all games on a shelf owned by the signed-in member.</summary>
+    [HttpGet("{id:guid}/games")]
+    public async Task<ActionResult<IEnumerable<ShelfGameDto>>> GetGames(
+        Guid id,
+        CancellationToken ct)
+    {
+        try
+        {
+            var games = await _service.ListShelfGamesAsync(
+                CurrentMemberId,
+                id,
+                ct);
+
+            return Ok(games);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+    }
+
 
 
 }

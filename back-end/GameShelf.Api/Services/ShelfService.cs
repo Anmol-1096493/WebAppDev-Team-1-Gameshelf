@@ -251,6 +251,42 @@ public sealed class ShelfService(GameShelfDbContext db)
         await _db.SaveChangesAsync(ct);
     }
 
+        // Get all games that belong to one shelf.
+    public async Task<IEnumerable<ShelfGameDto>> ListShelfGamesAsync(
+        Guid ownerId,
+        Guid shelfId,
+        CancellationToken ct)
+    {
+        // Find the shelf in the database.
+        var shelf = await _db.Shelves
+            .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+
+        // Check that the shelf exists.
+        if (shelf is null)
+        {
+            throw new NotFoundException("Shelf not found.");
+        }
+
+        // Check that the shelf belongs to the signed-in member.
+        if (shelf.OwnerId != ownerId)
+        {
+            throw new ForbiddenException("You cannot view this shelf.");
+        }
+
+        // Get all games from this shelf.
+        var games = await _db.ShelfGames
+            .Where(game => game.ShelfId == shelfId)
+            .Select(game => new ShelfGameDto(
+                game.CollectionRecordId,
+                game.CollectionRecord.GameId,
+                game.CollectionRecord.Game.Title,
+                game.CollectionRecord.PlayCount,
+                game.CollectionRecord.Rating,
+                game.CollectionRecord.Note))
+            .ToListAsync(ct);
+
+        return games;
+    }
 
 
 

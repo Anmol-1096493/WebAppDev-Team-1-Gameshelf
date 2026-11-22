@@ -32,3 +32,14 @@ public sealed record UpdateShelfDto(
 /// </summary>
 public sealed record AddGameToShelfDto(
     Guid CollectionRecordId);
+
+/// <summary>
+/// Shows one game that belongs to a shelf.
+/// </summary>
+public sealed record ShelfGameDto(
+    Guid CollectionRecordId,
+    Guid GameId,
+    string GameTitle,
+    int PlayCount,
+    int? Rating,
+    string Note);
