@@ -1,4 +1,4 @@
-
+using System.Linq.Expressions;
 using GameShelf.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +23,14 @@ public class Repository<T>(GameShelfDbContext context) : IRepository<T>
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         return await _context.Set<T>().FindAsync([id], ct);
+    }
+
+    // Find records that match a search condition.
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken ct)
+    {
+        return await _context.Set<T>()
+            .Where(predicate)
+            .ToListAsync(ct);
     }
 
     // Add a new record to the database.

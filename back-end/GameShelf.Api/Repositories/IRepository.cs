@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 namespace GameShelf.Api.Repositories;
 
 /// <summary>
@@ -10,6 +11,9 @@ public interface IRepository<T> where T : class, IEntity
 
     // Find one record by its ID.
     Task<T?> GetByIdAsync(Guid id, CancellationToken ct);
+
+    // Find records that match a search condition.
+    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);
 
     // Add a new record.
     void Add(T entity);
