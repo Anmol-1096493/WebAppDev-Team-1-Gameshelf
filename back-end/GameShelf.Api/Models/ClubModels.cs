@@ -1,10 +1,10 @@
 namespace GameShelf.Api.Models;
-
+using GameShelf.Api.Repositories;
 /// <summary>
 /// A club member. Login is backed by <see cref="PasswordHash"/>; there is no
 /// external identity provider yet.
 /// </summary>
-public sealed class Member
+public sealed class Member : IEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -18,7 +18,7 @@ public sealed class Member
 /// <summary>
 /// One catalogue edition, referenced by all club modules.
 /// </summary>
-public sealed class Game
+public sealed class Game : IEntity
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
@@ -43,7 +43,7 @@ public enum SignupStatus
 /// One member's signup for one session. CreatedAt orders both the confirmed
 /// seats and the waiting list.
 /// </summary>
-public sealed class Signup
+public sealed class Signup : IEntity
 {
     public Guid Id { get; set; }
     public Guid SessionId { get; set; }
@@ -60,7 +60,7 @@ public sealed class Signup
 /// <summary>
 /// A game session hosted by a member, in the club room or at a kitchen table.
 /// </summary>
-public sealed class Session
+public sealed class Session : IEntity
 {
     public Guid Id { get; set; }
     public Guid HostId { get; set; }

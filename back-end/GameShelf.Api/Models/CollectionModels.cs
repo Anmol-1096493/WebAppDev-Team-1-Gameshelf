@@ -1,9 +1,9 @@
 namespace GameShelf.Api.Models;
-
+using GameShelf.Api.Repositories;
 public enum CollectionStatus { NotPlayed = 0, InProgress = 1, Played = 2 }
 
 /// <summary>One owned catalogue edition, with the owner's play history and opinion.</summary>
-public sealed class CollectionRecord
+public sealed class CollectionRecord : IEntity
 {
     public Guid Id { get; set; }
     public Guid OwnerId { get; set; }
@@ -17,7 +17,7 @@ public sealed class CollectionRecord
 }
 
 /// <summary>A public or private group of collection records owned by one member.</summary>
-public sealed class Shelf
+public sealed class Shelf : IEntity
 {
     public Guid Id { get; set; }
     public Guid OwnerId { get; set; }

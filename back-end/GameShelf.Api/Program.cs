@@ -1,9 +1,11 @@
 using GameShelf.Api.Data;
+using GameShelf.Api.Repositories; 
 using GameShelf.Api.Services;
 using GameShelf.Api.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+
 
 var initializeOnly = args.Contains("--initialize-database");
 var builder = WebApplication.CreateBuilder(args.Where(arg => arg != "--initialize-database").ToArray());
@@ -33,7 +35,18 @@ var dbPath = Path.Combine(builder.Environment.ContentRootPath, "gameshelf.db");
 var connectionString = builder.Configuration.GetConnectionString("GameShelf")
     ?? new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = dbPath }.ToString();
 builder.Services.AddDbContext<GameShelfDbContext>(o => o.UseSqlite(connectionString));
+
+// Register the generic repository for database operations.
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 builder.Services.AddScoped<SessionService>();
+
+// Register the service that handles shelves.
+builder.Services.AddScoped<ShelfService>();
+
+// Register the service that handles collection records.
+builder.Services.AddScoped<CollectionService>();
+
 builder.Services.AddSingleton<TokenService>();
 
 // Bearer-token login for the prototype. Tokens are HMAC-signed and sent by the
