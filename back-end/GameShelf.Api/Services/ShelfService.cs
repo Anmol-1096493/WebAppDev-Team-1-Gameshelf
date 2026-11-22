@@ -117,4 +117,35 @@ public sealed class ShelfService(GameShelfDbContext db)
     }
 
 
+    // Delete an existing shelf owned by one member.
+    public async Task DeleteShelfAsync(
+        Guid ownerId,
+        Guid shelfId,
+        CancellationToken ct)
+    {
+        // Find the shelf in the database.
+        var shelf = await _db.Shelves
+            .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+
+        // Check that the shelf exists.
+        if (shelf is null)
+        {
+            throw new NotFoundException("Shelf not found.");
+        }
+
+        // Check that the shelf belongs to the signed-in member.
+        if (shelf.OwnerId != ownerId)
+        {
+            throw new ForbiddenException("You cannot delete this shelf.");
+        }
+
+        // Delete the shelf from the database.
+        _db.Shelves.Remove(shelf);
+
+        // Save the changes in the database.
+        await _db.SaveChangesAsync(ct);
+    }
+
+
+
 }

@@ -72,4 +72,28 @@ public sealed class ShelvesController(ShelfService service) : AuthenticatedContr
         }
     }
 
+
+    /// <summary>Deletes a shelf owned by the signed-in member.</summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken ct)
+    {
+        try
+        {
+            await _service.DeleteShelfAsync(CurrentMemberId, id, ct);
+
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+    }
+
+
 }
