@@ -14,3 +14,10 @@ public sealed record CollectionRecordDto(
     int PlayCount,
     int? Rating,
     string Note);
+
+
+/// <summary>
+/// Contains the information needed to add a game to a collection.
+/// </summary>
+public sealed record CreateCollectionRecordDto(
+    Guid GameId);
