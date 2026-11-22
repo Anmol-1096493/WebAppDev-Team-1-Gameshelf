@@ -208,6 +208,49 @@ public sealed class ShelfService(GameShelfDbContext db)
         await _db.SaveChangesAsync(ct);
     }
 
+        // Remove a game from a shelf.
+    public async Task RemoveGameFromShelfAsync(
+        Guid ownerId,
+        Guid shelfId,
+        Guid collectionRecordId,
+        CancellationToken ct)
+    {
+        // Find the shelf in the database.
+        var shelf = await _db.Shelves
+            .FirstOrDefaultAsync(s => s.Id == shelfId, ct);
+
+        // Check that the shelf exists.
+        if (shelf is null)
+        {
+            throw new NotFoundException("Shelf not found.");
+        }
+
+        // Check that the shelf belongs to the signed-in member.
+        if (shelf.OwnerId != ownerId)
+        {
+            throw new ForbiddenException("You cannot update this shelf.");
+        }
+
+        // Find the game on this shelf.
+        var shelfGame = await _db.ShelfGames
+            .FirstOrDefaultAsync(
+                game => game.ShelfId == shelfId
+                    && game.CollectionRecordId == collectionRecordId,
+                ct);
+
+        // Check that the game is on this shelf.
+        if (shelfGame is null)
+        {
+            throw new NotFoundException("Game not found on this shelf.");
+        }
+
+        // Remove the link between the shelf and the game.
+        _db.ShelfGames.Remove(shelfGame);
+
+        // Save the changes in the database.
+        await _db.SaveChangesAsync(ct);
+    }
+
 
 
 

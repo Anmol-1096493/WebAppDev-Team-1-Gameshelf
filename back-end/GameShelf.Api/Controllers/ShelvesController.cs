@@ -127,6 +127,33 @@ public sealed class ShelvesController(ShelfService service) : AuthenticatedContr
         }
     }
 
+        /// <summary>Removes a game from a shelf owned by the signed-in member.</summary>
+    [HttpDelete("{id:guid}/games/{collectionRecordId:guid}")]
+    public async Task<IActionResult> RemoveGame(
+        Guid id,
+        Guid collectionRecordId,
+        CancellationToken ct)
+    {
+        try
+        {
+            await _service.RemoveGameFromShelfAsync(
+                CurrentMemberId,
+                id,
+                collectionRecordId,
+                ct);
+
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+    }
+
 
 
 }
