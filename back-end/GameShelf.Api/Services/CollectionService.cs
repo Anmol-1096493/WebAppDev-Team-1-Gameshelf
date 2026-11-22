@@ -138,7 +138,10 @@ public sealed class CollectionService(
         }
 
         // Update the collection record.
-        record.Status = request.Status;
+        record.Status = request.PlayCount > 0
+            ? CollectionStatus.Played
+            : request.Status;
+
         record.PlayCount = request.PlayCount;
         record.Rating = request.Rating;
         record.Note = request.Note?.Trim() ?? string.Empty;
