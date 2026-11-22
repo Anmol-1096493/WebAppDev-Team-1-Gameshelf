@@ -153,4 +153,28 @@ public sealed class CollectionService(
             record.Rating,
             record.Note);
     }
+
+    // Remove a game from a member's collection.
+    public async Task DeleteCollectionAsync(
+        Guid ownerId,
+        Guid recordId,
+        CancellationToken ct)
+    {
+        // Find the collection record owned by this member.
+        var records = await _collectionRepository.FindAsync(
+            record => record.Id == recordId && record.OwnerId == ownerId,
+            ct);
+
+        var record = records.FirstOrDefault();
+
+        // Stop if the collection record does not exist.
+        if (record is null)
+        {
+            throw new NotFoundException("Collection record not found.");
+        }
+
+        // Remove the collection record from the database.
+        _collectionRepository.Delete(record);
+        await _collectionRepository.SaveChangesAsync(ct);
+    }
 }

@@ -73,4 +73,25 @@ public sealed class CollectionsController(CollectionService service)
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    // Remove a game from the signed-in member's collection.
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteCollection(
+        Guid id,
+        CancellationToken ct)
+    {
+        try
+        {
+            await service.DeleteCollectionAsync(
+                CurrentMemberId,
+                id,
+                ct);
+
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
 }
