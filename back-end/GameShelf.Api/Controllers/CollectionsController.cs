@@ -46,4 +46,31 @@ public sealed class CollectionsController(CollectionService service)
             return Conflict(new { error = ex.Message });
         }
     }
+
+    // Update a game in the signed-in member's collection.
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<CollectionRecordDto>> UpdateCollection(
+        Guid id,
+        UpdateCollectionRecordDto request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var record = await service.UpdateCollectionAsync(
+                CurrentMemberId,
+                id,
+                request,
+                ct);
+
+            return Ok(record);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 }

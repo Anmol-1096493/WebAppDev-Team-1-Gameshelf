@@ -84,4 +84,73 @@ public sealed class CollectionService(
             record.Rating,
             record.Note);
     }
+
+    // Update the details of a game in a member's collection.
+    public async Task<CollectionRecordDto> UpdateCollectionAsync(
+        Guid ownerId,
+        Guid recordId,
+        UpdateCollectionRecordDto request,
+        CancellationToken ct)
+    {
+        // Find the collection record.
+        var records = await _collectionRepository.FindAsync(
+            record => record.Id == recordId && record.OwnerId == ownerId,
+            ct);
+
+        var record = records.FirstOrDefault();
+
+        if (record is null)
+        {
+            throw new NotFoundException("Collection record not found.");
+        }
+
+        // Check that the status is valid.
+        if (!Enum.IsDefined(request.Status))
+        {
+            throw new ValidationException("Invalid collection status.");
+        }
+
+        // Check that the play count is not negative.
+        if (request.PlayCount < 0)
+        {
+            throw new ValidationException("Play count cannot be negative.");
+        }
+
+        // Check that the rating is between 1 and 10.
+        if (request.Rating is not null &&
+            (request.Rating < 1 || request.Rating > 10))
+        {
+            throw new ValidationException("Rating must be between 1 and 10.");
+        }
+
+        // A rating is only allowed for a game that has been played.
+        if (request.Rating is not null &&
+            (request.Status != CollectionStatus.Played || request.PlayCount == 0))
+        {
+            throw new ValidationException(
+                "A rating is only allowed when the game has been played.");
+        }
+
+        // Update the collection record.
+        record.Status = request.Status;
+        record.PlayCount = request.PlayCount;
+        record.Rating = request.Rating;
+        record.Note = request.Note?.Trim() ?? string.Empty;
+
+        _collectionRepository.Update(record);
+        await _collectionRepository.SaveChangesAsync(ct);
+
+        // Get the game title for the response.
+        var game = await _gameRepository.GetByIdAsync(record.GameId, ct);
+        var gameTitle = game?.Title ?? string.Empty;
+
+        return new CollectionRecordDto(
+            record.Id,
+            record.GameId,
+            gameTitle,
+            record.Status,
+            record.PlayCount,
+            record.Rating,
+            record.Note);
+    }
 }
