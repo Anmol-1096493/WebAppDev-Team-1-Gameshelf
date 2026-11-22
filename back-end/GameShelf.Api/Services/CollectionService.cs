@@ -34,4 +34,54 @@ public sealed class CollectionService(
             record.Rating,
             record.Note));
     }
+
+    // Add a game to a member's collection.
+    public async Task<CollectionRecordDto> AddToCollectionAsync(
+        Guid ownerId,
+        CreateCollectionRecordDto request,
+        CancellationToken ct)
+    {
+        // Check if the game exists in the catalogue.
+        var game = await _gameRepository.GetByIdAsync(request.GameId, ct);
+
+        if (game is null)
+        {
+            throw new NotFoundException("Game not found.");
+        }
+
+        // Check if the member already owns this game.
+        var existingRecords = await _collectionRepository.FindAsync(
+            record => record.OwnerId == ownerId && record.GameId == request.GameId,
+            ct);
+
+        if (existingRecords.Any())
+        {
+            throw new ConflictException("This game is already in your collection.");
+        }
+
+        // Create a new collection record.
+        var record = new CollectionRecord
+        {
+            Id = Guid.NewGuid(),
+            OwnerId = ownerId,
+            GameId = game.Id,
+            Status = CollectionStatus.NotPlayed,
+            PlayCount = 0,
+            Rating = null,
+            Note = string.Empty
+        };
+
+        _collectionRepository.Add(record);
+        await _collectionRepository.SaveChangesAsync(ct);
+
+        // Return the new collection record.
+        return new CollectionRecordDto(
+            record.Id,
+            record.GameId,
+            game.Title,
+            record.Status,
+            record.PlayCount,
+            record.Rating,
+            record.Note);
+    }
 }
