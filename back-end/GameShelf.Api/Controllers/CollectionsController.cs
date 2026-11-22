@@ -21,4 +21,29 @@ public sealed class CollectionsController(CollectionService service)
         var records = await service.ListCollectionAsync(CurrentMemberId, ct);
         return Ok(records);
     }
+
+    // Add a game to the signed-in member's collection.
+    [HttpPost]
+    public async Task<ActionResult<CollectionRecordDto>> AddToCollection(
+        CreateCollectionRecordDto request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var record = await service.AddToCollectionAsync(
+                CurrentMemberId,
+                request,
+                ct);
+
+            return StatusCode(StatusCodes.Status201Created, record);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ConflictException ex)
+        {
+            return Conflict(new { error = ex.Message });
+        }
+    }
 }
