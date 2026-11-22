@@ -137,10 +137,31 @@ public sealed class CollectionService(
                 "A rating is only allowed when the game has been played.");
         }
 
-        // Update the collection record.
-        record.Status = request.PlayCount > 0
+        // Decide which status the game should have.
+        var newStatus = request.PlayCount > 0
             ? CollectionStatus.Played
             : request.Status;
+
+        // Check how many other games are already in progress.
+        if (newStatus == CollectionStatus.InProgress)
+        {
+            var inProgressRecords = await _collectionRepository.FindAsync(
+                existingRecord =>
+                    existingRecord.OwnerId == ownerId &&
+                    existingRecord.Id != recordId &&
+                    existingRecord.Status == CollectionStatus.InProgress,
+                ct);
+
+            // A member can have a maximum of three games in progress.
+            if (inProgressRecords.Count() >= 3)
+            {
+                throw new ValidationException(
+                    "A member can have a maximum of three games in progress.");
+            }
+        }
+
+        // Update the collection record.
+        record.Status = newStatus;
 
         record.PlayCount = request.PlayCount;
         record.Rating = request.Rating;
