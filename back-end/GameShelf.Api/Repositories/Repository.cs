@@ -33,6 +33,15 @@ public class Repository<T>(GameShelfDbContext context) : IRepository<T>
             .ToListAsync(ct);
     }
 
+    // Find records and include related data, such as the game.
+    public async Task<IEnumerable<T>> FindWithRelatedAsync(Expression<Func<T, bool>> predicate, CancellationToken ct)
+    {
+        return await _context.Set<T>()
+            .Where(predicate)
+            .Include("Game")
+            .ToListAsync(ct);
+    }
+
     // Add a new record to the database.
     public void Add(T entity)
     {

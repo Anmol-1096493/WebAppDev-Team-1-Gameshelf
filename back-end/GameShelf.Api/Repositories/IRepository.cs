@@ -15,6 +15,9 @@ public interface IRepository<T> where T : class, IEntity
     // Find records that match a search condition.
     Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);
 
+    // Find records and include related data, such as the game.
+    Task<IEnumerable<T>> FindWithRelatedAsync(Expression<Func<T, bool>> predicate, CancellationToken ct);
+
     // Add a new record.
     void Add(T entity);
 
