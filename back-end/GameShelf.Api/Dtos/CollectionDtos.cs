@@ -21,3 +21,13 @@ public sealed record CollectionRecordDto(
 /// </summary>
 public sealed record CreateCollectionRecordDto(
     Guid GameId);
+
+
+/// <summary>
+/// Contains the information used to update a collection record.
+/// </summary>
+public sealed record UpdateCollectionRecordDto(
+    CollectionStatus Status,
+    int PlayCount,
+    int? Rating,
+    string Note);
