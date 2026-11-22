@@ -40,6 +40,10 @@ builder.Services.AddDbContext<GameShelfDbContext>(o => o.UseSqlite(connectionStr
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddScoped<SessionService>();
+
+// Register the service that handles collection records.
+builder.Services.AddScoped<CollectionService>();
+
 builder.Services.AddSingleton<TokenService>();
 
 // Bearer-token login for the prototype. Tokens are HMAC-signed and sent by the
