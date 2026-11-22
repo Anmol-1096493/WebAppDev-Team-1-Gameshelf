@@ -13,13 +13,13 @@ public sealed class ShelfService(GameShelfDbContext db)
     // Keep the database context so we can access shelves and their games.
     private readonly GameShelfDbContext _db = db;
 
-    // Get all shelves owned by one member.
+    // Get all shelves owned by one member and all public shelves.
     public async Task<IEnumerable<ShelfDto>> ListShelvesAsync(
         Guid ownerId,
         CancellationToken ct)
     {
         var shelves = await _db.Shelves
-            .Where(shelf => shelf.OwnerId == ownerId)
+            .Where(shelf => shelf.OwnerId == ownerId || shelf.IsPublic)
             .OrderBy(shelf => shelf.Name)
             .Select(shelf => new ShelfDto(
                 shelf.Id,
@@ -31,7 +31,6 @@ public sealed class ShelfService(GameShelfDbContext db)
 
         return shelves;
     }
-
 
     // Create a new shelf for one member.
     public async Task<ShelfDto> CreateShelfAsync(
@@ -68,7 +67,6 @@ public sealed class ShelfService(GameShelfDbContext db)
             0);
     }
 
-
     // Update an existing shelf owned by one member.
     public async Task<ShelfDto> UpdateShelfAsync(
         Guid ownerId,
@@ -86,7 +84,7 @@ public sealed class ShelfService(GameShelfDbContext db)
             throw new NotFoundException("Shelf not found.");
         }
 
-        // Check that the shelf belongs to the signed-in member.
+        // Only the owner can update this shelf.
         if (shelf.OwnerId != ownerId)
         {
             throw new ForbiddenException("You cannot update this shelf.");
@@ -116,7 +114,6 @@ public sealed class ShelfService(GameShelfDbContext db)
                 game => game.ShelfId == shelf.Id, ct));
     }
 
-
     // Delete an existing shelf owned by one member.
     public async Task DeleteShelfAsync(
         Guid ownerId,
@@ -133,7 +130,7 @@ public sealed class ShelfService(GameShelfDbContext db)
             throw new NotFoundException("Shelf not found.");
         }
 
-        // Check that the shelf belongs to the signed-in member.
+        // Only the owner can delete this shelf.
         if (shelf.OwnerId != ownerId)
         {
             throw new ForbiddenException("You cannot delete this shelf.");
@@ -141,11 +138,8 @@ public sealed class ShelfService(GameShelfDbContext db)
 
         // Delete the shelf from the database.
         _db.Shelves.Remove(shelf);
-
-        // Save the changes in the database.
         await _db.SaveChangesAsync(ct);
     }
-
 
     // Add a game from the member's collection to a shelf.
     public async Task AddGameToShelfAsync(
@@ -164,7 +158,7 @@ public sealed class ShelfService(GameShelfDbContext db)
             throw new NotFoundException("Shelf not found.");
         }
 
-        // Check that the shelf belongs to the signed-in member.
+        // Only the owner can add games to this shelf.
         if (shelf.OwnerId != ownerId)
         {
             throw new ForbiddenException("You cannot update this shelf.");
@@ -208,7 +202,7 @@ public sealed class ShelfService(GameShelfDbContext db)
         await _db.SaveChangesAsync(ct);
     }
 
-        // Remove a game from a shelf.
+    // Remove a game from a shelf.
     public async Task RemoveGameFromShelfAsync(
         Guid ownerId,
         Guid shelfId,
@@ -225,7 +219,7 @@ public sealed class ShelfService(GameShelfDbContext db)
             throw new NotFoundException("Shelf not found.");
         }
 
-        // Check that the shelf belongs to the signed-in member.
+        // Only the owner can remove games from this shelf.
         if (shelf.OwnerId != ownerId)
         {
             throw new ForbiddenException("You cannot update this shelf.");
@@ -246,12 +240,10 @@ public sealed class ShelfService(GameShelfDbContext db)
 
         // Remove the link between the shelf and the game.
         _db.ShelfGames.Remove(shelfGame);
-
-        // Save the changes in the database.
         await _db.SaveChangesAsync(ct);
     }
 
-        // Get all games that belong to one shelf.
+    // Get all games that belong to one shelf.
     public async Task<IEnumerable<ShelfGameDto>> ListShelfGamesAsync(
         Guid ownerId,
         Guid shelfId,
@@ -267,8 +259,8 @@ public sealed class ShelfService(GameShelfDbContext db)
             throw new NotFoundException("Shelf not found.");
         }
 
-        // Check that the shelf belongs to the signed-in member.
-        if (shelf.OwnerId != ownerId)
+        // Only the owner or another member can view a public shelf.
+        if (shelf.OwnerId != ownerId && !shelf.IsPublic)
         {
             throw new ForbiddenException("You cannot view this shelf.");
         }
@@ -287,7 +279,4 @@ public sealed class ShelfService(GameShelfDbContext db)
 
         return games;
     }
-
-
-
 }
